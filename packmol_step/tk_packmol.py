@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The graphical part of a PACKMOL step"""
 
-import chemflowchart
+import molssi_workflow
 import molssi_util.molssi_widgets as mw
 import packmol_step
 import Pmw
@@ -55,7 +55,7 @@ methods = {
 }
 
 
-class TkPACKMOL(chemflowchart.TkNode):
+class TkPACKMOL(molssi_workflow.TkNode):
     """The node_class is the class of the 'real' node that this
     class is the Tk graphics partner for
     """
