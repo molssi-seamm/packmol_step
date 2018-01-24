@@ -84,7 +84,9 @@ class TkPACKMOL(molssi_workflow.TkNode):
         self.dialog.withdraw()
 
         self._tmp = {}
-        frame = self.dialog.interior()
+        frame = ttk.Frame(self.dialog.interior())
+        frame.pack(expand=tk.YES, fill=tk.BOTH)
+        self._tmp['frame'] = frame
 
         # Set the first parameter -- which will be exactly matched
         method = ttk.Combobox(
@@ -156,7 +158,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
         method = method_widget.get()
         submethod = submethod_widget.get()
 
-        frame = self.dialog.interior()
+        frame = self._tmp['frame']
         for slave in frame.grid_slaves():
             slave.grid_forget()
 
