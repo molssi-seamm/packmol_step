@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """A node or step for PACKMOL in a workflow"""
 
-import chemflowchart
-from chemflowchart import units, Q_, data  # nopep8
+import molssi_workflow
+from molssi_workflow import units, Q_, data  # nopep8
 import logging
 import mendeleev
 from molssi_util import pdbfile
@@ -11,7 +11,7 @@ import pprint  # nopep8
 logger = logging.getLogger(__name__)
 
 
-class PACKMOL(chemflowchart.Node):
+class PACKMOL(molssi_workflow.Node):
     def __init__(self, workflow=None, gui_object=None, extension=None):
         '''Setup the main PACKMOL step
 
@@ -111,7 +111,7 @@ class PACKMOL(chemflowchart.Node):
 
         logger.log(0, pprint.pformat(files))
 
-        local = chemflowchart.ExecLocal()
+        local = molssi_workflow.ExecLocal()
         result = local.run(
             cmd='packmol < input.inp',
             shell=True,
@@ -149,7 +149,7 @@ class PACKMOL(chemflowchart.Node):
             offset += n_atoms_per_molecule
 
         # Duplicate the atom types if they exist
-        ff = chemflowchart.data.forcefield
+        ff = molssi_workflow.data.forcefield
         ff_name = ff.current_forcefield
         molecule_atoms = molecule['atoms']
         if 'atom_types' in molecule_atoms and \

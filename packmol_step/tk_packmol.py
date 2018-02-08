@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The graphical part of a PACKMOL step"""
 
-import chemflowchart
+import molssi_workflow
 import molssi_util.molssi_widgets as mw
 import packmol_step
 import Pmw
@@ -55,7 +55,7 @@ methods = {
 }
 
 
-class TkPACKMOL(chemflowchart.TkNode):
+class TkPACKMOL(molssi_workflow.TkNode):
     """The node_class is the class of the 'real' node that this
     class is the Tk graphics partner for
     """
@@ -84,7 +84,9 @@ class TkPACKMOL(chemflowchart.TkNode):
         self.dialog.withdraw()
 
         self._tmp = {}
-        frame = self.dialog.interior()
+        frame = ttk.Frame(self.dialog.interior())
+        frame.pack(expand=tk.YES, fill=tk.BOTH)
+        self._tmp['frame'] = frame
 
         # Set the first parameter -- which will be exactly matched
         method = ttk.Combobox(
@@ -156,7 +158,7 @@ class TkPACKMOL(chemflowchart.TkNode):
         method = method_widget.get()
         submethod = submethod_widget.get()
 
-        frame = self.dialog.interior()
+        frame = self._tmp['frame']
         for slave in frame.grid_slaves():
             slave.grid_forget()
 
