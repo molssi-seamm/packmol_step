@@ -54,7 +54,10 @@ setup(
     tests_require=test_requirements,
     setup_requires=setup_requirements,
     entry_points={
-        'molssi.workflow.tk': [
+        'org.molssi.workflow': [
+            'PACKMOL = packmol_step:PACKMOLStep',
+        ],
+        'org.molssi.workflow.tk': [
             'PACKMOL = packmol_step:PACKMOLStep',
         ],
     }

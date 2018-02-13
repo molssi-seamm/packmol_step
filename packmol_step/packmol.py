@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class PACKMOL(molssi_workflow.Node):
-    def __init__(self, workflow=None, gui_object=None, extension=None):
+    def __init__(self, workflow=None, extension=None):
         '''Setup the main PACKMOL step
 
         Keyword arguments:
@@ -33,8 +33,7 @@ class PACKMOL(molssi_workflow.Node):
         self.mass = Q_(1, 'g')
 
         super().__init__(
-            workflow=workflow, title='PACKMOL', gui_object=gui_object,
-            extension=extension)
+            workflow=workflow, title='PACKMOL', extension=extension)
 
     def run(self):
         """Run a PACKMOL building step
