@@ -4,6 +4,15 @@
 Installation
 ============
 
+PACKMOL
+_______
+
+Please go to the `PACKMOL website`_ to register for and download PACKMOL. Follow the instructions for your
+platform. Note that on MacOS, in order to run PACKMOL you may need gfortran installed so that the runtime
+libraries are available.
+
+.. _PACKMOL website: http://m3g.iqm.unicamp.br/packmol/home.shtml
+
 
 Stable release
 --------------
