@@ -63,7 +63,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
     node_class = packmol_step.PACKMOL
 
     def __init__(self, tk_workflow=None, node=None, canvas=None,
-                 x=None, y=None, w=None, h=None):
+                 x=None, y=None, w=200, h=50):
         '''Initialize a node
 
         Keyword arguments:
