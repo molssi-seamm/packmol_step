@@ -13,6 +13,9 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'mendeleev',
+    'molssi_util',
+    'molssi_workflow',
+    'Pmw',
     'pint'
 ]
 
