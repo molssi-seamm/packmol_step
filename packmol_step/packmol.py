@@ -2,7 +2,7 @@
 """A node or step for PACKMOL in a workflow"""
 
 import molssi_workflow
-from molssi_workflow import units, Q_, data  # nopep8
+from molssi_workflow import units, Q_, data, units_class  # nopep8
 import logging
 import mendeleev
 from molssi_util import pdbfile
@@ -35,9 +35,110 @@ class PACKMOL(molssi_workflow.Node):
         super().__init__(
             workflow=workflow, title='PACKMOL', extension=extension)
 
+    def describe(self, indent='', json_dict=None):
+        """Write out information about what this node will do
+        If json_dict is passed in, add information to that dictionary
+        so that it can be written out by the controller as appropriate.
+        """
+
+        next_node = super().describe(indent, json_dict)
+
+        indent += '    '
+        string = indent + 'Creating a cubic supercell '
+        if 'cubic' in self.method:
+            size = self.cube_size
+            if isinstance(size, units_class):
+                string += '{:~P} on a side'.format(size)
+            else:
+                string += '{} on a side'.format(size)
+        elif 'Volume' in self.method:
+            volume = self.volume
+            if isinstance(volume, units_class):
+                string += 'with a volume of {:~P}'.format(volume)
+            else:
+                string += 'with a volume of {}'.format(volume)
+        elif 'Density' in self.method:
+            density = self.density
+            if isinstance(density, units_class):
+                string += 'with a density of {:~P}'.format(density)
+            else:
+                string += 'with a density of {}'.format(density)
+        elif 'molecules' in self.method:
+            n_molecules = self.n_molecules
+            string += 'containing {} molecules'.format(n_molecules)
+        elif 'atoms' in self.method:
+            n_atoms = self.n_atoms
+            string += 'containing about {} atoms'.format(n_atoms)
+        elif 'moles' in self.method:
+            n_moles = self.n_moles
+            if isinstance(n_moles, units_class):
+                string += 'containing {:~P}'.format(n_moles)
+            else:
+                string += 'containing {} moles'.format(n_moles)
+        elif 'Mass' in self.method:
+            mass = self.mass
+            if isinstance(mass, units_class):
+                string += 'with a mass of {:~P}'.format(mass)
+            else:
+                string += 'with a mass of {}'.format(mass)
+        else:
+            raise RuntimeError(
+                "Don't recognize the method {}".format(self.method))
+
+        self.job_output(string)
+
+        string = indent
+        if 'cubic' in self.submethod:
+            size = self.cube_size
+            if isinstance(size, units_class):
+                string += 'in a cubic cell {:~P} on a side'.format(size)
+            else:
+                string += 'in a cubic {} on a side'.format(size)
+        elif 'Volume' in self.submethod:
+            volume = self.volume
+            if isinstance(volume, units_class):
+                string += 'with a volume of {:~P}'.format(volume)
+            else:
+                string += 'with a volume of {}'.format(volume)
+        elif 'Density' in self.submethod:
+            density = self.density
+            if isinstance(density, units_class):
+                string += 'with a density of {:~P}'.format(density)
+            else:
+                string += 'with a density of {}'.format(density)
+        elif 'molecules' in self.submethod:
+            n_molecules = self.n_molecules
+            string += 'containing {} molecules'.format(n_molecules)
+        elif 'atoms' in self.submethod:
+            n_atoms = self.n_atoms
+            string += 'containing about {} atoms'.format(n_atoms)
+        elif 'moles' in self.submethod:
+            n_moles = self.n_moles
+            if isinstance(n_moles, units_class):
+                string += 'containing {:~P}'.format(n_moles)
+            else:
+                string += 'containing {} moles'.format(n_moles)
+        elif 'Mass' in self.submethod:
+            mass = self.mass
+            if isinstance(mass, units_class):
+                string += 'with a mass of {:~P}'.format(mass)
+            else:
+                string += 'with a mass of {}'.format(mass)
+        else:
+            raise RuntimeError(
+                "Don't recognize the submethod {}".format(self.submethod))
+
+        self.job_output(string)
+
+        self.job_output('')
+
+        return next_node
+
     def run(self):
         """Run a PACKMOL building step
         """
+
+        next_node = super().run()
 
         logger.info('   method = {}'.format(self.method))
         logger.info('submethod = {}'.format(self.submethod))
@@ -51,40 +152,86 @@ class PACKMOL(molssi_workflow.Node):
         mass = None
 
         if 'cubic' in self.method:
-            size = self.cube_size
+            size = self.get_value(self.cube_size)
         elif 'Volume' in self.method:
-            volume = self.volume
+            volume = self.get_value(self.volume)
         elif 'Density' in self.method:
-            density = self.density
+            density = self.get_value(self.density)
         elif 'molecules' in self.method:
-            n_molecules = self.n_molecules
+            n_molecules = self.get_value(self.n_molecules)
         elif 'atoms' in self.method:
-            n_atoms = self.n_atoms
+            n_atoms = self.get_value(self.n_atoms)
         elif 'moles' in self.method:
-            n_moles = self.n_moles
+            n_moles = self.get_value(self.n_moles)
         elif 'Mass' in self.method:
-            mass = self.mass
+            mass = self.get_value(self.mass)
         else:
             raise RuntimeError(
                 "Don't recognize the method {}".format(self.method))
 
         if 'cubic' in self.submethod:
-            size = self.cube_size
+            size = self.get_value(self.cube_size)
+            if not isinstance(size, units_class):
+                size = Q_(size, 'angstrom')
         elif 'Volume' in self.submethod:
-            volume = self.volume
+            volume = self.get_value(self.volume)
+            if not isinstance(volume, units_class):
+                volume = Q_(volume, 'angstrom**3')
         elif 'Density' in self.submethod:
-            density = self.density
+            density = self.get_value(self.density)
+            if not isinstance(density, units_class):
+                density = Q_(density, 'g/mL')
         elif 'molecules' in self.submethod:
-            n_molecules = self.n_molecules
+            n_molecules = self.get_value(self.n_molecules)
         elif 'atoms' in self.submethod:
-            n_atoms = self.n_atoms
+            n_atoms = self.get_value(self.n_atoms)
         elif 'moles' in self.submethod:
-            n_moles = self.n_moles
+            n_moles = self.get_value(self.n_moles)
         elif 'Mass' in self.submethod:
-            mass = self.mass
+            mass = self.get_value(self.mass)
         else:
             raise RuntimeError(
                 "Don't recognize the submethod {}".format(self.submethod))
+
+        # Print what we are going to do...
+        string = '    Creating a cubic supercell '
+        if 'cubic' in self.method:
+            string += '{:~P} on a side'.format(size)
+        elif 'Volume' in self.method:
+            string += 'with a volume of {:~P}'.format(volume)
+        elif 'Density' in self.method:
+            string += 'with a density of {:~P}'.format(density)
+        elif 'molecules' in self.method:
+            string += 'containing {} molecules'.format(n_molecules)
+        elif 'atoms' in self.method:
+            string += 'containing about {} atoms'.format(n_atoms)
+        elif 'moles' in self.method:
+            string += 'containing {:~P}'.format(n_moles)
+        elif 'Mass' in self.method:
+            string += 'with a mass of {:~P}'.format(mass)
+        else:
+            raise RuntimeError(
+                "Don't recognize the method {}".format(self.method))
+
+        if 'cubic' in self.submethod:
+            string += ' in a cubic cell {:~P} on a side'.format(size)
+        elif 'Volume' in self.submethod:
+            string += ' with a volume of {:~P}'.format(volume)
+        elif 'Density' in self.submethod:
+            string += ' with a density of {:~P}'.format(density)
+        elif 'molecules' in self.submethod:
+            string += ' containing {} molecules'.format(n_molecules)
+        elif 'atoms' in self.submethod:
+            string += ' containing about {} atoms'.format(n_atoms)
+        elif 'moles' in self.submethod:
+            string += ' containing {:~P}'.format(n_moles)
+        elif 'Mass' in self.submethod:
+            string += ' with a mass of {:~P}'.format(mass)
+        else:
+            raise RuntimeError(
+                "Don't recognize the submethod {}".format(self.submethod))
+
+        self.log(string)
 
         tmp = self.calculate(size=size, volume=volume, density=density,
                              n_molecules=n_molecules, n_atoms=n_atoms,
@@ -162,10 +309,16 @@ class PACKMOL(molssi_workflow.Node):
         data.structure['periodicity'] = 3
         data.structure['cell'] = [size, size, size, 90.0, 90.0, 90.0]
 
+        string = '    Created a cubic cell {size:.5~P} on a side'
+        string += ' with {n_molecules} molecules'
+        string += '\n    for a total of {n_atoms} atoms in the cell'
+        string += ' giving a density of {density:.5~P}.\n'
+        self.log(string.format(**tmp))
+
         logger.log(0, 'Structure created by PACKMOL:\n\n' +
                    pprint.pformat(data.structure))
 
-        return super().run()
+        return next_node
 
     def calculate(self, size=None, volume=None, density=None,
                   n_molecules=None, n_atoms=None, n_moles=None, mass=None):
@@ -273,9 +426,9 @@ class PACKMOL(molssi_workflow.Node):
                 "quantities!")
 
         # make the units pretty
-        size.ito_base_units()
-        volume.ito_base_units()
-        density.ito_base_units()
+        size.ito('Å')
+        volume.ito('Å**3')
+        density.ito('g/ml')
         n_moles.ito_base_units()
         mass.ito_base_units()
 
