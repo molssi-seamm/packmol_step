@@ -10,5 +10,6 @@ __version__ = '0.1.0'
 # the packmol_step package.
 
 from packmol_step.packmol import PACKMOL  # nopep8
+from packmol_step.packmol_parameters import PACKMOL_Parameters  # nopep8
 from packmol_step.packmol_step import PACKMOLStep  # nopep8
 from packmol_step.tk_packmol import TkPACKMOL  # nopep8
