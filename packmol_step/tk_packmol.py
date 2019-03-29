@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """The graphical part of a PACKMOL step"""
 
+import logging
 import molssi_workflow
 import molssi_util.molssi_widgets as mw
 import packmol_step
@@ -8,6 +9,8 @@ import Pmw
 import pprint  # nopep8
 import tkinter as tk
 import tkinter.ttk as ttk
+
+logger = logging.getLogger(__name__)
 
 
 class TkPACKMOL(molssi_workflow.TkNode):
@@ -31,7 +34,6 @@ class TkPACKMOL(molssi_workflow.TkNode):
         self.dialog = Pmw.Dialog(
             self.toplevel,
             buttons=('OK', 'Help', 'Cancel'),
-            defaultbutton='OK',
             master=self.toplevel,
             title='Edit PACKMOL step',
             command=self.handle_dialog)
@@ -47,9 +49,13 @@ class TkPACKMOL(molssi_workflow.TkNode):
             self[key] = P[key].widget(frame)
 
         self['method'].combobox.bind("<<ComboboxSelected>>", self.reset_dialog)
+        self['method'].combobox.bind("<Return>", self.reset_dialog)
+        self['method'].combobox.bind("<FocusOut>", self.reset_dialog)
         self['submethod'].combobox.bind(
             "<<ComboboxSelected>>", self.reset_dialog
         )
+        self['submethod'].combobox.bind("<Return>", self.reset_dialog)
+        self['submethod'].combobox.bind("<FocusOut>", self.reset_dialog)
 
         self.reset_dialog()
 
@@ -59,6 +65,8 @@ class TkPACKMOL(molssi_workflow.TkNode):
         method = self['method'].get()
         submethod = self['submethod'].get()
 
+        logger.debug('reset_dialog: {} {}'.format(method, submethod))
+
         frame = self['frame']
         for slave in frame.grid_slaves():
             slave.grid_forget()
@@ -67,10 +75,11 @@ class TkPACKMOL(molssi_workflow.TkNode):
         self['method'].grid(row=row, column=0, sticky=tk.E)
         if method[0] != '$':
             self[method].grid(row=row, column=1, sticky=tk.W)
+            self[method].show('combobox', 'entry', 'units')
         row += 1
 
         if method[0] == '$':
-            self['submethod'].combobox.config(values=methods.keys())
+            self['submethod'].combobox.config(values=[*methods])
             self['submethod'].set(submethod)
             if submethod[0] == '$':
                 # Both are variables, so any combination is possible
@@ -80,6 +89,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
                 for key in methods:
                     widgets.append(self[key])
                     self[key].grid(row=row, column=1, sticky=tk.EW)
+                    self[key].show('all')
                     row += 1
                 mw.align_labels(widgets)
             else:
@@ -88,18 +98,21 @@ class TkPACKMOL(molssi_workflow.TkNode):
                 for key in methods[submethod]:
                     widgets.append(self[key])
                     self[key].grid(row=row, column=1, sticky=tk.EW)
+                    self[key].show('all')
                     row += 1
                 mw.align_labels(widgets)
                 self['submethod'].grid(row=row, column=0, sticky=tk.E)
                 self[submethod].grid(row=row, column=1, sticky=tk.W)
+                self[submethod].show('combobox', 'entry', 'units')
         else:
             if submethod[0] == '$':
                 self['submethod'].grid(row=row, column=0, sticky=tk.E)
                 row += 1
                 widgets = []
-                for key in methods[submethod]:
+                for key in methods[method]:
                     widgets.append(self[key])
                     self[key].grid(row=row, column=1, sticky=tk.EW)
+                    self[key].show('all')
                     row += 1
                 mw.align_labels(widgets)
             else:
@@ -112,6 +125,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
 
                 self['submethod'].grid(row=row, column=0, sticky=tk.E)
                 self[submethod].grid(row=row, column=1, sticky=tk.W)
+                self[submethod].show('combobox', 'entry', 'units')
         row += 1
 
     def right_click(self, event):
@@ -132,7 +146,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
         self.dialog.activate(geometry='centerscreenfirst')
 
     def handle_dialog(self, result):
-        if result == 'Cancel':
+        if result is None or result == 'Cancel':
             self.dialog.deactivate(result)
             return
 
