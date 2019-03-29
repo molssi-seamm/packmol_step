@@ -37,19 +37,15 @@ class PACKMOL(molssi_workflow.Node):
         if P['method'][0] == '$':
             text += 'with the method given by {method}'
         elif 'cubic' in P['method']:
-            text += '{cube edge} on a side'
+            text += '{size of cubic cell} on a side'
         elif 'volume' in P['method']:
             text += 'with a volume of {volume}'
         elif 'density' in P['method']:
             text += 'with a density of {density}'
         elif 'molecules' in P['method']:
-            text += 'containing {# molecules} molecules'
+            text += 'containing {number of molecules} molecules'
         elif 'atoms' in P['method']:
-            text += 'containing about {# atoms} atoms'
-        elif 'moles' in P['method']:
-            text += 'containing {moles} moles'
-        elif 'mass' in P['method']:
-            text += 'with a mass of {mass}'
+            text += 'containing about {approximate number of atoms} atoms'
         else:
             raise RuntimeError(
                 "Don't recognize the method {}".format(P['method']))
@@ -57,19 +53,15 @@ class PACKMOL(molssi_workflow.Node):
         if P['submethod'][0] == '$':
             text += ' and a submethod given by {submethod}'
         elif 'cubic' in P['submethod']:
-            text += ' in a cubic {cube edge} on a side'
+            text += ' in a cubic {size of cubic cell} on a side'
         elif 'volume' in P['submethod']:
             text += ' with a volume of {volume}'
         elif 'density' in P['submethod']:
             text += ' with a density of {density}'
         elif 'molecules' in P['submethod']:
-            text += ' containing {# molecules} molecules'
+            text += ' containing {number of molecules} molecules'
         elif 'atoms' in P['submethod']:
-            text += ' containing about {# atoms} atoms'
-        elif 'moles' in P['submethod']:
-            text += ' containing {moles} moles'
-        elif 'mass' in P['submethod']:
-            text += ' with a mass of {mass}'
+            text += ' containing about {approximate number of atoms} atoms'
         else:
             raise RuntimeError(
                 "Don't recognize the submethod {}".format(P['submethod']))
@@ -107,7 +99,7 @@ class PACKMOL(molssi_workflow.Node):
 
         # Print what we are doing
         text = self.description(P)
-        printer.important(__(text, **P, indent=self.indent+'    '))
+        printer.important(__(text, **P, indent='    '))
 
         size = None
         volume = None
@@ -118,37 +110,29 @@ class PACKMOL(molssi_workflow.Node):
         mass = None
 
         if 'cubic' in P['method']:
-            size = P['cube edge']
+            size = P['size of cubic cell']
         elif 'volume' in P['method']:
             volume = P['volume']
         elif 'density' in P['method']:
             density = P['density']
         elif 'molecules' in P['method']:
-            n_molecules = P['# molecules']
+            n_molecules = P['number of molecules']
         elif 'atoms' in P['method']:
-            n_atoms = P['# atoms']
-        elif 'moles' in P['method']:
-            n_moles = P['moles']
-        elif 'mass' in P['method']:
-            mass = P['mass']
+            n_atoms = P['approximate number of atoms']
         else:
             raise RuntimeError(
                 "Don't recognize the method {}".format(P['method']))
 
         if 'cubic' in P['submethod']:
-            size = P['cube edge']
+            size = P['size of cubic cell']
         elif 'volume' in P['submethod']:
             volume = P['volume']
         elif 'density' in P['submethod']:
             density = P['density']
         elif 'molecules' in P['submethod']:
-            n_molecules = P['# molecules']
+            n_molecules = P['number of molecules']
         elif 'atoms' in P['submethod']:
-            n_atoms = P['# atoms']
-        elif 'moles' in P['submethod']:
-            n_moles = P['moles']
-        elif 'mass' in P['submethod']:
-            mass = P['mass']
+            n_atoms = P['approximate number of atoms']
         else:
             raise RuntimeError(
                 "Don't recognize the submethod {}".format(P['submethod']))
@@ -239,7 +223,7 @@ class PACKMOL(molssi_workflow.Node):
         string += ' with {n_molecules} molecules'
         string += ' for a total of {n_atoms} atoms in the cell'
         string += ' and a density of {density:.5~P}.'
-        printer.important(__(string, indent=self.indent+'    ', **tmp))
+        printer.important(__(string, indent='    ', **tmp))
 
         logger.log(0, 'Structure created by PACKMOL:\n\n' +
                    pprint.pformat(data.structure))
@@ -294,7 +278,9 @@ class PACKMOL(molssi_workflow.Node):
             if density is not None:
                 # rho = mass/volume
                 mass = density * volume
-                n_molecules = mass / molecular_mass
+                n_molecules = int(round(mass / molecular_mass))
+                if n_molecules == 0:
+                    n_molecules = 1
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
             elif n_molecules is not None:
@@ -311,13 +297,17 @@ class PACKMOL(molssi_workflow.Node):
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
             elif n_moles is not None:
-                n_molecules = n_moles * ureg.N_A
+                n_molecules = int(round(n_moles * ureg.N_A))
+                if n_molecules == 0:
+                    n_molecules = 1
                 mass = n_molecules * molecular_mass
                 density = mass / volume
                 n_atoms = n_molecules * n_atoms_per_molecule
             elif mass is not None:
                 density = mass / volume
-                n_molecules = mass / molecular_mass
+                n_molecules = int(round(mass / molecular_mass))
+                if n_molecules == 0:
+                    n_molecules = 1
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
         elif density is not None:
@@ -327,7 +317,7 @@ class PACKMOL(molssi_workflow.Node):
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
             elif n_atoms is not None:
-                n_molecules = round(n_atoms / n_atoms_per_molecule)
+                n_molecules = int(round(n_atoms / n_atoms_per_molecule))
                 if n_molecules == 0:
                     n_molecules = 1
                 mass = n_molecules * molecular_mass
@@ -335,13 +325,17 @@ class PACKMOL(molssi_workflow.Node):
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
             elif n_moles is not None:
-                n_molecules = n_moles * ureg.N_A
+                n_molecules = int(round(n_moles * ureg.N_A))
+                if n_molecules == 0:
+                    n_molecules = 1
                 mass = n_molecules * molecular_mass
                 volume = mass / density
                 n_atoms = n_molecules * n_atoms_per_molecule
             elif mass is not None:
                 volume = mass / density
-                n_molecules = mass / molecular_mass
+                n_molecules = int(round(mass / molecular_mass))
+                if n_molecules == 0:
+                    n_molecules = 1
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
             size = volume**(1/3)
@@ -355,16 +349,12 @@ class PACKMOL(molssi_workflow.Node):
         size.ito('Å')
         volume.ito('Å**3')
         density.ito('g/ml')
-        n_moles.ito_base_units()
-        mass.ito_base_units()
 
         logger.debug(" size = {:~P}".format(size))
         logger.debug("             volume = {:~P}".format(volume))
         logger.debug("            density = {:~P}".format(density))
         logger.debug("number of molecules = {}".format(n_molecules))
         logger.debug("    number of atoms = {}".format(n_atoms))
-        logger.debug("    number of moles = {:~P}".format(n_moles))
-        logger.debug("               mass = {:~P}".format(mass))
 
         return {
             'size': size,
@@ -372,6 +362,4 @@ class PACKMOL(molssi_workflow.Node):
             'density': density,
             'n_molecules': n_molecules,
             'n_atoms': n_atoms,
-            'n_moles': n_moles,
-            'mass': mass
         }
