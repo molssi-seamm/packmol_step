@@ -122,15 +122,11 @@ class PACKMOL_Parameters(molssi_workflow.Parameters):
         },
     }
 
-    def __init__(self, data=parameters):
+    def __init__(self, defaults={}, data=None):
         """Initialize the instance, by default from the default
         parameters given in the class"""
 
-        logger.debug('PACKMOL_Parameters.__init__')
-
-        super().__init__()
-
-        logger.debug("Initializing PACKMOL_Parameters object:")
-        logger.debug("\n{}\n".format(pprint.pformat(data)))
-
-        self.update(data)
+        super().__init__(
+            defaults={**PACKMOL_Parameters.parameters, **defaults},
+            data=data
+        )
