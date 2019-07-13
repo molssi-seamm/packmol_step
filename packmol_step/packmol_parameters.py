@@ -3,13 +3,13 @@
 """
 
 import logging
-import molssi_workflow
+import seamm
 import pprint
 
 logger = logging.getLogger(__name__)
 
 
-class PACKMOL_Parameters(molssi_workflow.Parameters):
+class PACKMOL_Parameters(seamm.Parameters):
     """The control parameters for PACKMOL packing fluids
     """
     methods = {
