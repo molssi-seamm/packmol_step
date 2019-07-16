@@ -13,7 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'mendeleev',
-    'molssi_util',
+    'seamm_util',
     'seamm',
     'Pmw',
     'pint'

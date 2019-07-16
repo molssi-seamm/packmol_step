@@ -5,9 +5,9 @@ import logging
 import mendeleev
 import seamm
 from seamm import ureg, Q_, data, units_class  # nopep8
-from molssi_util import pdbfile
-import molssi_util.printing as printing
-from molssi_util.printing import FormattedText as __
+from seamm_util import pdbfile
+import seamm_util.printing as printing
+from seamm_util.printing import FormattedText as __
 import packmol_step
 import pprint  # nopep8
 
