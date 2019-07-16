@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""A node or step for PACKMOL in a workflow"""
+"""A node or step for PACKMOL in a seamm"""
 
 import logging
 import mendeleev
-import molssi_workflow
-from molssi_workflow import ureg, Q_, data, units_class  # nopep8
-from molssi_util import pdbfile
-import molssi_util.printing as printing
-from molssi_util.printing import FormattedText as __
+import seamm
+from seamm import ureg, Q_, data, units_class  # nopep8
+from seamm_util import pdbfile
+import seamm_util.printing as printing
+from seamm_util.printing import FormattedText as __
 import packmol_step
 import pprint  # nopep8
 
@@ -16,8 +16,8 @@ job = printing.getPrinter()
 printer = printing.getPrinter('packmol')
 
 
-class PACKMOL(molssi_workflow.Node):
-    def __init__(self, workflow=None, extension=None):
+class PACKMOL(seamm.Node):
+    def __init__(self, flowchart=None, extension=None):
         '''Setup the main PACKMOL step
 
         Keyword arguments:
@@ -25,7 +25,7 @@ class PACKMOL(molssi_workflow.Node):
         logger.debug('Creating PACKMOL {}'.format(self))
 
         super().__init__(
-            workflow=workflow, title='PACKMOL', extension=extension)
+            flowchart=flowchart, title='PACKMOL', extension=extension)
 
         self.parameters = packmol_step.PACKMOL_Parameters()
 
@@ -91,7 +91,7 @@ class PACKMOL(molssi_workflow.Node):
         next_node = super().run(printer)
 
         P = self.parameters.current_values_to_dict(
-            context=molssi_workflow.workflow_variables._data
+            context=seamm.flowchart_variables._data
         )
 
         logger.info('   method = {}'.format(P['method']))
@@ -162,7 +162,7 @@ class PACKMOL(molssi_workflow.Node):
 
         logger.log(0, pprint.pformat(files))
 
-        local = molssi_workflow.ExecLocal()
+        local = seamm.ExecLocal()
         result = local.run(
             cmd='packmol < input.inp',
             shell=True,
@@ -200,7 +200,7 @@ class PACKMOL(molssi_workflow.Node):
             offset += n_atoms_per_molecule
 
         # Duplicate the atom types if they exist
-        ff = molssi_workflow.data.forcefield
+        ff = seamm.data.forcefield
         if ff:
             ff_name = ff.current_forcefield
             if ff_name:

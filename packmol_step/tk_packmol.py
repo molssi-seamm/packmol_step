@@ -2,8 +2,8 @@
 """The graphical part of a PACKMOL step"""
 
 import logging
-import molssi_workflow
-import molssi_util.molssi_widgets as mw
+import seamm
+import seamm_widgets as sw
 import packmol_step
 import Pmw
 import pprint  # nopep8
@@ -13,11 +13,11 @@ import tkinter.ttk as ttk
 logger = logging.getLogger(__name__)
 
 
-class TkPACKMOL(molssi_workflow.TkNode):
+class TkPACKMOL(seamm.TkNode):
     """Graphical interface for using PACKMOL for fluid boxes
     """
 
-    def __init__(self, tk_workflow=None, node=None, canvas=None,
+    def __init__(self, tk_flowchart=None, node=None, canvas=None,
                  x=None, y=None, w=200, h=50):
         '''Initialize a node
 
@@ -26,7 +26,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
 
         self.dialog = None
 
-        super().__init__(tk_workflow=tk_workflow, node=node,
+        super().__init__(tk_flowchart=tk_flowchart, node=node,
                          canvas=canvas, x=x, y=y, w=w, h=h)
 
     def create_dialog(self):
@@ -91,7 +91,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
                     self[key].grid(row=row, column=1, sticky=tk.EW)
                     self[key].show('all')
                     row += 1
-                mw.align_labels(widgets)
+                sw.align_labels(widgets)
             else:
                 # Submethod is given, so it controls the choices for the method
                 widgets = []
@@ -100,7 +100,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
                     self[key].grid(row=row, column=1, sticky=tk.EW)
                     self[key].show('all')
                     row += 1
-                mw.align_labels(widgets)
+                sw.align_labels(widgets)
                 self['submethod'].grid(row=row, column=0, sticky=tk.E)
                 self[submethod].grid(row=row, column=1, sticky=tk.W)
                 self[submethod].show('combobox', 'entry', 'units')
@@ -114,7 +114,7 @@ class TkPACKMOL(molssi_workflow.TkNode):
                     self[key].grid(row=row, column=1, sticky=tk.EW)
                     self[key].show('all')
                     row += 1
-                mw.align_labels(widgets)
+                sw.align_labels(widgets)
             else:
                 self['submethod'].combobox.config(values=methods[method])
                 if submethod in methods[method]:

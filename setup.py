@@ -13,14 +13,14 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'mendeleev',
-    'molssi_util',
-    'molssi_workflow',
+    'seamm_util',
+    'seamm',
     'Pmw',
     'pint'
 ]
 
 setup_requirements = [
-    'pytest-runner',
+    # 'pytest-runner',
     # TODO(paulsaxe): put setup requirements (distutils extensions, etc.) here
 ]
 
@@ -36,7 +36,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Paul Saxe",
     author_email='psaxe@molssi.org',
-    url='https://github.com/paulsaxe/packmol_step',
+    url='https://github.com/molssi-seamm/packmol_step',
     packages=find_packages(include=['packmol_step']),
     include_package_data=True,
     install_requires=requirements,
@@ -52,15 +52,17 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     test_suite='tests',
     tests_require=test_requirements,
     setup_requires=setup_requirements,
     entry_points={
-        'org.molssi.workflow': [
+        'org.molssi.seamm': [
             'PACKMOL = packmol_step:PACKMOLStep',
         ],
-        'org.molssi.workflow.tk': [
+        'org.molssi.seamm.tk': [
             'PACKMOL = packmol_step:PACKMOLStep',
         ],
     }
