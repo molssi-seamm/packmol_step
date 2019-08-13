@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """The graphical part of a PACKMOL step"""
 
 import logging
@@ -6,7 +7,6 @@ import seamm
 import seamm_widgets as sw
 import packmol_step
 import Pmw
-import pprint  # nopep8
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -17,8 +17,16 @@ class TkPACKMOL(seamm.TkNode):
     """Graphical interface for using PACKMOL for fluid boxes
     """
 
-    def __init__(self, tk_flowchart=None, node=None, canvas=None,
-                 x=None, y=None, w=200, h=50):
+    def __init__(
+        self,
+        tk_flowchart=None,
+        node=None,
+        canvas=None,
+        x=None,
+        y=None,
+        w=200,
+        h=50
+    ):
         '''Initialize a node
 
         Keyword arguments:
@@ -26,8 +34,15 @@ class TkPACKMOL(seamm.TkNode):
 
         self.dialog = None
 
-        super().__init__(tk_flowchart=tk_flowchart, node=node,
-                         canvas=canvas, x=x, y=y, w=w, h=h)
+        super().__init__(
+            tk_flowchart=tk_flowchart,
+            node=node,
+            canvas=canvas,
+            x=x,
+            y=y,
+            w=w,
+            h=h
+        )
 
     def create_dialog(self):
         """Create the dialog!"""
@@ -36,7 +51,8 @@ class TkPACKMOL(seamm.TkNode):
             buttons=('OK', 'Help', 'Cancel'),
             master=self.toplevel,
             title='Edit PACKMOL step',
-            command=self.handle_dialog)
+            command=self.handle_dialog
+        )
         self.dialog.withdraw()
 
         frame = ttk.Frame(self.dialog.interior())
@@ -157,7 +173,8 @@ class TkPACKMOL(seamm.TkNode):
         if result != "OK":
             self.dialog.deactivate(result)
             raise RuntimeError(
-                "Don't recognize dialog result '{}'".format(result))
+                "Don't recognize dialog result '{}'".format(result)
+            )
 
         self.dialog.deactivate(result)
 
