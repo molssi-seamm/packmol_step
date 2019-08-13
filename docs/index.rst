@@ -1,5 +1,5 @@
-Welcome to packmol step's documentation!
-======================================
+Welcome to the documentation for the packmol_step in SEAMM flowcharts
+=====================================================================
 
 Contents:
 

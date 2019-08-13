@@ -1,29 +1,41 @@
-# Config file for automatic testing at travis-ci.org
-# This file will be regenerated if you run travis_pypi_setup.py
-
 language: python
-python:
-  - 3.5
-  - 3.4
-  - 3.3
-  - 2.7
-  - 2.6
-
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U tox-travis
-
-# command to run tests, e.g. python setup.py test
-script: tox
-
-# After you create the Github repo and add it to Travis, run the
-# travis_pypi_setup.py script to finish PyPI deployment setup
+matrix:
+  include:
+  - os: osx
+    language: generic
+    env: PYTHON_VER=3.6
+  - os: osx
+    language: generic
+    env: PYTHON_VER=3.7
+  - os: linux
+    language: generic
+    env: PYTHON_VER=3.6
+  - os: linux
+    language: generic
+    env: PYTHON_VER=3.7
+before_install:
+- uname -a
+- df -h
+- ulimit -a
+- source devtools/travis-ci/before_install.sh
+- python -V
+install:
+- python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
+- conda activate test
+- python setup.py develop --no-deps
+script:
+- pytest -v --cov=packmol_step tests/
+notifications:
+  email: false
+after_success:
+- codecov
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
-  user: paulsaxe
-  password:
-    secure: PLEASE_REPLACE_ME
   on:
+    condition: "$TRAVIS_OS_NAME = linux"
+    repo: molssi-seamm/packmol_step
     tags: true
-    repo: paulsaxe/packmol_step
-    python: 2.7
+  user: seamm
+  password:
+    secure: KqSom7/u3yZJ6/QMYtpZOtVt3kLVEnnYRPly7TfmjOiwvV1d5rJF078lKYkyJJf2DNpgudazn3bETGppEHU0RcW7dCabtb6awoYFFfIorc35BVRSNnTKSTtboq8izoiylY2TU9O/dIj0f/jsmaNUsff23N1kgbW9Zq/nrCic/aYGocZqbymJBZ53JpH4NQyX2zclwyflcZh9hZ4lbhH8LJjEfZXSRd8FMTX5qZLDYfc080lUlotel/7w/NpMRJNQSzkwdDMcCPDimVJl68Ex+6mbkRSDfIleyTFhOOZCjS6HbON0gsmi/bEuQXdUtve0jTdyEnfTntHesT3ky7rIkDrTDjY8N9PiDyyRBP9ufLOPiUjvuWl2gVciEFAkz0Z/dlfcCMhgM4GpMZOb0RNf8YDgHvyz8rBR3E6rxOuTsr/drzUE7/8eaoqwrqlclwNNMn9mJ/AvDMs2s+CBlOxl7uX5p2Kaa2lJjGdEN0BzYj69Qxr95JpVqS4fm+KLS/t5W+UEUTgOKEBrS6ymHkX0HgPn74f94EDRKmb/9xqybPkQtrJo3hbp36MwlMbccKY/IEwXgjhzB5qsDZR4+p58jjHL9z8dWUulZodlWCMF3F7+ijZQu1hNUJAAN/JOzJXlUwxtgED+fURAA+gLRT2LjfRT89mKnkUHgnX6ViMl1iM=

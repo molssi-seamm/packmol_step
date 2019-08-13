@@ -1,3 +1,4 @@
+MODULE := packmol_step
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
@@ -46,9 +47,20 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
+	find . -name '.pytype' -exec rm -fr {} +
 
 lint: ## check style with flake8
-	flake8 packmol_step tests
+	flake8 $(MODULE) tests
+	yapf --diff --recursive  $(MODULE) tests
+#	isort --check-only --diff --recursive $(MODULE) tests
+
+format: ## reformat with with yapf and isort
+	yapf --recursive --in-place $(MODULE) tests
+#	isort --recursive --atomic $(MODULE) tests
+
+typing: ## check typing
+	pytype $(MODULE)
+#	mypy -p $(MODULE)
 
 test: ## run tests quickly with the default Python
 	py.test
@@ -61,15 +73,15 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source packmol_step -m pytest
+	coverage run --source $(MODULE) -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/packmol_step.rst
+	rm -f docs/$(MODULE).rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ packmol_step
+	sphinx-apidoc -o docs/ $(MODULE)
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
@@ -78,8 +90,8 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	python -m twine upload dist/*
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist
@@ -90,4 +102,4 @@ install: clean ## install the package to the active Python's site-packages
 	python setup.py install
 
 uninstall: clean ## uninstall the package
-	pip uninstall --yes packmol_step
+	pip uninstall --yes $(MODULE)

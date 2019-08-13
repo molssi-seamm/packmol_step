@@ -4,7 +4,6 @@
 
 import logging
 import seamm
-import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +48,11 @@ class PACKMOL_Parameters(seamm.Parameters):
             "enumeration": tuple(methods.keys()),
             "format_string": "s",
             "description": "Set the",
-            "help_text": ("The first parameter controlling the size of "
-                          "the cell.")
+            "help_text":
+                (
+                    "The first parameter controlling the size of "
+                    "the cell."
+                )
         },
         "submethod": {
             "default": "approximate number of atoms",
@@ -59,8 +61,11 @@ class PACKMOL_Parameters(seamm.Parameters):
             "enumeration": tuple(methods.keys()),
             "format_string": "s",
             "description": "and set the",
-            "help_text": ("The second parameter controlling the size of "
-                          "the cell.")
+            "help_text":
+                (
+                    "The second parameter controlling the size of "
+                    "the cell."
+                )
         },
         "gap": {
             "default": 2.0,
@@ -69,10 +74,13 @@ class PACKMOL_Parameters(seamm.Parameters):
             "enumeration": tuple(),
             "format_string": ".1f",
             "description": "Gap around cell:",
-            "help_text": ("Since PACKMOL does not support periodic systems "
-                          "we will build a box with this gap around the "
-                          "atoms, then make it periodic. The gap ensures "
-                          "that molecules at the boundary do not hit images")
+            "help_text":
+                (
+                    "Since PACKMOL does not support periodic systems "
+                    "we will build a box with this gap around the "
+                    "atoms, then make it periodic. The gap ensures "
+                    "that molecules at the boundary do not hit images"
+                )
         },
         "size of cubic cell": {
             "default": 4.0,
@@ -99,8 +107,11 @@ class PACKMOL_Parameters(seamm.Parameters):
             "enumeration": tuple(),
             "format_string": "d",
             "description": "Approximate number of atoms:",
-            "help_text": ("The approximate number of atoms packed into the "
-                          "cell. This will be rounded to give whole molecules")
+            "help_text":
+                (
+                    "The approximate number of atoms packed into the "
+                    "cell. This will be rounded to give whole molecules"
+                )
         },
         "volume": {
             "default": 64.0,

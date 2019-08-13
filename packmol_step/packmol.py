@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+
 """A node or step for PACKMOL in a seamm"""
 
 import logging
 import mendeleev
 import seamm
+from seamm import data
 from seamm_util import ureg, Q_, units_class  # noqa: F401
 from seamm_util import pdbfile
 import seamm_util.printing as printing
@@ -17,6 +19,7 @@ printer = printing.getPrinter('packmol')
 
 
 class PACKMOL(seamm.Node):
+
     def __init__(self, flowchart=None, extension=None):
         '''Setup the main PACKMOL step
 
@@ -25,7 +28,8 @@ class PACKMOL(seamm.Node):
         logger.debug('Creating PACKMOL {}'.format(self))
 
         super().__init__(
-            flowchart=flowchart, title='PACKMOL', extension=extension)
+            flowchart=flowchart, title='PACKMOL', extension=extension
+        )
 
         self.parameters = packmol_step.PACKMOL_Parameters()
 
@@ -48,7 +52,8 @@ class PACKMOL(seamm.Node):
             text += 'containing about {approximate number of atoms} atoms'
         else:
             raise RuntimeError(
-                "Don't recognize the method {}".format(P['method']))
+                "Don't recognize the method {}".format(P['method'])
+            )
 
         if P['submethod'][0] == '$':
             text += ' and a submethod given by {submethod}'
@@ -64,7 +69,8 @@ class PACKMOL(seamm.Node):
             text += ' containing about {approximate number of atoms} atoms'
         else:
             raise RuntimeError(
-                "Don't recognize the submethod {}".format(P['submethod']))
+                "Don't recognize the submethod {}".format(P['submethod'])
+            )
 
         return text
 
@@ -80,7 +86,7 @@ class PACKMOL(seamm.Node):
 
         text = self.description(P)
 
-        job.job(__(text, **P, indent=self.indent+'    '))
+        job.job(__(text, **P, indent=self.indent + '    '))
 
         return next_node
 
@@ -121,7 +127,8 @@ class PACKMOL(seamm.Node):
             n_atoms = P['approximate number of atoms']
         else:
             raise RuntimeError(
-                "Don't recognize the method {}".format(P['method']))
+                "Don't recognize the method {}".format(P['method'])
+            )
 
         if 'cubic' in P['submethod']:
             size = P['size of cubic cell']
@@ -135,11 +142,18 @@ class PACKMOL(seamm.Node):
             n_atoms = P['approximate number of atoms']
         else:
             raise RuntimeError(
-                "Don't recognize the submethod {}".format(P['submethod']))
+                "Don't recognize the submethod {}".format(P['submethod'])
+            )
 
-        tmp = self.calculate(size=size, volume=volume, density=density,
-                             n_molecules=n_molecules, n_atoms=n_atoms,
-                             n_moles=n_moles, mass=mass)
+        tmp = self.calculate(
+            size=size,
+            volume=volume,
+            density=density,
+            n_molecules=n_molecules,
+            n_atoms=n_atoms,
+            n_moles=n_moles,
+            mass=mass
+        )
 
         size = tmp['size'].to('Å').magnitude
         n_molecules = tmp['n_molecules']
@@ -151,9 +165,7 @@ class PACKMOL(seamm.Node):
         lines.append('filetype pdb')
         lines.append('structure input.pdb')
         lines.append('number {}'.format(n_molecules))
-        lines.append(
-            'inside cube 0.0 0.0 0.0 {:.4f}'.format(size - gap)
-        )
+        lines.append('inside cube 0.0 0.0 0.0 {:.4f}'.format(size - gap))
         lines.append('end structure')
         lines.append('')
 
@@ -186,17 +198,18 @@ class PACKMOL(seamm.Node):
         if n_atoms_per_molecule * n_molecules != n_atoms:
             raise RuntimeError(
                 'Serious problem in PACKMOL with the number of atoms'
-                ' {} != {}'.format(n_atoms,
-                                   n_atoms_per_molecule * n_molecules)
+                ' {} != {}'.format(
+                    n_atoms, n_atoms_per_molecule * n_molecules
+                )
             )
         # Set the bonds from the molecule
         molecule_bonds = molecule['bonds']
         bonds = data.structure['bonds'] = []
         offset = 0
-        for molecule_number in range(1, n_molecules+1):
+        for molecule_number in range(1, n_molecules + 1):
             for bond in molecule_bonds:
                 i, j, order = bond
-                bonds.append((i+offset, j+offset, order))
+                bonds.append((i + offset, j + offset, order))
             offset += n_atoms_per_molecule
 
         # Duplicate the atom types if they exist
@@ -206,8 +219,8 @@ class PACKMOL(seamm.Node):
             if ff_name:
                 molecule_atoms = molecule['atoms']
                 if (
-                        'atom_types' in molecule_atoms and
-                        ff_name in molecule_atoms['atom_types']
+                    'atom_types' in molecule_atoms and
+                    ff_name in molecule_atoms['atom_types']
                 ):
                     if 'atom_types' not in atoms:
                         atoms['atom_types'] = {}
@@ -225,13 +238,23 @@ class PACKMOL(seamm.Node):
         string += ' and a density of {density:.5~P}.'
         printer.important(__(string, indent='    ', **tmp))
 
-        logger.log(0, 'Structure created by PACKMOL:\n\n' +
-                   pprint.pformat(data.structure))
+        logger.log(
+            0, 'Structure created by PACKMOL:\n\n' +
+            pprint.pformat(data.structure)
+        )
 
         return next_node
 
-    def calculate(self, size=None, volume=None, density=None,
-                  n_molecules=None, n_atoms=None, n_moles=None, mass=None):
+    def calculate(
+        self,
+        size=None,
+        volume=None,
+        density=None,
+        n_molecules=None,
+        n_atoms=None,
+        n_moles=None,
+        mass=None
+    ):
         """Work out the other variables given any two independent ones"""
 
         if data.structure is None:
@@ -263,8 +286,10 @@ class PACKMOL(seamm.Node):
             n_parameters += 1
 
         if n_parameters != 2:
-            raise RuntimeError('Exactly two independent parameters '
-                               'must be given, not {}'.format(n_parameters))
+            raise RuntimeError(
+                'Exactly two independent parameters '
+                'must be given, not {}'.format(n_parameters)
+            )
 
         if size is not None or volume is not None:
             if size is not None:
@@ -273,7 +298,7 @@ class PACKMOL(seamm.Node):
 
                 volume = size**3
             else:
-                size = volume**(1/3)
+                size = volume**(1 / 3)
 
             if density is not None:
                 # rho = mass/volume
@@ -338,12 +363,13 @@ class PACKMOL(seamm.Node):
                     n_molecules = 1
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
-            size = volume**(1/3)
+            size = volume**(1 / 3)
         else:
             raise RuntimeError(
                 "Number of molecules, number of atoms, "
                 "number of moles or the mass are not independenet "
-                "quantities!")
+                "quantities!"
+            )
 
         # make the units pretty
         size.ito('Å')
