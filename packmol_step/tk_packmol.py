@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""The graphical part of a PACKMOL step"""
+"""The graphical part of a Packmol step"""
 
 import logging
 import seamm
@@ -13,8 +13,8 @@ import tkinter.ttk as ttk
 logger = logging.getLogger(__name__)
 
 
-class TkPACKMOL(seamm.TkNode):
-    """Graphical interface for using PACKMOL for fluid boxes
+class TkPackmol(seamm.TkNode):
+    """Graphical interface for using Packmol for fluid boxes
     """
 
     def __init__(
@@ -50,7 +50,7 @@ class TkPACKMOL(seamm.TkNode):
             self.toplevel,
             buttons=('OK', 'Help', 'Cancel'),
             master=self.toplevel,
-            title='Edit PACKMOL step',
+            title='Edit Packmol step',
             command=self.handle_dialog
         )
         self.dialog.withdraw()
@@ -76,7 +76,7 @@ class TkPACKMOL(seamm.TkNode):
         self.reset_dialog()
 
     def reset_dialog(self, widget=None):
-        methods = packmol_step.PACKMOL_Parameters.methods
+        methods = packmol_step.Packmol_Parameters.methods
 
         method = self['method'].get()
         submethod = self['submethod'].get()
@@ -154,7 +154,7 @@ class TkPACKMOL(seamm.TkNode):
         self.popup_menu.tk_popup(event.x_root, event.y_root, 0)
 
     def edit(self):
-        """Present a dialog for editing the PACKMOL input
+        """Present a dialog for editing the Packmol input
         """
         if self.dialog is None:
             self.create_dialog()

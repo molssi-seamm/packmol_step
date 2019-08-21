@@ -85,10 +85,10 @@ setup(
     ],
     entry_points={
         'org.molssi.seamm': [
-            'PACKMOL = packmol_step:PACKMOLStep',
+            'Packmol = packmol_step:PackmolStep',
         ],
         'org.molssi.seamm.tk': [
-            'PACKMOL = packmol_step:PACKMOLStep',
+            'Packmol = packmol_step:PackmolStep',
         ],
     }
 )
