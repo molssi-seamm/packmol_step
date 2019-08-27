@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""A node or step for PACKMOL in a seamm"""
+"""A node or step for Packmol in a seamm"""
 
 import logging
 import mendeleev
@@ -18,24 +18,47 @@ job = printing.getPrinter()
 printer = printing.getPrinter('packmol')
 
 
-class PACKMOL(seamm.Node):
+class Packmol(seamm.Node):
 
     def __init__(self, flowchart=None, extension=None):
-        '''Setup the main PACKMOL step
+        '''Setup the main Packmol step
 
         Keyword arguments:
         '''
-        logger.debug('Creating PACKMOL {}'.format(self))
+        logger.debug('Creating Packmol {}'.format(self))
 
         super().__init__(
-            flowchart=flowchart, title='PACKMOL', extension=extension
+            flowchart=flowchart, title='Packmol', extension=extension
         )
 
-        self.parameters = packmol_step.PACKMOL_Parameters()
+        self.parameters = packmol_step.PackmolParameters()
 
-    def description(self, P):
-        """Prepare information about what this node will do
+    @property
+    def version(self):
+        """The semantic version of this module.
         """
+        return packmol_step.__version__
+
+    @property
+    def git_revision(self):
+        """The git version of this module.
+        """
+        return packmol_step.__git_revision__
+
+    def description_text(self, P=None):
+        """Return a short description of this step.
+
+        Return a nicely formatted string describing what this step will
+        do.
+
+        Keyword arguments:
+            P: a dictionary of parameter values, which may be variables
+                or final values. If None, then the parameters values will
+                be used as is.
+        """
+
+        if not P:
+            P = self.parameters.values_to_dict()
 
         text = 'Creating a cubic supercell '
         if P['method'][0] == '$':
@@ -72,26 +95,10 @@ class PACKMOL(seamm.Node):
                 "Don't recognize the submethod {}".format(P['submethod'])
             )
 
-        return text
-
-    def describe(self, indent='', json_dict=None):
-        """Write out information about what this node will do
-        If json_dict is passed in, add information to that dictionary
-        so that it can be written out by the controller as appropriate.
-        """
-
-        next_node = super().describe(indent, json_dict)
-
-        P = self.parameters.values_to_dict()
-
-        text = self.description(P)
-
-        job.job(__(text, **P, indent=self.indent + '    '))
-
-        return next_node
+        return self.header + '\n' + __(text, **P, indent=4*' ').__str__()
 
     def run(self):
-        """Run a PACKMOL building step
+        """Run a Packmol building step
         """
 
         next_node = super().run(printer)
@@ -104,8 +111,7 @@ class PACKMOL(seamm.Node):
         logger.info('submethod = {}'.format(P['submethod']))
 
         # Print what we are doing
-        text = self.description(P)
-        printer.important(__(text, **P, indent='    '))
+        printer.important(__(self.description_text(P), indent=self.indent))
 
         size = None
         volume = None
@@ -197,7 +203,7 @@ class PACKMOL(seamm.Node):
         n_atoms = len(atoms['elements'])
         if n_atoms_per_molecule * n_molecules != n_atoms:
             raise RuntimeError(
-                'Serious problem in PACKMOL with the number of atoms'
+                'Serious problem in Packmol with the number of atoms'
                 ' {} != {}'.format(
                     n_atoms, n_atoms_per_molecule * n_molecules
                 )
@@ -237,9 +243,10 @@ class PACKMOL(seamm.Node):
         string += ' for a total of {n_atoms} atoms in the cell'
         string += ' and a density of {density:.5~P}.'
         printer.important(__(string, indent='    ', **tmp))
+        printer.important('')
 
         logger.log(
-            0, 'Structure created by PACKMOL:\n\n' +
+            0, 'Structure created by Packmol:\n\n' +
             pprint.pformat(data.structure)
         )
 
@@ -258,8 +265,8 @@ class PACKMOL(seamm.Node):
         """Work out the other variables given any two independent ones"""
 
         if data.structure is None:
-            logger.error('PACKMOL run(): there is no structure!')
-            raise RuntimeError('PACKMOL run(): there is no structure!')
+            logger.error('Packmol run(): there is no structure!')
+            raise RuntimeError('Packmol run(): there is no structure!')
 
         elements = data.structure['atoms']['elements']
         n_atoms_per_molecule = len(elements)

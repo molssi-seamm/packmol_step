@@ -8,11 +8,11 @@ nodes."""
 import packmol_step
 
 
-class PACKMOLStep(object):
+class PackmolStep(object):
     my_description = {
-        'description': 'An interface for PACKMOL',
+        'description': 'An interface for Packmol',
         'group': 'Building',
-        'name': 'PACKMOL'
+        'name': 'Packmol'
     }
 
     def __init__(self, flowchart=None, gui=None):
@@ -25,12 +25,12 @@ class PACKMOLStep(object):
     def description(self):
         """Return a description of what this extension does
         """
-        return PACKMOLStep.my_description
+        return PackmolStep.my_description
 
     def create_node(self, flowchart=None, **kwargs):
         """Return the new node object"""
-        return packmol_step.PACKMOL(flowchart=flowchart, **kwargs)
+        return packmol_step.Packmol(flowchart=flowchart, **kwargs)
 
     def create_tk_node(self, canvas=None, **kwargs):
         """Return the graphical Tk node object"""
-        return packmol_step.TkPACKMOL(canvas=canvas, **kwargs)
+        return packmol_step.TkPackmol(canvas=canvas, **kwargs)

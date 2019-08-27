@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Control parameters for PACKMOL, currently for packing fluids
+"""Control parameters for Packmol, currently for packing fluids
 """
 
 import logging
@@ -8,8 +8,8 @@ import seamm
 logger = logging.getLogger(__name__)
 
 
-class PACKMOL_Parameters(seamm.Parameters):
-    """The control parameters for PACKMOL packing fluids
+class PackmolParameters(seamm.Parameters):
+    """The control parameters for Packmol packing fluids
     """
     methods = {
         'size of cubic cell': (
@@ -76,7 +76,7 @@ class PACKMOL_Parameters(seamm.Parameters):
             "description": "Gap around cell:",
             "help_text":
                 (
-                    "Since PACKMOL does not support periodic systems "
+                    "Since Packmol does not support periodic systems "
                     "we will build a box with this gap around the "
                     "atoms, then make it periodic. The gap ensures "
                     "that molecules at the boundary do not hit images"
@@ -138,6 +138,6 @@ class PACKMOL_Parameters(seamm.Parameters):
         parameters given in the class"""
 
         super().__init__(
-            defaults={**PACKMOL_Parameters.parameters, **defaults},
+            defaults={**PackmolParameters.parameters, **defaults},
             data=data
         )
