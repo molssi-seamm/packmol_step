@@ -49,7 +49,7 @@ class Packmol(seamm.Node):
         """Return a short description of this step.
 
         Return a nicely formatted string describing what this step will
-        do. 
+        do.
 
         Keyword arguments:
             P: a dictionary of parameter values, which may be variables
@@ -95,7 +95,7 @@ class Packmol(seamm.Node):
                 "Don't recognize the submethod {}".format(P['submethod'])
             )
 
-        return text
+        return self.header + '\n' + __(text, **P, indent=4*' ').__str__()
 
     def run(self):
         """Run a Packmol building step
@@ -111,8 +111,7 @@ class Packmol(seamm.Node):
         logger.info('submethod = {}'.format(P['submethod']))
 
         # Print what we are doing
-        text = self.description_text(P)
-        printer.important(__(text, **P, indent='    '))
+        printer.important(__(self.description_text(P), indent=self.indent))
 
         size = None
         volume = None
@@ -244,6 +243,7 @@ class Packmol(seamm.Node):
         string += ' for a total of {n_atoms} atoms in the cell'
         string += ' and a density of {density:.5~P}.'
         printer.important(__(string, indent='    ', **tmp))
+        printer.important('')
 
         logger.log(
             0, 'Structure created by Packmol:\n\n' +
