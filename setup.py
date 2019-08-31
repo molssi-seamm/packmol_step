@@ -23,11 +23,11 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'mendeleev>=0.4.5<1',
-    'Pmw>=2.0.1<3',
-    'seamm>=0.2.0<1',
-    'seamm-widgets>=0.2.1<1',
-    'seamm-util>=0.2.1<1',
+    'mendeleev>=0.4.5',
+    'Pmw>=2.0.1',
+    'seamm>=0.2.0',
+    'seamm-widgets>=0.2.1',
+    'seamm-util>=0.2.1',
 ]
 
 setup(
