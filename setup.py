@@ -25,9 +25,9 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'mendeleev>=0.4.5',
     'Pmw>=2.0.1',
-    'seamm>=0.2.0',
-    'seamm-widgets>=0.2.1',
-    'seamm-util>=0.2.1',
+    'seamm>=0.5',
+    'seamm-widgets>=0.5',
+    'seamm-util>=0.5',
 ]
 
 setup(
