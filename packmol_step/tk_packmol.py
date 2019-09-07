@@ -76,7 +76,7 @@ class TkPackmol(seamm.TkNode):
         self.reset_dialog()
 
     def reset_dialog(self, widget=None):
-        methods = packmol_step.Packmol_Parameters.methods
+        methods = packmol_step.PackmolParameters.methods
 
         method = self['method'].get()
         submethod = self['submethod'].get()
