@@ -22,13 +22,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [
-    'mendeleev>=0.4.5',
-    'Pmw>=2.0.1',
-    'seamm>=0.5',
-    'seamm-widgets>=0.5',
-    'seamm-util>=0.5',
-]
+with open('requirements_install.txt') as fd:
+    requirements = fd.read()
 
 setup(
     # Descriptive entries which should always be present
@@ -38,7 +33,6 @@ setup(
     description=short_description[1],
     long_description=readme + '\n\n' + history,
     version=versioneer.get_version(),
-    # version='0.1.0',
     cmdclass=versioneer.get_cmdclass(),
     license='BSD-3-Clause',
     url='https://github.com/molssi-seam/packmol_step',
@@ -75,11 +69,10 @@ setup(
     keywords='packmol_step',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
