@@ -1,31 +1,88 @@
 # -*- coding: utf-8 -*-
 
-"""A node or step for Packmol in a seamm"""
+"""A step for building fluids with Packmol in a SEAMM flowchart"""
 
+import argparse
+import configargparse
 import logging
 import mendeleev
+import os.path
 import seamm
 from seamm import data
+import seamm_util
 from seamm_util import ureg, Q_, units_class  # noqa: F401
 from seamm_util import pdbfile
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import packmol_step
-import pprint  # nopep8
+import pprint
 
 logger = logging.getLogger(__name__)
 job = printing.getPrinter()
 printer = printing.getPrinter('packmol')
 
 
+def upcase(string):
+    """Return an uppercase version of the string.
+
+    Used for the type argument in argparse/
+    """
+    return string.upper()
+
+
 class Packmol(seamm.Node):
 
     def __init__(self, flowchart=None, extension=None):
-        '''Setup the main Packmol step
+        """Setup the main Packmol step
 
         Keyword arguments:
-        '''
-        logger.debug('Creating Packmol {}'.format(self))
+        """
+
+        logger.debug('Handling arguments in Packmol {}'.format(self))
+
+        # Argument/config parsing
+        self.parser = configargparse.ArgParser(
+            auto_env_var_prefix='',
+            default_config_files=[
+                '/etc/seamm/packmol.ini',
+                '/etc/seamm/packmol_step.ini',
+                '/etc/seamm/seamm.ini',
+                '~/.seamm/packmol.ini',
+                '~/.seamm/packmol_step.ini',
+                '~/.seamm/seamm.ini',
+            ]
+        )
+
+        self.parser.add_argument(
+            '--seamm-configfile',
+            is_config_file=True,
+            default=None,
+            help='a configuration file to override others'
+        )
+
+        # Options for this plugin
+        self.parser.add_argument(
+            "--packmol-log-level",
+            default=argparse.SUPPRESS,
+            choices=[
+                'CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
+            ],
+            type=upcase,
+            help="the logging level for the Packmol step"
+        )
+
+        # Options for Packmol
+        self.parser.add_argument(
+            '--packmol-path',
+            default='',
+            help='the path to the Packmol executables'
+        )
+
+        self.options, self.unknown = self.parser.parse_known_args()
+
+        # Set the logging level for this module if requested
+        if 'packmol_log_level' in self.options:
+            logger.setLevel(self.options.packmol_log_level)
 
         super().__init__(
             flowchart=flowchart, title='Packmol', extension=extension
@@ -95,13 +152,22 @@ class Packmol(seamm.Node):
                 "Don't recognize the submethod {}".format(P['submethod'])
             )
 
-        return self.header + '\n' + __(text, **P, indent=4*' ').__str__()
+        return self.header + '\n' + __(text, **P, indent=4 * ' ').__str__()
 
     def run(self):
         """Run a Packmol building step
         """
 
         next_node = super().run(printer)
+
+        # The options from command line, config file ...
+        o = self.options
+
+        packmol_exe = os.path.join(o.packmol_path, 'packmol')
+
+        seamm_util.check_executable(
+            packmol_exe, key='--packmol-path', parser=self.parser
+        )
 
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
@@ -182,7 +248,7 @@ class Packmol(seamm.Node):
 
         local = seamm.ExecLocal()
         result = local.run(
-            cmd='packmol < input.inp',
+            cmd=(packmol_exe + ' < input.inp'),
             shell=True,
             files=files,
             return_files=['packmol.pdb']

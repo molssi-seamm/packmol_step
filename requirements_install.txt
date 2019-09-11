@@ -1,0 +1,5 @@
+mendeleev
+Pmw
+seamm>=0.6
+seamm-widgets>=0.6
+seamm-util>=0.6

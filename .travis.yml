@@ -1,43 +1,98 @@
 language: python
-matrix:
-  include:
-  - os: osx
-    language: generic
-    env: PYTHON_VER=3.6
-  - os: osx
-    language: generic
-    env: PYTHON_VER=3.7
-  - os: linux
-    language: generic
-    env: PYTHON_VER=3.6
-  - os: linux
-    language: generic
-    env: PYTHON_VER=3.7
+
 before_install:
-- uname -a
-- df -h
-- ulimit -a
-- source devtools/travis-ci/before_install.sh
-- python -V
+    # Additional info about the build
+  - uname -a
+  - df -h
+  - ulimit -a
+
+    # Install the Python environment
+  - source devtools/travis-ci/before_install.sh
+  - python -V
+
 install:
-- python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
-- conda activate test
-- python setup.py develop --no-deps
-script:
-- pytest -v --cov=packmol_step tests/
+    # Create test environment for package
+  - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
+    # Activate the test environment
+  - conda activate test
+    # Build and install package
+    #- python setup.py develop --no-deps
+  - pip install -e .
+    # Print details of the environment
+  - conda list
+  - pip freeze
+
+matrix:
+  fast_finish: true
+
 notifications:
-  email: false
-after_success:
-- codecov
-deploy:
-  provider: pypi
-  distributions: sdist bdist_wheel
-  skip_existing: true
-  on:
-    condition: $TRAVIS_OS_NAME = linux
-    condition: $PYTHON_VER = 3.7
-    repo: molssi-seamm/packmol_step
-    tags: true
-  user: seamm
-  password:
-    secure: KqSom7/u3yZJ6/QMYtpZOtVt3kLVEnnYRPly7TfmjOiwvV1d5rJF078lKYkyJJf2DNpgudazn3bETGppEHU0RcW7dCabtb6awoYFFfIorc35BVRSNnTKSTtboq8izoiylY2TU9O/dIj0f/jsmaNUsff23N1kgbW9Zq/nrCic/aYGocZqbymJBZ53JpH4NQyX2zclwyflcZh9hZ4lbhH8LJjEfZXSRd8FMTX5qZLDYfc080lUlotel/7w/NpMRJNQSzkwdDMcCPDimVJl68Ex+6mbkRSDfIleyTFhOOZCjS6HbON0gsmi/bEuQXdUtve0jTdyEnfTntHesT3ky7rIkDrTDjY8N9PiDyyRBP9ufLOPiUjvuWl2gVciEFAkz0Z/dlfcCMhgM4GpMZOb0RNf8YDgHvyz8rBR3E6rxOuTsr/drzUE7/8eaoqwrqlclwNNMn9mJ/AvDMs2s+CBlOxl7uX5p2Kaa2lJjGdEN0BzYj69Qxr95JpVqS4fm+KLS/t5W+UEUTgOKEBrS6ymHkX0HgPn74f94EDRKmb/9xqybPkQtrJo3hbp36MwlMbccKY/IEwXgjhzB5qsDZR4+p58jjHL9z8dWUulZodlWCMF3F7+ijZQu1hNUJAAN/JOzJXlUwxtgED+fURAA+gLRT2LjfRT89mKnkUHgnX6ViMl1iM=
+    email: false
+
+stages:
+  - lint
+  - test
+  - deploy
+
+jobs:
+  include:
+    - stage: lint
+      name: "Check formatting of code for PEP-8"
+      os: linux
+      language: generic
+      env: PYTHON_VER=3.7
+      script:
+        - flake8 packmol_step tests
+        - yapf --diff --recursive  packmol_step tests
+
+    - stage: test
+      name: "Tests on MacOS Python 3.6"
+      script:
+        - pytest -v tests/
+      os: osx
+      language: generic
+      env: PYTHON_VER=3.6
+
+    - stage: test
+      name: "Tests on MacOS Python 3.7"
+      script:
+        - pytest -v tests/
+      os: osx
+      language: generic
+      env: PYTHON_VER=3.7
+
+    - stage: test
+      name: "Tests on Linux Python 3.6"
+      script:
+        - pytest -v tests/
+      os: linux
+      language: generic  # No need to set Python version since its conda
+      env: PYTHON_VER=3.6
+
+    - stage: test
+      name: "Tests and coverage on Linux Python 3.7"
+      script:
+        - pytest -v --cov=packmol_step tests/
+      after_success:
+        - codecov
+      os: linux
+      language: generic
+      env: PYTHON_VER=3.7
+
+    - stage: deploy
+      name: "Deploy to PyPi"
+      if: tag IS present
+      dist: xenial
+      python: 3.7
+      script: skip
+      deploy:
+        provider: pypi
+        distributions: sdist bdist_wheel
+        skip_existing: true
+        on:
+          condition: $PYTHON_VER = 3.7
+          condition: $TRAVIS_OS_NAME = linux
+          repo: molssi-seamm/packmol_step
+          tags: true
+        user: seamm
+        password:
+          secure: KqSom7/u3yZJ6/QMYtpZOtVt3kLVEnnYRPly7TfmjOiwvV1d5rJF078lKYkyJJf2DNpgudazn3bETGppEHU0RcW7dCabtb6awoYFFfIorc35BVRSNnTKSTtboq8izoiylY2TU9O/dIj0f/jsmaNUsff23N1kgbW9Zq/nrCic/aYGocZqbymJBZ53JpH4NQyX2zclwyflcZh9hZ4lbhH8LJjEfZXSRd8FMTX5qZLDYfc080lUlotel/7w/NpMRJNQSzkwdDMcCPDimVJl68Ex+6mbkRSDfIleyTFhOOZCjS6HbON0gsmi/bEuQXdUtve0jTdyEnfTntHesT3ky7rIkDrTDjY8N9PiDyyRBP9ufLOPiUjvuWl2gVciEFAkz0Z/dlfcCMhgM4GpMZOb0RNf8YDgHvyz8rBR3E6rxOuTsr/drzUE7/8eaoqwrqlclwNNMn9mJ/AvDMs2s+CBlOxl7uX5p2Kaa2lJjGdEN0BzYj69Qxr95JpVqS4fm+KLS/t5W+UEUTgOKEBrS6ymHkX0HgPn74f94EDRKmb/9xqybPkQtrJo3hbp36MwlMbccKY/IEwXgjhzB5qsDZR4+p58jjHL9z8dWUulZodlWCMF3F7+ijZQu1hNUJAAN/JOzJXlUwxtgED+fURAA+gLRT2LjfRT89mKnkUHgnX6ViMl1iM=
