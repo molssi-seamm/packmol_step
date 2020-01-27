@@ -138,7 +138,7 @@ class Packmol(seamm.Node):
         if P['submethod'][0] == '$':
             text += ' and a submethod given by {submethod}'
         elif 'cubic' in P['submethod']:
-            text += ' in a cubic {size of cubic cell} on a side'
+            text += ' in a cell {size of cubic cell} on a side'
         elif 'volume' in P['submethod']:
             text += ' with a volume of {volume}'
         elif 'density' in P['submethod']:
@@ -331,8 +331,8 @@ class Packmol(seamm.Node):
         """Work out the other variables given any two independent ones"""
 
         if data.structure is None:
-            logger.error('Packmol run(): there is no structure!')
-            raise RuntimeError('Packmol run(): there is no structure!')
+            logger.error('Packmol calculate: there is no structure!')
+            raise RuntimeError('Packmol calculate: there is no structure!')
 
         elements = data.structure['atoms']['elements']
         n_atoms_per_molecule = len(elements)
