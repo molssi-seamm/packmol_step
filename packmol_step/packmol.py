@@ -340,7 +340,7 @@ class Packmol(seamm.Node):
         for element in elements:
             tmp_mass += mendeleev.element(element).mass
         molecular_mass = tmp_mass * ureg.g / ureg.mol  # g/mol
-        molecular_mass.ito('kg')
+        molecular_mass.ito('kg/mole')
 
         n_parameters = 0
         if size is not None:
@@ -418,10 +418,10 @@ class Packmol(seamm.Node):
                 n_molecules = int(round(n_atoms / n_atoms_per_molecule))
                 if n_molecules == 0:
                     n_molecules = 1
-                mass = n_molecules * molecular_mass
-                volume = mass / density
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
+                mass = n_moles * molecular_mass
+                volume = mass / density
             elif n_moles is not None:
                 n_molecules = int(round(n_moles * ureg.N_A))
                 if n_molecules == 0:
@@ -443,7 +443,6 @@ class Packmol(seamm.Node):
                 "number of moles or the mass are not independenet "
                 "quantities!"
             )
-
         # make the units pretty
         size.ito('Å')
         volume.ito('Å**3')
