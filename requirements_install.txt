@@ -1,5 +1,5 @@
 mendeleev
 Pmw
-seamm>=0.6
-seamm-widgets>=0.6
-seamm-util>=0.6
+seamm>=0.9
+seamm-widgets>=0.9
+seamm-util>=0.9

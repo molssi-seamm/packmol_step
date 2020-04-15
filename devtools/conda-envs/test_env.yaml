@@ -20,9 +20,9 @@ dependencies:
     - codecov
     - mendeleev
     - Pmw
-    - seamm
-    - seamm-util
-    - seamm-widgets
+    - seamm>=0.9
+    - seamm-util>=0.9
+    - seamm-widgets>=0.9
 
       # Testing
     - yapf
