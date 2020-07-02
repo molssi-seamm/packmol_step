@@ -340,7 +340,7 @@ class Packmol(seamm.Node):
         for element in elements:
             tmp_mass += mendeleev.element(element).mass
         molecular_mass = tmp_mass * ureg.g / ureg.mol  # g/mol
-        molecular_mass.ito('kg')
+        molecular_mass.ito('kg/mol') 
 
         n_parameters = 0
         if size is not None:
@@ -382,23 +382,24 @@ class Packmol(seamm.Node):
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
             elif n_molecules is not None:
-                mass = n_molecules * molecular_mass
+                n_moles = n_molecules / ureg.N_A
+                mass = n_molecules * molecular_mass / ureg.N_A
                 density = mass / volume
                 n_atoms = n_molecules * n_atoms_per_molecule
-                n_moles = n_molecules / ureg.N_A
             elif n_atoms is not None:
                 n_molecules = round(n_atoms / n_atoms_per_molecule)
                 if n_molecules == 0:
                     n_molecules = 1
-                mass = n_molecules * molecular_mass
+                n_moles = n_molecules / ureg.N_A
+                mass = n_moles * molecular_mass
                 density = mass / volume
                 n_atoms = n_molecules * n_atoms_per_molecule
-                n_moles = n_molecules / ureg.N_A
             elif n_moles is not None:
                 n_molecules = int(round(n_moles * ureg.N_A))
                 if n_molecules == 0:
                     n_molecules = 1
-                mass = n_molecules * molecular_mass
+                n_moles = n_molecules / ureg.N_A
+                mass = n_moles * molecular_mass
                 density = mass / volume
                 n_atoms = n_molecules * n_atoms_per_molecule
             elif mass is not None:
@@ -410,23 +411,23 @@ class Packmol(seamm.Node):
                 n_moles = n_molecules / ureg.N_A
         elif density is not None:
             if n_molecules is not None:
-                mass = n_molecules * molecular_mass
+                n_moles = n_molecules / ureg.N_A
+                mass = n_moles * molecular_mass
                 volume = mass / density
                 n_atoms = n_molecules * n_atoms_per_molecule
-                n_moles = n_molecules / ureg.N_A
             elif n_atoms is not None:
                 n_molecules = int(round(n_atoms / n_atoms_per_molecule))
                 if n_molecules == 0:
                     n_molecules = 1
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
-                mass = n_molecules * molecular_mass
+                mass = n_moles * molecular_mass
                 volume = mass / density
             elif n_moles is not None:
                 n_molecules = int(round(n_moles * ureg.N_A))
                 if n_molecules == 0:
                     n_molecules = 1
-                mass = n_molecules * molecular_mass
+                mass = n_moles * molecular_mass
                 volume = mass / density
                 n_atoms = n_molecules * n_atoms_per_molecule
             elif mass is not None:
