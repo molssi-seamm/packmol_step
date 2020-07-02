@@ -340,7 +340,7 @@ class Packmol(seamm.Node):
         for element in elements:
             tmp_mass += mendeleev.element(element).mass
         molecular_mass = tmp_mass * ureg.g / ureg.mol  # g/mol
-        molecular_mass.ito('kg/mol') 
+        molecular_mass.ito('kg/mol')
 
         n_parameters = 0
         if size is not None:
