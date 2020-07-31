@@ -286,7 +286,7 @@ class Packmol(seamm.Node):
 
         # Duplicate the atom types if they exist
         ff = seamm.data.forcefield
-        if ff:
+        if ff is not None and ff != 'OpenKIM':
             ff_name = ff.current_forcefield
             if ff_name:
                 molecule_atoms = molecule['atoms']
