@@ -8,10 +8,8 @@ import logging
 import mendeleev
 import os.path
 import seamm
-from seamm import data
 import seamm_util
 from seamm_util import ureg, Q_, units_class  # noqa: F401
-from seamm_util import pdbfile
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import packmol_step
@@ -160,6 +158,10 @@ class Packmol(seamm.Node):
 
         next_node = super().run(printer)
 
+        # Get the system
+        systems = self.get_variable('_systems')
+        system = self.get_variable('_system')
+
         # The options from command line, config file ...
         o = self.options
 
@@ -218,6 +220,7 @@ class Packmol(seamm.Node):
             )
 
         tmp = self.calculate(
+            system,
             size=size,
             volume=volume,
             density=density,
@@ -241,7 +244,7 @@ class Packmol(seamm.Node):
         lines.append('end structure')
         lines.append('')
 
-        files = {'input.pdb': pdbfile.from_molssi(data.structure)}
+        files = {'input.pdb': system.to_pdb_text()}
         files['input.inp'] = '\n'.join(lines)
 
         logger.log(0, pprint.pformat(files))
@@ -256,17 +259,19 @@ class Packmol(seamm.Node):
 
         logger.debug(pprint.pformat(result))
 
-        # Parse the resulting PDB file
-        new_structure = pdbfile.to_molssi(result['packmol.pdb']['data'])
-
         # Ouch! Packmol just gives back atoms and coordinates, so we
         # need to graft to the original structure.
 
-        molecule = {**data.structure}
-        n_atoms_per_molecule = len(molecule['atoms']['elements'])
-        data.structure = new_structure
-        atoms = data.structure['atoms']
-        n_atoms = len(atoms['elements'])
+        # Create a new, temporary system and get the coordinates
+        tmp_sys = systems.create_system('tmp_sys', temporary=True)
+        tmp_sys.from_pdb_text(result['packmol.pdb']['data'])
+        n_atoms = tmp_sys.n_atoms()
+        xs = [*tmp_sys.atoms['x']]
+        ys = [*tmp_sys.atoms['y']]
+        zs = [*tmp_sys.atoms['z']]
+        del systems['tmp_sys']
+
+        n_atoms_per_molecule = system.n_atoms()
         if n_atoms_per_molecule * n_molecules != n_atoms:
             raise RuntimeError(
                 'Serious problem in Packmol with the number of atoms'
@@ -274,35 +279,48 @@ class Packmol(seamm.Node):
                     n_atoms, n_atoms_per_molecule * n_molecules
                 )
             )
-        # Set the bonds from the molecule
-        molecule_bonds = molecule['bonds']
-        bonds = data.structure['bonds'] = []
-        offset = 0
-        for molecule_number in range(1, n_molecules + 1):
-            for bond in molecule_bonds:
-                i, j, order = bond
-                bonds.append((i + offset, j + offset, order))
-            offset += n_atoms_per_molecule
 
-        # Duplicate the atom types if they exist
-        ff = seamm.data.forcefield
-        if ff is not None and ff != 'OpenKIM':
-            ff_name = ff.current_forcefield
-            if ff_name:
-                molecule_atoms = molecule['atoms']
-                if (
-                    'atom_types' in molecule_atoms and
-                    ff_name in molecule_atoms['atom_types']
-                ):
-                    if 'atom_types' not in atoms:
-                        atoms['atom_types'] = {}
-                        atoms['atom_types'][ff_name] = (
-                            molecule_atoms['atom_types'][ff_name] * n_molecules
-                        )
+        # get the initial atoms so that we can duplicate them
+        rows = system.atoms.atoms()
+        atom_data = {}
+        columns = [x[0] for x in rows.description]
+        for column in columns:
+            atom_data[column] = []
+        for row in rows:
+            for column, value in zip(columns, row):
+                atom_data[column].append(value)
+        atom_ids = atom_data['id']
+        del atom_data['id']
+        to_index = {j: i for i, j in enumerate(atom_ids)}
+
+        # and bonds
+        rows = system.bonds.bonds()
+        bond_data = {}
+        columns = [x[0] for x in rows.description]
+        for column in columns:
+            bond_data[column] = []
+        for row in rows:
+            for column, value in zip(columns, row):
+                bond_data[column].append(value)
+        i_index = [to_index[i] for i in bond_data['i']]
+        j_index = [to_index[j] for j in bond_data['j']]
+
+        # Append the atoms and bonds n_molecules-1 times to give n_molecules
+        for copy in range(1, n_molecules):
+            new_atoms = system.atoms.append(**atom_data)
+
+            bond_data['i'] = [new_atoms[i] for i in i_index]
+            bond_data['j'] = [new_atoms[j] for j in j_index]
+            system.bonds.append(**bond_data)
+
+        # And set the coordinates to the correct ones
+        system.atoms['x'] = xs
+        system.atoms['y'] = ys
+        system.atoms['z'] = zs
 
         # make periodic of correct size
-        data.structure['periodicity'] = 3
-        data.structure['cell'] = [size, size, size, 90.0, 90.0, 90.0]
+        system.periodicity = 3
+        system.cell.set_cell(size, size, size, 90.0, 90.0, 90.0)
 
         string = 'Created a cubic cell {size:.5~P} on a side'
         string += ' with {n_molecules} molecules'
@@ -311,15 +329,11 @@ class Packmol(seamm.Node):
         printer.important(__(string, indent='    ', **tmp))
         printer.important('')
 
-        logger.log(
-            0, 'Structure created by Packmol:\n\n' +
-            pprint.pformat(data.structure)
-        )
-
         return next_node
 
     def calculate(
         self,
+        system,
         size=None,
         volume=None,
         density=None,
@@ -330,11 +344,11 @@ class Packmol(seamm.Node):
     ):
         """Work out the other variables given any two independent ones"""
 
-        if data.structure is None:
+        if system.n_atoms() == 0:
             logger.error('Packmol calculate: there is no structure!')
             raise RuntimeError('Packmol calculate: there is no structure!')
 
-        elements = data.structure['atoms']['elements']
+        elements = system.atoms.symbols()
         n_atoms_per_molecule = len(elements)
         tmp_mass = 0.0
         for element in elements:
