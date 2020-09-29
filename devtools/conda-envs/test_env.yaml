@@ -2,11 +2,13 @@ name: test
 
 channels:
   - default
+  - conda-forge
 
 dependencies:
     # Base depends
   - python
   - pip
+  - openbabel
 
     # Testing
   - coverage
@@ -20,9 +22,9 @@ dependencies:
     - codecov
     - mendeleev
     - Pmw
-    - seamm>=0.9
-    - seamm-util>=0.9
-    - seamm-widgets>=0.9
+    - seamm>=2020.9.28
+    - seamm-util>=2020.9.23
+    - seamm-widgets>=2020.9.28
 
       # Testing
     - yapf
