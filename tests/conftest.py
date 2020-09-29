@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Fixtures for testing the 'molsystem' package."""
-import math
+"""Fixtures for testing the packmol_step package."""
 
 import pytest
 
