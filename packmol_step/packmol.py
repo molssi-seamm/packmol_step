@@ -83,7 +83,11 @@ class Packmol(seamm.Node):
             logger.setLevel(self.options.packmol_log_level)
 
         super().__init__(
-            flowchart=flowchart, title='Packmol', extension=extension
+            flowchart=flowchart,
+            title='Packmol',
+            extension=extension,
+            module=__name__,
+            logger=logger
         )
 
         self.parameters = packmol_step.PackmolParameters()
@@ -175,8 +179,8 @@ class Packmol(seamm.Node):
             context=seamm.flowchart_variables._data
         )
 
-        logger.info('   method = {}'.format(P['method']))
-        logger.info('submethod = {}'.format(P['submethod']))
+        self.logger.info('   method = {}'.format(P['method']))
+        self.logger.info('submethod = {}'.format(P['submethod']))
 
         # Print what we are doing
         printer.important(__(self.description_text(P), indent=self.indent))
@@ -247,7 +251,7 @@ class Packmol(seamm.Node):
         files = {'input.pdb': system.to_pdb_text()}
         files['input.inp'] = '\n'.join(lines)
 
-        logger.log(0, pprint.pformat(files))
+        self.logger.log(0, pprint.pformat(files))
 
         local = seamm.ExecLocal()
         result = local.run(
@@ -257,7 +261,10 @@ class Packmol(seamm.Node):
             return_files=['packmol.pdb']
         )
 
-        logger.debug(pprint.pformat(result))
+        self.logger.debug(pprint.pformat(result))
+
+        with open(os.path.join(self.directory, 'packmol.out'), 'w') as fd:
+            fd.write(result['stdout'])
 
         # Ouch! Packmol just gives back atoms and coordinates, so we
         # need to graft to the original structure.
@@ -329,6 +336,23 @@ class Packmol(seamm.Node):
         printer.important(__(string, indent='    ', **tmp))
         printer.important('')
 
+        # Since we have succeeded, add the citation.
+
+        self.references.cite(
+            raw=self._bibliography['doi:10.1002/jcc.21224'],
+            alias='packmol',
+            module='packmol_step',
+            level=1,
+            note='The principle PACKMOL citation.'
+        )
+        self.references.cite(
+            raw=self._bibliography['packmol_step'],
+            alias='packmol_step',
+            module='packmol_step',
+            level=1,
+            note='The principle citation for the PACKMOL step in SEAMM.'
+        )
+
         return next_node
 
     def calculate(
@@ -345,7 +369,7 @@ class Packmol(seamm.Node):
         """Work out the other variables given any two independent ones"""
 
         if system.n_atoms() == 0:
-            logger.error('Packmol calculate: there is no structure!')
+            self.logger.error('Packmol calculate: there is no structure!')
             raise RuntimeError('Packmol calculate: there is no structure!')
 
         elements = system.atoms.symbols()
@@ -462,11 +486,11 @@ class Packmol(seamm.Node):
         volume.ito('Å**3')
         density.ito('g/ml')
 
-        logger.debug(" size = {:~P}".format(size))
-        logger.debug("             volume = {:~P}".format(volume))
-        logger.debug("            density = {:~P}".format(density))
-        logger.debug("number of molecules = {}".format(n_molecules))
-        logger.debug("    number of atoms = {}".format(n_atoms))
+        self.logger.debug(" size = {:~P}".format(size))
+        self.logger.debug("             volume = {:~P}".format(volume))
+        self.logger.debug("            density = {:~P}".format(density))
+        self.logger.debug("number of molecules = {}".format(n_molecules))
+        self.logger.debug("    number of atoms = {}".format(n_atoms))
 
         return {
             'size': size,
