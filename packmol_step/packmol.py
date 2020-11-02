@@ -18,14 +18,6 @@ job = printing.getPrinter()
 printer = printing.getPrinter('packmol')
 
 
-def upcase(string):
-    """Return an uppercase version of the string.
-
-    Used for the type argument in argparse/
-    """
-    return string.upper()
-
-
 class Packmol(seamm.Node):
 
     def __init__(self, flowchart=None, extension=None):
