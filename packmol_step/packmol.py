@@ -3,7 +3,6 @@
 """A step for building fluids with Packmol in a SEAMM flowchart"""
 
 import logging
-import mendeleev
 import os.path
 import seamm
 import seamm_util
@@ -344,10 +343,7 @@ class Packmol(seamm.Node):
 
         elements = system.atoms.symbols()
         n_atoms_per_molecule = len(elements)
-        tmp_mass = 0.0
-        for element in elements:
-            tmp_mass += mendeleev.element(element).mass
-        molecular_mass = tmp_mass * ureg.g / ureg.mol  # g/mol
+        molecular_mass = system.mass() * ureg.g / ureg.mol  # g/mol
         molecular_mass.ito('kg')
 
         n_parameters = 0
