@@ -8,7 +8,7 @@ import pytest
 from seamm_util import ureg, Q_, units_class  # noqa: F401
 
 
-m_Ar = 39.948  # g/mol
+m_Ar = 39.8775  # g/mol
 n_A = 6.02214076E+23
 L = 10.0E-10  # 10 Å
 mass = m_Ar / n_A
