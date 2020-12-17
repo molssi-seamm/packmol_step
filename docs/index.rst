@@ -1,22 +1,32 @@
-Welcome to the documentation for the packmol_step in SEAMM flowcharts
-=====================================================================
+Welcome to the documentation for the PACKMOL plug-in
+==================================================== 
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :titlesonly:
 
-   readme
-   installation
-   usage
-   modules
-   contributing
+   user/index
+   developer/index
    authors
    history
 
-Indices and tables
-==================
+--------
+   
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   Main SEAMM documentation <https://molssi-seamm.github.io>
+
+Documentation Versions
+----------------------
+
+.. raw:: html
+
+   <iframe
+   src="https://molssi-seamm.github.io/packmol_step/dev/versions.html"
+   title="Documentation Versions"  style="border:none;">
+   </iframe>
+
