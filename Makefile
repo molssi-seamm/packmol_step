@@ -52,15 +52,12 @@ clean-test: ## remove test and coverage artifacts
 lint: ## check style with flake8
 	flake8 $(MODULE) tests
 	yapf --diff --recursive  $(MODULE) tests
-#	isort --check-only --diff --recursive $(MODULE) tests
 
 format: ## reformat with with yapf and isort
 	yapf --recursive --in-place $(MODULE) tests
-#	isort --recursive --atomic $(MODULE) tests
 
 typing: ## check typing
 	pytype $(MODULE)
-#	mypy -p $(MODULE)
 
 test: ## run tests quickly with the default Python
 	py.test
@@ -79,9 +76,9 @@ coverage: ## check code coverage quickly with the default Python
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/$(MODULE).rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ $(MODULE)
+	rm -f docs/developer/$(MODULE).rst
+	rm -f docs/developer/modules.rst
+	sphinx-apidoc -o docs/developer $(MODULE)
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
