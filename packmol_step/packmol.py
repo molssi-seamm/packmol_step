@@ -134,8 +134,8 @@ class Packmol(seamm.Node):
         next_node = super().run(printer)
 
         # Get the system
-        systems = self.get_variable('_systems')
-        system = self.get_variable('_system')
+        system_db = self.get_variable('_system_db')
+        configuration = system_db.system.configuration
 
         # The options from command line, config file ...
         path = self.options['packmol_path']
@@ -193,7 +193,7 @@ class Packmol(seamm.Node):
             )
 
         tmp = self.calculate(
-            system,
+            configuration,
             size=size,
             volume=volume,
             density=density,
@@ -217,7 +217,7 @@ class Packmol(seamm.Node):
         lines.append('end structure')
         lines.append('')
 
-        files = {'input.pdb': system.to_pdb_text()}
+        files = {'input.pdb': configuration.to_pdb_text()}
         files['input.inp'] = '\n'.join(lines)
 
         self.logger.log(0, pprint.pformat(files))
@@ -239,15 +239,17 @@ class Packmol(seamm.Node):
         # need to graft to the original structure.
 
         # Create a new, temporary system and get the coordinates
-        tmp_sys = systems.create_system('tmp_sys', temporary=True)
-        tmp_sys.from_pdb_text(result['packmol.pdb']['data'])
-        n_atoms = tmp_sys.n_atoms()
-        xs = [*tmp_sys.atoms['x']]
-        ys = [*tmp_sys.atoms['y']]
-        zs = [*tmp_sys.atoms['z']]
-        del systems['tmp_sys']
+        tmp_sys = system_db.create_system('tmp_sys', make_current=False)
+        tmp_configuration = tmp_sys.create_configuration('tmp')
+        tmp_configuration.from_pdb_text(result['packmol.pdb']['data'])
+        tmp_atoms = tmp_configuration.atoms
+        n_atoms = tmp_atoms.n_atoms
+        xs = [*tmp_atoms['x']]
+        ys = [*tmp_atoms['y']]
+        zs = [*tmp_atoms['z']]
+        system_db.delete_system(tmp_sys)
 
-        n_atoms_per_molecule = system.n_atoms()
+        n_atoms_per_molecule = configuration.n_atoms
         if n_atoms_per_molecule * n_molecules != n_atoms:
             raise RuntimeError(
                 'Serious problem in Packmol with the number of atoms'
@@ -256,47 +258,35 @@ class Packmol(seamm.Node):
                 )
             )
 
-        # get the initial atoms so that we can duplicate them
-        rows = system.atoms.atoms()
-        atom_data = {}
-        columns = [x[0] for x in rows.description]
-        for column in columns:
-            atom_data[column] = []
-        for row in rows:
-            for column, value in zip(columns, row):
-                atom_data[column].append(value)
-        atom_ids = atom_data['id']
+        # Get a copy of the current atom and bond data
+        atoms = configuration.atoms
+        atom_data = atoms.get_as_dict()
+        # index of atoms to use for bonds
+        index = {j: i for i, j in enumerate(atom_data['id'])}
         del atom_data['id']
-        to_index = {j: i for i, j in enumerate(atom_ids)}
+        bonds = configuration.bonds
+        bond_data = bonds.get_as_dict()
+        del bond_data['id']
 
-        # and bonds
-        rows = system.bonds.bonds()
-        bond_data = {}
-        columns = [x[0] for x in rows.description]
-        for column in columns:
-            bond_data[column] = []
-        for row in rows:
-            for column, value in zip(columns, row):
-                bond_data[column].append(value)
-        i_index = [to_index[i] for i in bond_data['i']]
-        j_index = [to_index[j] for j in bond_data['j']]
+        i_index = [index[i] for i in bond_data['i']]
+        j_index = [index[j] for j in bond_data['j']]
 
         # Append the atoms and bonds n_molecules-1 times to give n_molecules
         for copy in range(1, n_molecules):
-            new_atoms = system.atoms.append(**atom_data)
+            new_atoms = configuration.atoms.append(**atom_data)
 
             bond_data['i'] = [new_atoms[i] for i in i_index]
             bond_data['j'] = [new_atoms[j] for j in j_index]
-            system.bonds.append(**bond_data)
+            configuration.bonds.append(**bond_data)
 
         # And set the coordinates to the correct ones
-        system.atoms['x'] = xs
-        system.atoms['y'] = ys
-        system.atoms['z'] = zs
+        configuration.atoms['x'] = xs
+        configuration.atoms['y'] = ys
+        configuration.atoms['z'] = zs
 
         # make periodic of correct size
-        system.periodicity = 3
-        system.cell.set_cell(size, size, size, 90.0, 90.0, 90.0)
+        configuration.periodicity = 3
+        configuration.cell.parameters = (size, size, size, 90.0, 90.0, 90.0)
 
         string = 'Created a cubic cell {size:.5~P} on a side'
         string += ' with {n_molecules} molecules'
@@ -326,7 +316,7 @@ class Packmol(seamm.Node):
 
     def calculate(
         self,
-        system,
+        configuration,
         size=None,
         volume=None,
         density=None,
@@ -337,13 +327,13 @@ class Packmol(seamm.Node):
     ):
         """Work out the other variables given any two independent ones"""
 
-        if system.n_atoms() == 0:
+        if configuration.n_atoms == 0:
             self.logger.error('Packmol calculate: there is no structure!')
             raise RuntimeError('Packmol calculate: there is no structure!')
 
-        elements = system.atoms.symbols()
+        elements = configuration.atoms.symbols
         n_atoms_per_molecule = len(elements)
-        molecular_mass = system.mass() * ureg.g / ureg.mol  # g/mol
+        molecular_mass = configuration.mass * ureg.g / ureg.mol  # g/mol
         molecular_mass.ito('kg')
 
         n_parameters = 0
