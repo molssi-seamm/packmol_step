@@ -2,8 +2,12 @@
 packmol step
 ============
 
-.. image:: https://img.shields.io/travis/molssi-seamm/packmol_step.svg
-   :target: https://travis-ci.org/molssi-seamm/packmol_step
+.. image:: https://img.shields.io/github/issues-pr-raw/molssi-seamm/packmol_step
+   :target: https://github.com/molssi-seamm/packmol_step/pulls
+   :alt: GitHub pull requests
+
+.. image:: https://github.com/molssi-seamm/packmol_step/workflows/CI/badge.svg
+   :target: https://github.com/molssi-seamm/packmol_step/actions
    :alt: Build Status
 
 .. image:: https://codecov.io/gh/molssi-seamm/packmol_step/branch/master/graph/badge.svg
@@ -14,8 +18,8 @@ packmol step
    :target: https://lgtm.com/projects/g/molssi-seamm/packmol_step/context:python
    :alt: Code Quality
 
-.. image:: https://readthedocs.org/projects/packmol-step/badge/?version=latest
-   :target: https://packmol-step.readthedocs.io/en/latest/?badge=latest
+.. image:: https://github.com/molssi-seamm/packmol_step/workflows/Documentation/badge.svg
+   :target: https://molssi-seamm.github.io/packmol_step/index.html
    :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/molssi-seamm/packmol_step/shield.svg
@@ -30,7 +34,7 @@ A step for a SEAMM flowchart for building periodic fluid boxes using Packmol
 
 
 * Free software: BSD license
-* Documentation: https://packmol-step.readthedocs.io.
+* Documentation: https://molssi-seamm.github.io/packmol_step/index.html
 
 
 Features
