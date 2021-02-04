@@ -5,7 +5,7 @@
 
 import pytest
 
-from molsystem.systems import Systems
+from molsystem import SystemDB
 
 
 def pytest_addoption(parser):
@@ -32,20 +32,45 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture()
-def system():
-    systems = Systems()
-    system = systems.create_system('seamm', temporary=True)
+def empty_db():
+    """Create a system db with no systems."""
+    db = SystemDB(filename='file:seamm_db?mode=memory&cache=shared')
 
-    yield system
+    yield db
 
-    del systems['seamm']
+    db.close()
+    try:
+        del db
+    except:  # noqa: E722
+        print('Caught error deleting the database')
 
 
 @pytest.fixture()
-def Argon(system):
+def db(empty_db):
+    """Create an empty system db."""
+    system = empty_db.create_system(name='default')
+    system.create_configuration(name='default')
+
+    return empty_db
+
+
+@pytest.fixture()
+def system(db):
+    """An empty system."""
+    return db.system
+
+
+@pytest.fixture()
+def configuration(system):
+    """An empty system."""
+    return system.configuration
+
+
+@pytest.fixture()
+def Argon(configuration):
     """An system object for an argon atom
     """
-    system.name = 'argon'
-    system['atoms'].append(x=0.0, y=0.0, z=0.0, symbol=['Ar'])
+    configuration.name = 'argon'
+    configuration.atoms.append(x=0.0, y=0.0, z=0.0, symbol=['Ar'])
 
-    return system
+    return configuration
