@@ -124,13 +124,13 @@ def test_density_mass(instance, Argon):
 
 
 # Resets the system! Needs to be at end
-def test_no_system(instance, system):
+def test_no_system(instance, configuration):
     """Test calculation of cell. First error with empty system."""
     with pytest.raises(
         RuntimeError, match=r"Packmol calculate: there is no structure!"
     ):
         instance.calculate(
-            system,
+            configuration,
             size=Q_(10, 'Å'),
             n_molecules=100
         )
