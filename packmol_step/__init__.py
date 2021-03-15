@@ -15,6 +15,7 @@ from packmol_step.tk_packmol import TkPackmol  # noqa: F401
 
 # Handle versioneer
 from ._version import get_versions
+
 __author__ = """Paul Saxe"""
 __email__ = 'psaxe@molssi.org'
 versions = get_versions()
