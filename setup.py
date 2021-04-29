@@ -62,6 +62,9 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     entry_points={
+        'console_scripts': [
+            'packmol-step-installer=packmol_step.__main__:run',
+        ],
         'org.molssi.seamm': [
             'Packmol = packmol_step:PackmolStep',
         ],
