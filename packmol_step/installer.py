@@ -51,22 +51,22 @@ class Installer(seamm_installer.InstallerBase):
         # parser, amongst other things.
         super().__init__(logger=logger)
 
-        logger.debug('Initializing the PACKMOL installer object.')
+        logger.debug("Initializing the PACKMOL installer object.")
 
         self.section = "packmol-step"
         self.path_name = "packmol-path"
-        self.executables = ['packmol']
+        self.executables = ["packmol"]
         # What Conda environment is the default?
         data = self.configuration.get_values(self.section)
-        if 'conda-environment' in data and data['conda-environment'] != '':
-            self.environment = data['conda-environment']
+        if "conda-environment" in data and data["conda-environment"] != "":
+            self.environment = data["conda-environment"]
         else:
-            self.environment = 'seamm-packmol'
+            self.environment = "seamm-packmol"
 
         # The environment.yaml file for Conda installations.
-        path = Path(pkg_resources.resource_filename(__name__, 'data/'))
+        path = Path(pkg_resources.resource_filename(__name__, "data/"))
         logger.debug(f"data directory: {path}")
-        self.environment_file = path / 'seamm-packmol.yml'
+        self.environment_file = path / "seamm-packmol.yml"
 
     def exe_version(self, path):
         """Get the version of the PACKMOL executable.
@@ -83,22 +83,22 @@ class Installer(seamm_installer.InstallerBase):
         """
         try:
             result = subprocess.run(
-                [str(path), '-log', 'none'],
+                [str(path), "-log", "none"],
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
-                text=True
+                text=True,
             )
         except Exception:
-            version = 'unknown'
+            version = "unknown"
         else:
-            version = 'unknown'
+            version = "unknown"
             lines = result.stdout.splitlines()
             for line in lines:
                 line = line.strip()
                 tmp = line.split()
                 if len(tmp) == 2:
                     key, value = tmp
-                    if key == 'Version':
+                    if key == "Version":
                         version = value
                         break
 

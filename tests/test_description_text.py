@@ -38,34 +38,35 @@ def test_git_revision():
 def test_description_text_default(instance):
     """Test the default description text"""
 
-    assert re.fullmatch(
-        (
-            r'Step 1: Packmol  [-+.0-9a-z]+\n'
-            r'    Creating a cubic supercell with a density of 0.7 g/ml '
-            r'containing about 2000\n'
-            r'    atoms'
-        ),
-        instance.description_text()
-    ) is not None
+    assert (
+        re.fullmatch(
+            (
+                r"Step 1: Packmol  [-+.0-9a-z]+\n"
+                r"    Creating a cubic supercell with a density of 0.7 g/ml "
+                r"containing about 2000\n"
+                r"    atoms"
+            ),
+            instance.description_text(),
+        )
+        is not None
+    )
 
 
 def test_description_text_expr_expr(instance):
     """Test the default description text"""
 
-    assert re.fullmatch(
-        (
-            r'Step 1: Packmol  [-+.0-9a-z]+\n'
-            r'    Creating a cubic supercell with the method given by '
-            r'\$method and a submethod\n'
-            r'    given by \$submethod'
-        ),
-        instance.description_text(
-            {
-                'method': '$method',
-                'submethod': '$submethod'
-            }
+    assert (
+        re.fullmatch(
+            (
+                r"Step 1: Packmol  [-+.0-9a-z]+\n"
+                r"    Creating a cubic supercell with the method given by "
+                r"\$method and a submethod\n"
+                r"    given by \$submethod"
+            ),
+            instance.description_text({"method": "$method", "submethod": "$submethod"}),
         )
-    ) is not None
+        is not None
+    )
 
 
 def test_description_text_cubic_expr(instance):
@@ -76,11 +77,7 @@ def test_description_text_cubic_expr(instance):
     \$submethod"""
 
     result = instance.description_text(
-        {
-            'method': 'cubic',
-            'size of cubic cell': '10.0 Å',
-            'submethod': '$submethod'
-        }
+        {"method": "cubic", "size of cubic cell": "10.0 Å", "submethod": "$submethod"}
     )
 
     # print(result)
@@ -96,10 +93,10 @@ def test_description_text_cubic_density(instance):
 
     result = instance.description_text(
         {
-            'method': 'cubic',
-            'size of cubic cell': '10.0 Å',
-            'submethod': 'density',
-            'density': '1.0 g/mL'
+            "method": "cubic",
+            "size of cubic cell": "10.0 Å",
+            "submethod": "density",
+            "density": "1.0 g/mL",
         }
     )
 
@@ -116,10 +113,10 @@ def test_description_text_cubic_nmolecules(instance):
 
     result = instance.description_text(
         {
-            'method': 'cubic',
-            'size of cubic cell': '10.0 Å',
-            'submethod': 'number of molecules',
-            'number of molecules': '50'
+            "method": "cubic",
+            "size of cubic cell": "10.0 Å",
+            "submethod": "number of molecules",
+            "number of molecules": "50",
         }
     )
 
@@ -136,10 +133,10 @@ def test_description_text_cubic_natoms(instance):
 
     result = instance.description_text(
         {
-            'method': 'cubic',
-            'size of cubic cell': '10.0 Å',
-            'submethod': 'approximate number of atoms',
-            'approximate number of atoms': '2000'
+            "method": "cubic",
+            "size of cubic cell": "10.0 Å",
+            "submethod": "approximate number of atoms",
+            "approximate number of atoms": "2000",
         }
     )
 
@@ -157,10 +154,10 @@ def test_description_text_volume_nmolecules(instance):
 
     result = instance.description_text(
         {
-            'method': 'volume',
-            'volume': '1000.0 Å^3',
-            'submethod': 'number of molecules',
-            'number of molecules': '50'
+            "method": "volume",
+            "volume": "1000.0 Å^3",
+            "submethod": "number of molecules",
+            "number of molecules": "50",
         }
     )
 
@@ -178,10 +175,10 @@ def test_description_text_nmolecules_volume(instance):
 
     result = instance.description_text(
         {
-            'method': 'number of molecules',
-            'number of molecules': '50',
-            'submethod': 'volume',
-            'volume': '1000.0 Å^3'
+            "method": "number of molecules",
+            "number of molecules": "50",
+            "submethod": "volume",
+            "volume": "1000.0 Å^3",
         }
     )
 
@@ -199,10 +196,10 @@ def test_description_text_natoms_cubic(instance):
 
     result = instance.description_text(
         {
-            'method': 'approximate number of atoms',
-            'approximate number of atoms': '999',
-            'submethod': 'cubic',
-            'size of cubic cell': '10.0 Å'
+            "method": "approximate number of atoms",
+            "approximate number of atoms": "999",
+            "submethod": "cubic",
+            "size of cubic cell": "10.0 Å",
         }
     )
 
@@ -215,23 +212,17 @@ def test_description_text_method_error(instance):
     """Test the description text"""
 
     with pytest.raises(RuntimeError, match=r"Don't recognize the method junk"):
-        instance.description_text(
-            {
-                'method': 'junk'
-            }
-        )
+        instance.description_text({"method": "junk"})
 
 
 def test_description_text_submethod_error(instance):
     """Test the description text"""
 
-    with pytest.raises(
-            RuntimeError, match=r"Don't recognize the submethod junk"
-    ):
+    with pytest.raises(RuntimeError, match=r"Don't recognize the submethod junk"):
         instance.description_text(
             {
-                'method': 'number of molecules',
-                'number of molecules': '50',
-                'submethod': 'junk'
+                "method": "number of molecules",
+                "number of molecules": "50",
+                "submethod": "junk",
             }
         )
