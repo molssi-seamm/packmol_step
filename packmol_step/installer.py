@@ -56,6 +56,7 @@ class Installer(seamm_installer.InstallerBase):
         self.section = "packmol-step"
         self.path_name = "packmol-path"
         self.executables = ["packmol"]
+        self.resource_path = Path(pkg_resources.resource_filename(__name__, "data/"))
         # What Conda environment is the default?
         data = self.configuration.get_values(self.section)
         if "conda-environment" in data and data["conda-environment"] != "":
