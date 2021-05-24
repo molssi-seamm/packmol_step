@@ -53,7 +53,7 @@ lint: ## check style with black and flake8
 	black --check --diff $(MODULE) tests
 	flake8 $(MODULE) tests
 
-format: ## reformat with with yapf and isort
+format: ## reformat with with black and isort
 	black $(MODULE) tests
 
 typing: ## check typing
