@@ -1,4 +1,4 @@
-name: seamm-lammps
+name: seamm-packmol
 channels:
   - conda-forge
 dependencies:
