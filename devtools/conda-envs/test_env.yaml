@@ -12,6 +12,7 @@ dependencies:
   - openbabel
 
   # Testing
+  - black
   - codecov
   - flake8
   - pytest
@@ -20,9 +21,6 @@ dependencies:
   # Pip-only installs
   - pip:
     - seamm
-
-    # Testing
-    - yapf
 
     # Documentation
     - rinohtype

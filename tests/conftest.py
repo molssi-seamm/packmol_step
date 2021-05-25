@@ -10,10 +10,7 @@ from molsystem import SystemDB
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--run-timing",
-        action="store_true",
-        default=False,
-        help="run timing tests"
+        "--run-timing", action="store_true", default=False, help="run timing tests"
     )
 
 
@@ -34,7 +31,7 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture()
 def empty_db():
     """Create a system db with no systems."""
-    db = SystemDB(filename='file:seamm_db?mode=memory&cache=shared')
+    db = SystemDB(filename="file:seamm_db?mode=memory&cache=shared")
 
     yield db
 
@@ -42,14 +39,14 @@ def empty_db():
     try:
         del db
     except:  # noqa: E722
-        print('Caught error deleting the database')
+        print("Caught error deleting the database")
 
 
 @pytest.fixture()
 def db(empty_db):
     """Create an empty system db."""
-    system = empty_db.create_system(name='default')
-    system.create_configuration(name='default')
+    system = empty_db.create_system(name="default")
+    system.create_configuration(name="default")
 
     return empty_db
 
@@ -68,9 +65,8 @@ def configuration(system):
 
 @pytest.fixture()
 def Argon(configuration):
-    """An system object for an argon atom
-    """
-    configuration.name = 'argon'
-    configuration.atoms.append(x=0.0, y=0.0, z=0.0, symbol=['Ar'])
+    """An system object for an argon atom"""
+    configuration.name = "argon"
+    configuration.atoms.append(x=0.0, y=0.0, z=0.0, symbol=["Ar"])
 
     return configuration

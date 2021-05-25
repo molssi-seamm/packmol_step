@@ -10,9 +10,9 @@ import packmol_step
 
 class PackmolStep(object):
     my_description = {
-        'description': 'An interface for Packmol',
-        'group': 'Building',
-        'name': 'Packmol'
+        "description": "An interface for Packmol",
+        "group": "Building",
+        "name": "Packmol",
     }
 
     def __init__(self, flowchart=None, gui=None):
@@ -23,8 +23,7 @@ class PackmolStep(object):
         pass
 
     def description(self):
-        """Return a description of what this extension does
-        """
+        """Return a description of what this extension does"""
         return PackmolStep.my_description
 
     def create_node(self, flowchart=None, **kwargs):

@@ -1,0 +1,7 @@
+name: seamm-packmol
+channels:
+  - conda-forge
+dependencies:
+  - python
+    # Executables, etc.
+  - packmol

@@ -14,44 +14,40 @@ import pprint
 
 logger = logging.getLogger(__name__)
 job = printing.getPrinter()
-printer = printing.getPrinter('packmol')
+printer = printing.getPrinter("packmol")
 
 
 class Packmol(seamm.Node):
-
     def __init__(self, flowchart=None, extension=None):
         """Setup the main Packmol step
 
         Keyword arguments:
         """
 
-        logger.debug('Handling arguments in Packmol {}'.format(self))
+        logger.debug("Handling arguments in Packmol {}".format(self))
 
         super().__init__(
             flowchart=flowchart,
-            title='Packmol',
+            title="Packmol",
             extension=extension,
             module=__name__,
-            logger=logger
+            logger=logger,
         )
 
         self.parameters = packmol_step.PackmolParameters()
 
     @property
     def version(self):
-        """The semantic version of this module.
-        """
+        """The semantic version of this module."""
         return packmol_step.__version__
 
     @property
     def git_revision(self):
-        """The git version of this module.
-        """
+        """The git version of this module."""
         return packmol_step.__git_revision__
 
     def create_parser(self):
-        """Setup the command-line / config file parser
-        """
+        """Setup the command-line / config file parser"""
         parser_name = self.step_type
         parser = seamm.getParser()
 
@@ -68,9 +64,9 @@ class Packmol(seamm.Node):
         # Options for Packmol
         parser.add_argument(
             self.step_type,
-            '--packmol-path',
-            default='',
-            help='the path to the Packmol executables'
+            "--packmol-path",
+            default="",
+            help="the path to the Packmol executables",
         )
 
         return result
@@ -90,57 +86,54 @@ class Packmol(seamm.Node):
         if not P:
             P = self.parameters.values_to_dict()
 
-        text = 'Creating a cubic supercell '
-        if P['method'][0] == '$':
-            text += 'with the method given by {method}'
-        elif 'cubic' in P['method']:
-            text += '{size of cubic cell} on a side'
-        elif 'volume' in P['method']:
-            text += 'with a volume of {volume}'
-        elif 'density' in P['method']:
-            text += 'with a density of {density}'
-        elif 'molecules' in P['method']:
-            text += 'containing {number of molecules} molecules'
-        elif 'atoms' in P['method']:
-            text += 'containing about {approximate number of atoms} atoms'
+        text = "Creating a cubic supercell "
+        if P["method"][0] == "$":
+            text += "with the method given by {method}"
+        elif "cubic" in P["method"]:
+            text += "{size of cubic cell} on a side"
+        elif "volume" in P["method"]:
+            text += "with a volume of {volume}"
+        elif "density" in P["method"]:
+            text += "with a density of {density}"
+        elif "molecules" in P["method"]:
+            text += "containing {number of molecules} molecules"
+        elif "atoms" in P["method"]:
+            text += "containing about {approximate number of atoms} atoms"
+        else:
+            raise RuntimeError("Don't recognize the method {}".format(P["method"]))
+
+        if P["submethod"][0] == "$":
+            text += " and a submethod given by {submethod}"
+        elif "cubic" in P["submethod"]:
+            text += " in a cell {size of cubic cell} on a side"
+        elif "volume" in P["submethod"]:
+            text += " with a volume of {volume}"
+        elif "density" in P["submethod"]:
+            text += " with a density of {density}"
+        elif "molecules" in P["submethod"]:
+            text += " containing {number of molecules} molecules"
+        elif "atoms" in P["submethod"]:
+            text += " containing about {approximate number of atoms} atoms"
         else:
             raise RuntimeError(
-                "Don't recognize the method {}".format(P['method'])
+                "Don't recognize the submethod {}".format(P["submethod"])
             )
 
-        if P['submethod'][0] == '$':
-            text += ' and a submethod given by {submethod}'
-        elif 'cubic' in P['submethod']:
-            text += ' in a cell {size of cubic cell} on a side'
-        elif 'volume' in P['submethod']:
-            text += ' with a volume of {volume}'
-        elif 'density' in P['submethod']:
-            text += ' with a density of {density}'
-        elif 'molecules' in P['submethod']:
-            text += ' containing {number of molecules} molecules'
-        elif 'atoms' in P['submethod']:
-            text += ' containing about {approximate number of atoms} atoms'
-        else:
-            raise RuntimeError(
-                "Don't recognize the submethod {}".format(P['submethod'])
-            )
-
-        return self.header + '\n' + __(text, **P, indent=4 * ' ').__str__()
+        return self.header + "\n" + __(text, **P, indent=4 * " ").__str__()
 
     def run(self):
-        """Run a Packmol building step
-        """
+        """Run a Packmol building step"""
 
         next_node = super().run(printer)
 
         # Get the system
-        system_db = self.get_variable('_system_db')
+        system_db = self.get_variable("_system_db")
         configuration = system_db.system.configuration
 
         # The options from command line, config file ...
-        path = self.options['packmol_path']
+        path = self.options["packmol_path"]
 
-        packmol_exe = os.path.join(path, 'packmol')
+        packmol_exe = os.path.join(path, "packmol")
 
         seamm_util.check_executable(packmol_exe)
 
@@ -148,8 +141,8 @@ class Packmol(seamm.Node):
             context=seamm.flowchart_variables._data
         )
 
-        self.logger.info('   method = {}'.format(P['method']))
-        self.logger.info('submethod = {}'.format(P['submethod']))
+        self.logger.info("   method = {}".format(P["method"]))
+        self.logger.info("submethod = {}".format(P["submethod"]))
 
         # Print what we are doing
         printer.important(__(self.description_text(P), indent=self.indent))
@@ -162,34 +155,32 @@ class Packmol(seamm.Node):
         n_moles = None
         mass = None
 
-        if 'cubic' in P['method']:
-            size = P['size of cubic cell']
-        elif 'volume' in P['method']:
-            volume = P['volume']
-        elif 'density' in P['method']:
-            density = P['density']
-        elif 'molecules' in P['method']:
-            n_molecules = P['number of molecules']
-        elif 'atoms' in P['method']:
-            n_atoms = P['approximate number of atoms']
+        if "cubic" in P["method"]:
+            size = P["size of cubic cell"]
+        elif "volume" in P["method"]:
+            volume = P["volume"]
+        elif "density" in P["method"]:
+            density = P["density"]
+        elif "molecules" in P["method"]:
+            n_molecules = P["number of molecules"]
+        elif "atoms" in P["method"]:
+            n_atoms = P["approximate number of atoms"]
         else:
-            raise RuntimeError(
-                "Don't recognize the method {}".format(P['method'])
-            )
+            raise RuntimeError("Don't recognize the method {}".format(P["method"]))
 
-        if 'cubic' in P['submethod']:
-            size = P['size of cubic cell']
-        elif 'volume' in P['submethod']:
-            volume = P['volume']
-        elif 'density' in P['submethod']:
-            density = P['density']
-        elif 'molecules' in P['submethod']:
-            n_molecules = P['number of molecules']
-        elif 'atoms' in P['submethod']:
-            n_atoms = P['approximate number of atoms']
+        if "cubic" in P["submethod"]:
+            size = P["size of cubic cell"]
+        elif "volume" in P["submethod"]:
+            volume = P["volume"]
+        elif "density" in P["submethod"]:
+            density = P["density"]
+        elif "molecules" in P["submethod"]:
+            n_molecules = P["number of molecules"]
+        elif "atoms" in P["submethod"]:
+            n_atoms = P["approximate number of atoms"]
         else:
             raise RuntimeError(
-                "Don't recognize the submethod {}".format(P['submethod'])
+                "Don't recognize the submethod {}".format(P["submethod"])
             )
 
         tmp = self.calculate(
@@ -200,116 +191,114 @@ class Packmol(seamm.Node):
             n_molecules=n_molecules,
             n_atoms=n_atoms,
             n_moles=n_moles,
-            mass=mass
+            mass=mass,
         )
 
-        size = tmp['size'].to('Å').magnitude
-        n_molecules = tmp['n_molecules']
+        size = tmp["size"].to("Å").magnitude
+        n_molecules = tmp["n_molecules"]
 
-        gap = P['gap'].to('Å').magnitude
+        gap = P["gap"].to("Å").magnitude
         lines = []
-        lines.append('tolerance {}'.format(gap))
-        lines.append('output packmol.pdb')
-        lines.append('filetype pdb')
-        lines.append('structure input.pdb')
-        lines.append('number {}'.format(n_molecules))
-        lines.append('inside cube 0.0 0.0 0.0 {:.4f}'.format(size - gap))
-        lines.append('end structure')
-        lines.append('')
+        lines.append("tolerance {}".format(gap))
+        lines.append("output packmol.pdb")
+        lines.append("filetype pdb")
+        lines.append("structure input.pdb")
+        lines.append("number {}".format(n_molecules))
+        lines.append("inside cube 0.0 0.0 0.0 {:.4f}".format(size - gap))
+        lines.append("end structure")
+        lines.append("")
 
-        files = {'input.pdb': configuration.to_pdb_text()}
-        files['input.inp'] = '\n'.join(lines)
+        files = {"input.pdb": configuration.to_pdb_text()}
+        files["input.inp"] = "\n".join(lines)
 
         self.logger.log(0, pprint.pformat(files))
 
         local = seamm.ExecLocal()
         result = local.run(
-            cmd=(packmol_exe + ' < input.inp'),
+            cmd=(packmol_exe + " < input.inp"),
             shell=True,
             files=files,
-            return_files=['packmol.pdb']
+            return_files=["packmol.pdb"],
         )
 
         self.logger.debug(pprint.pformat(result))
 
-        with open(os.path.join(self.directory, 'packmol.out'), 'w') as fd:
-            fd.write(result['stdout'])
+        with open(os.path.join(self.directory, "packmol.out"), "w") as fd:
+            fd.write(result["stdout"])
 
         # Ouch! Packmol just gives back atoms and coordinates, so we
         # need to graft to the original structure.
 
         # Create a new, temporary system and get the coordinates
-        tmp_sys = system_db.create_system('tmp_sys', make_current=False)
-        tmp_configuration = tmp_sys.create_configuration('tmp')
-        tmp_configuration.from_pdb_text(result['packmol.pdb']['data'])
+        tmp_sys = system_db.create_system("tmp_sys", make_current=False)
+        tmp_configuration = tmp_sys.create_configuration("tmp")
+        tmp_configuration.from_pdb_text(result["packmol.pdb"]["data"])
         tmp_atoms = tmp_configuration.atoms
         n_atoms = tmp_atoms.n_atoms
-        xs = [*tmp_atoms['x']]
-        ys = [*tmp_atoms['y']]
-        zs = [*tmp_atoms['z']]
+        xs = [*tmp_atoms["x"]]
+        ys = [*tmp_atoms["y"]]
+        zs = [*tmp_atoms["z"]]
         system_db.delete_system(tmp_sys)
 
         n_atoms_per_molecule = configuration.n_atoms
         if n_atoms_per_molecule * n_molecules != n_atoms:
             raise RuntimeError(
-                'Serious problem in Packmol with the number of atoms'
-                ' {} != {}'.format(
-                    n_atoms, n_atoms_per_molecule * n_molecules
-                )
+                "Serious problem in Packmol with the number of atoms"
+                " {} != {}".format(n_atoms, n_atoms_per_molecule * n_molecules)
             )
 
         # Get a copy of the current atom and bond data
         atoms = configuration.atoms
         atom_data = atoms.get_as_dict()
         # index of atoms to use for bonds
-        index = {j: i for i, j in enumerate(atom_data['id'])}
-        del atom_data['id']
+        index = {j: i for i, j in enumerate(atom_data["id"])}
+        del atom_data["id"]
         bonds = configuration.bonds
         bond_data = bonds.get_as_dict()
-        del bond_data['id']
+        del bond_data["id"]
 
-        i_index = [index[i] for i in bond_data['i']]
-        j_index = [index[j] for j in bond_data['j']]
+        i_index = [index[i] for i in bond_data["i"]]
+        j_index = [index[j] for j in bond_data["j"]]
 
         # Append the atoms and bonds n_molecules-1 times to give n_molecules
         for copy in range(1, n_molecules):
             new_atoms = configuration.atoms.append(**atom_data)
 
-            bond_data['i'] = [new_atoms[i] for i in i_index]
-            bond_data['j'] = [new_atoms[j] for j in j_index]
+            bond_data["i"] = [new_atoms[i] for i in i_index]
+            bond_data["j"] = [new_atoms[j] for j in j_index]
             configuration.bonds.append(**bond_data)
 
         # And set the coordinates to the correct ones
-        configuration.atoms['x'] = xs
-        configuration.atoms['y'] = ys
-        configuration.atoms['z'] = zs
+        configuration.atoms["x"] = xs
+        configuration.atoms["y"] = ys
+        configuration.atoms["z"] = zs
 
         # make periodic of correct size
         configuration.periodicity = 3
         configuration.cell.parameters = (size, size, size, 90.0, 90.0, 90.0)
 
-        string = 'Created a cubic cell {size:.5~P} on a side'
-        string += ' with {n_molecules} molecules'
-        string += ' for a total of {n_atoms} atoms in the cell'
-        string += ' and a density of {density:.5~P}.'
-        printer.important(__(string, indent='    ', **tmp))
-        printer.important('')
+        string = "Created a cubic cell {size:.5~P} on a side"
+        string += " with {n_molecules} molecules"
+        string += " for a total of {n_atoms} atoms in the cell"
+        string += " and a density of {density:.5~P}."
+        printer.important(__(string, indent="    ", **tmp))
+        printer.important("")
 
         # Since we have succeeded, add the citation.
 
         self.references.cite(
-            raw=self._bibliography['doi:10.1002/jcc.21224'],
-            alias='packmol',
-            module='packmol_step',
+            raw=self._bibliography["doi:10.1002/jcc.21224"],
+            alias="packmol",
+            module="packmol_step",
             level=1,
-            note='The principle PACKMOL citation.'
+            note="The principle PACKMOL citation.",
         )
         self.references.cite(
-            raw=self._bibliography['packmol_step'],
-            alias='packmol_step',
-            module='packmol_step',
+            raw=self._bibliography["packmol_step"],
+            alias="packmol_step",
+            module="packmol_step",
             level=1,
-            note='The principle citation for the PACKMOL step in SEAMM.'
+            note="The principle citation for the PACKMOL step in SEAMM.",
         )
 
         return next_node
@@ -323,18 +312,18 @@ class Packmol(seamm.Node):
         n_molecules=None,
         n_atoms=None,
         n_moles=None,
-        mass=None
+        mass=None,
     ):
         """Work out the other variables given any two independent ones"""
 
         if configuration.n_atoms == 0:
-            self.logger.error('Packmol calculate: there is no structure!')
-            raise RuntimeError('Packmol calculate: there is no structure!')
+            self.logger.error("Packmol calculate: there is no structure!")
+            raise RuntimeError("Packmol calculate: there is no structure!")
 
         elements = configuration.atoms.symbols
         n_atoms_per_molecule = len(elements)
         molecular_mass = configuration.mass * ureg.g / ureg.mol  # g/mol
-        molecular_mass.ito('kg')
+        molecular_mass.ito("kg")
 
         n_parameters = 0
         if size is not None:
@@ -354,8 +343,8 @@ class Packmol(seamm.Node):
 
         if n_parameters != 2:
             raise RuntimeError(
-                'Exactly two independent parameters '
-                'must be given, not {}'.format(n_parameters)
+                "Exactly two independent parameters "
+                "must be given, not {}".format(n_parameters)
             )
 
         if size is not None or volume is not None:
@@ -363,9 +352,9 @@ class Packmol(seamm.Node):
                 if volume is not None:
                     raise RuntimeError("Size and volume are not independent!")
 
-                volume = size**3
+                volume = size ** 3
             else:
-                size = volume**(1 / 3)
+                size = volume ** (1 / 3)
 
             if density is not None:
                 # rho = mass/volume
@@ -430,7 +419,7 @@ class Packmol(seamm.Node):
                     n_molecules = 1
                 n_atoms = n_molecules * n_atoms_per_molecule
                 n_moles = n_molecules / ureg.N_A
-            size = volume**(1 / 3)
+            size = volume ** (1 / 3)
         else:
             raise RuntimeError(
                 "Number of molecules, number of atoms, "
@@ -438,9 +427,9 @@ class Packmol(seamm.Node):
                 "quantities!"
             )
         # make the units pretty
-        size.ito('Å')
-        volume.ito('Å**3')
-        density.ito('g/ml')
+        size.ito("Å")
+        volume.ito("Å**3")
+        density.ito("g/ml")
 
         self.logger.debug(" size = {:~P}".format(size))
         self.logger.debug("             volume = {:~P}".format(volume))
@@ -449,9 +438,9 @@ class Packmol(seamm.Node):
         self.logger.debug("    number of atoms = {}".format(n_atoms))
 
         return {
-            'size': size,
-            'volume': volume,
-            'density': density,
-            'n_molecules': n_molecules,
-            'n_atoms': n_atoms,
+            "size": size,
+            "volume": volume,
+            "density": density,
+            "n_molecules": n_molecules,
+            "n_atoms": n_atoms,
         }
