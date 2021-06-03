@@ -49,7 +49,7 @@ class Packmol(seamm.Node):
     def create_parser(self):
         """Setup the command-line / config file parser"""
         parser_name = self.step_type
-        parser = seamm.getParser()
+        parser = seamm_util.getParser()
 
         # Remember if the parser exists ... this type of step may have been
         # found before
