@@ -16,11 +16,13 @@ class PackmolParameters(seamm.Parameters):
             "density",
             "number of molecules",
             "approximate number of atoms",
+            "ideal gas pressure",
         ),
         "volume": (
             "density",
             "number of molecules",
             "approximate number of atoms",
+            "ideal gas pressure",
         ),
         "density": (
             "size of cubic cell",
@@ -32,15 +34,41 @@ class PackmolParameters(seamm.Parameters):
             "size of cubic cell",
             "volume",
             "density",
+            "ideal gas pressure",
         ),
         "approximate number of atoms": (
             "size of cubic cell",
             "volume",
             "density",
+            "ideal gas pressure",
+        ),
+        "ideal gas pressure": (
+            "size of cubic cell",
+            "volume",
+            "number of molecules",
+            "approximate number of atoms",
         ),
     }
 
     parameters = {
+        "molecule source": {
+            "default": "current configuration",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": ("current configuration", "SMILES"),
+            "format_string": "s",
+            "description": "Molecule(s) to pack:",
+            "help_text": "Where to get the molecules from.",
+        },
+        "molecules": {
+            "default": [],
+            "kind": "list",
+            "default_units": None,
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "The molecules",
+            "help_text": "An internal place to put the molecule definitions.",
+        },
         "method": {
             "default": "density",
             "kind": "enumeration",
@@ -48,7 +76,7 @@ class PackmolParameters(seamm.Parameters):
             "enumeration": tuple(methods.keys()),
             "format_string": "s",
             "description": "Set the",
-            "help_text": ("The first parameter controlling the size of " "the cell."),
+            "help_text": "The first parameter controlling the size of the cell.",
         },
         "submethod": {
             "default": "approximate number of atoms",
@@ -57,7 +85,7 @@ class PackmolParameters(seamm.Parameters):
             "enumeration": tuple(methods.keys()),
             "format_string": "s",
             "description": "and set the",
-            "help_text": ("The second parameter controlling the size of " "the cell."),
+            "help_text": "The second parameter controlling the size of the cell.",
         },
         "gap": {
             "default": 2.0,
@@ -120,6 +148,24 @@ class PackmolParameters(seamm.Parameters):
             "format_string": ".1f",
             "description": "Density:",
             "help_text": ("The target density of the cell."),
+        },
+        "ideal gas pressure": {
+            "default": 1.0,
+            "kind": "float",
+            "default_units": "atm",
+            "enumeration": tuple(),
+            "format_string": ".2f",
+            "description": "Ideal gas pressure:",
+            "help_text": ("The pressure using an ideal gas model (PV=nRT)."),
+        },
+        "ideal gas temperature": {
+            "default": 298.15,
+            "kind": "float",
+            "default_units": "K",
+            "enumeration": tuple(),
+            "format_string": ".2f",
+            "description": "Ideal gas temperature:",
+            "help_text": ("The temperature using an ideal gas model (PV=nRT)."),
         },
     }
 
