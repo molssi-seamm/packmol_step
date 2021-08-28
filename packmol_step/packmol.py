@@ -577,7 +577,7 @@ class Packmol(seamm.Node):
             n_atoms = n_copies * input_n_atoms
         else:
             raise RuntimeError(
-                "The number of moles or the mass are not independenet " "quantities!"
+                "The number of moles or the mass are not independent quantities!"
             )
         # make the units pretty
         size.ito("Å")
