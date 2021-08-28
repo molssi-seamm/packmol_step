@@ -329,57 +329,8 @@ class Packmol(seamm.Node):
                 bond_orders.extend(orders * n)
             configuration.bonds.get_column("bondorder")[:] = bond_orders
 
+            # Remove the temporary database
             tmp_db.close()
-        else:
-            # This is the original code, before newer version of Packmol kept
-            # the conectivity. Saved here just in case :-)
-            #
-            # Ouch! Packmol just gives back atoms and coordinates, so we
-            # need to graft to the original structure.
-
-            # Create a new, temporary system and get the coordinates
-            tmp_sys = system_db.create_system("tmp_sys", make_current=False)
-            tmp_configuration = tmp_sys.create_configuration("tmp")
-            tmp_configuration.from_pdb_text(result["packmol.pdb"]["data"])
-            tmp_atoms = tmp_configuration.atoms
-            n_atoms = tmp_atoms.n_atoms
-            xs = [*tmp_atoms["x"]]
-            ys = [*tmp_atoms["y"]]
-            zs = [*tmp_atoms["z"]]
-            system_db.delete_system(tmp_sys)
-
-            n_atoms_per_molecule = configuration.n_atoms
-            if n_atoms_per_molecule * n_molecules != n_atoms:
-                raise RuntimeError(
-                    "Serious problem in Packmol with the number of atoms"
-                    " {} != {}".format(n_atoms, n_atoms_per_molecule * n_molecules)
-                )
-
-            # Get a copy of the current atom and bond data
-            atoms = configuration.atoms
-            atom_data = atoms.get_as_dict()
-            # index of atoms to use for bonds
-            index = {j: i for i, j in enumerate(atom_data["id"])}
-            del atom_data["id"]
-            bonds = configuration.bonds
-            bond_data = bonds.get_as_dict()
-            del bond_data["id"]
-
-            i_index = [index[i] for i in bond_data["i"]]
-            j_index = [index[j] for j in bond_data["j"]]
-
-            # Append the atoms and bonds n_molecules-1 times to give n_molecules
-            for copy in range(1, n_molecules):
-                new_atoms = configuration.atoms.append(**atom_data)
-
-                bond_data["i"] = [new_atoms[i] for i in i_index]
-                bond_data["j"] = [new_atoms[j] for j in j_index]
-                configuration.bonds.append(**bond_data)
-
-            # And set the coordinates to the correct ones
-            configuration.atoms["x"] = xs
-            configuration.atoms["y"] = ys
-            configuration.atoms["z"] = zs
 
         # Finally, make periodic of correct size
         configuration.periodicity = 3
