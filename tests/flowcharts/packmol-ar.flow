@@ -1,0 +1,236 @@
+#!/usr/bin/env run_flowchart
+!MolSSI flowchart 2.0
+#metadata
+{
+    "title": "Packmol test using Ar",
+    "description": "This flowchart tests PACKMOL using the current configuration, which in this case is Ar. The conditions are STP with 602224 atoms == 10^-18 moles, which should lead to 10^-18 of the molar volume of 22.71 L = 22.7 * 10^27 A^3 --> 22.71 * 10^9 A^3.\n\n",
+    "keywords": [
+        "PACKMOL",
+        "test",
+        "Argon"
+    ],
+    "creators": [
+        {
+            "name": "Saxe, Paul",
+            "orcid": "0000-0002-8641-9448",
+            "affiliation": "Molecular Sciences Software Institute"
+        }
+    ],
+    "sha256": "83395e5e991afae07633073305f26bcb2a30d4d86e4c41a19a06b6a36565f957",
+    "sha256_strict": "fd3188d933baaa9819413b5d4e4ab26d4bf82cecabce6b33c9b3763419d55c95"
+}
+#flowchart
+{
+    "item": "object",
+    "module": "seamm.flowchart",
+    "class": "Flowchart",
+    "extension": null,
+    "nodes": [
+        {
+            "item": "object",
+            "module": "seamm.start_node",
+            "class": "StartNode",
+            "version": "2021.8.28",
+            "extension": null,
+            "attributes": {
+                "_uuid": 1,
+                "_title": "Start",
+                "extension": null,
+                "parameters": null,
+                "x": 150.0,
+                "y": 35.0,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "from_smiles_step.from_smiles",
+            "class": "FromSMILES",
+            "version": "2021.8.4.1+1.g8b9a329",
+            "extension": "FromSMILESStep",
+            "attributes": {
+                "_uuid": 239586744239877325219536131695328089914,
+                "_title": "from SMILES",
+                "extension": "FromSMILESStep",
+                "parameters": {
+                    "__class__": "FromSMILESParameters",
+                    "__module__": "from_smiles_step.from_smiles_parameters",
+                    "smiles string": {
+                        "value": "[Ar]",
+                        "units": null
+                    },
+                    "structure handling": {
+                        "value": "Overwrite the current configuration",
+                        "units": null
+                    },
+                    "subsequent structure handling": {
+                        "value": "Create a new system and configuration",
+                        "units": null
+                    },
+                    "system name": {
+                        "value": "from file",
+                        "units": null
+                    },
+                    "configuration name": {
+                        "value": "use Canonical SMILES string",
+                        "units": null
+                    }
+                },
+                "x": 150.0,
+                "y": 105.0,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "packmol_step.packmol",
+            "class": "Packmol",
+            "version": "2021.6.3+7.ged904b3",
+            "extension": "Packmol",
+            "attributes": {
+                "_uuid": 100599965059017509693736658597476296890,
+                "_title": "Packmol",
+                "extension": "Packmol",
+                "parameters": {
+                    "__class__": "PackmolParameters",
+                    "__module__": "packmol_step.packmol_parameters",
+                    "molecule source": {
+                        "value": "current configuration",
+                        "units": null
+                    },
+                    "molecules": {
+                        "value": [],
+                        "units": null
+                    },
+                    "method": {
+                        "value": "ideal gas pressure",
+                        "units": null
+                    },
+                    "submethod": {
+                        "value": "approximate number of atoms",
+                        "units": null
+                    },
+                    "gap": {
+                        "value": "2.0",
+                        "units": "\u00c5"
+                    },
+                    "size of cubic cell": {
+                        "value": "4.0",
+                        "units": "nm"
+                    },
+                    "number of molecules": {
+                        "value": "100",
+                        "units": null
+                    },
+                    "approximate number of atoms": {
+                        "value": "602214",
+                        "units": null
+                    },
+                    "volume": {
+                        "value": "64.0",
+                        "units": "nm^3"
+                    },
+                    "density": {
+                        "value": "0.7",
+                        "units": "g/ml"
+                    },
+                    "ideal gas pressure": {
+                        "value": "1.0",
+                        "units": "bar"
+                    },
+                    "ideal gas temperature": {
+                        "value": "273.15",
+                        "units": "K"
+                    }
+                },
+                "x": 150.0,
+                "y": 175.0,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "custom_step.custom",
+            "class": "Custom",
+            "version": "2021.8.28.1",
+            "extension": "Python",
+            "attributes": {
+                "_uuid": 40927047806993889244308355910488329601,
+                "_title": "Custom Python",
+                "extension": "Python",
+                "parameters": {
+                    "__class__": "CustomParameters",
+                    "__module__": "custom_step.custom_parameters",
+                    "script": {
+                        "value": "correct = 22710954641.485\ndelta = 2.0e-07\n\nconfiguration = _system_db.system.configuration\nvolume = configuration.volume\nprint(f\"    volume = {volume:,.3f}  =? {correct:,.3f}\")\nrelative_error = abs(volume - correct) / correct\nprint(f\"    relative error = {relative_error:,.9f}\")\nif relative_error < delta:\n   print(\"    ***Passed***\")\nelse:\n   print(\"    ***Failed***\")\n   raise RuntimeError(\"Test failed -- volume incorrect\")\n",
+                        "units": null
+                    }
+                },
+                "x": 150.0,
+                "y": 245.0,
+                "w": 200,
+                "h": 50
+            }
+        }
+    ],
+    "edges": [
+        {
+            "item": "edge",
+            "node1": 1,
+            "node2": 239586744239877325219536131695328089914,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 12,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    60,
+                    150,
+                    80
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 239586744239877325219536131695328089914,
+            "node2": 100599965059017509693736658597476296890,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 13,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    130,
+                    150,
+                    150
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 100599965059017509693736658597476296890,
+            "node2": 40927047806993889244308355910488329601,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 53,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    200,
+                    150,
+                    220
+                ]
+            }
+        }
+    ]
+}
+#end
