@@ -8,8 +8,8 @@ dependencies:
   - python
   - pip
 
-  # molsystem requires, and only available via Conda.
-  - openbabel
+  # SEAMM
+  - seamm
 
   # Testing
   - black
@@ -18,12 +18,15 @@ dependencies:
   - pytest
   - pytest-cov
 
+  # Documentation
+  - pygments
+
   # Pip-only installs
   - pip:
-    - seamm
+    # Integration testing
+    - from_smiles_step
 
     # Documentation
     - rinohtype
-    - pygments
     - sphinx-rtd-theme
     - pystemmer

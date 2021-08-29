@@ -1,8 +1,8 @@
 -r requirements_install.txt
 
-coverage
 flake8
 pytest
+pytest-cov
 pytest-runner
 sphinx
 tox
