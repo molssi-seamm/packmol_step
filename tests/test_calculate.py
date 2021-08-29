@@ -28,6 +28,7 @@ def instance():
     return instance
 
 
+@pytest.mark.unit
 def test_cell_nmolecules(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -40,6 +41,7 @@ def test_cell_nmolecules(instance):
     assert abs(result["density"].magnitude - density) < 0.000001
 
 
+@pytest.mark.unit
 def test_cell_natoms(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -52,6 +54,7 @@ def test_cell_natoms(instance):
     assert abs(result["density"].magnitude - density) < 0.000001
 
 
+@pytest.mark.unit
 def test_cell_density(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -64,6 +67,7 @@ def test_cell_density(instance):
     assert result["n_atoms"] == 100
 
 
+@pytest.mark.unit
 def test_cell_nmoles(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -76,6 +80,7 @@ def test_cell_nmoles(instance):
     assert abs(result["density"].magnitude - density) < 0.000001
 
 
+@pytest.mark.unit
 def test_cell_mass(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -88,6 +93,7 @@ def test_cell_mass(instance):
     assert abs(result["density"].magnitude - density) < 0.000001
 
 
+@pytest.mark.unit
 def test_volume_nmolecules(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -100,6 +106,7 @@ def test_volume_nmolecules(instance):
     assert abs(result["density"].magnitude - density) < 0.000001
 
 
+@pytest.mark.unit
 def test_density_nmolecules(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -112,6 +119,7 @@ def test_density_nmolecules(instance):
     assert abs(result["size"].magnitude - 10.0) < 0.000001
 
 
+@pytest.mark.unit
 def test_density_natoms(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -124,6 +132,7 @@ def test_density_natoms(instance):
     assert abs(result["size"].magnitude - 10.0) < 0.000001
 
 
+@pytest.mark.unit
 def test_density_nmoles(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -136,6 +145,7 @@ def test_density_nmoles(instance):
     assert abs(result["size"].magnitude - 10.0) < 0.000001
 
 
+@pytest.mark.unit
 def test_density_mass(instance):
     """Test calculation of cell."""
     result = instance.calculate(
@@ -148,6 +158,7 @@ def test_density_mass(instance):
     assert abs(result["size"].magnitude - 10.0) < 0.000001
 
 
+@pytest.mark.unit
 def test_ideal_gas(instance):
     """Test calculation of cell."""
     result = instance.calculate(
