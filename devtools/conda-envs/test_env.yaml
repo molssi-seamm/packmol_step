@@ -19,6 +19,9 @@ dependencies:
   - pytest
   - pytest-cov
 
+  # Integration testing
+  - packmol==20.2.2
+
   # Documentation
   - pygments
 
