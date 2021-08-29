@@ -24,7 +24,8 @@ dependencies:
   # Pip-only installs
   - pip:
     # Integration testing
-    - from_smiles_step
+    - custom-step
+    - from-smiles-step
 
     # Documentation
     - rinohtype
