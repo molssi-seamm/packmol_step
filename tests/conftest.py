@@ -10,16 +10,13 @@ from molsystem import SystemDB
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--no-unit",
-        action="store_true",
-        default=False,
-        help="don't run the unit tests"
+        "--no-unit", action="store_true", default=False, help="don't run the unit tests"
     )
     parser.addoption(
         "--integration",
         action="store_true",
         default=False,
-        help="run the integration tests"
+        help="run the integration tests",
     )
     parser.addoption(
         "--timing", action="store_true", default=False, help="run the timing tests"
@@ -33,9 +30,7 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "integration: integration test, run with --integration"
     )
-    config.addinivalue_line(
-        "markers", "timing: timing tests, run with --timing"
-    )
+    config.addinivalue_line("markers", "timing: timing tests, run with --timing")
 
 
 def pytest_collection_modifyitems(config, items):
