@@ -59,21 +59,42 @@ format: ## reformat with with black and isort
 typing: ## check typing
 	pytype $(MODULE)
 
-test: ## run tests quickly with the default Python
+test: ## run the unit tests
 	py.test
+
+test-all: ## run all the tests
+	py.test --integration --timing
+
+test-integration: ## run the integration tests
+	py.test --no-unit --integration
+
+test-timing: ## run the timing tests
+	py.test --no-unit --timing
 
 dependencies:
 	pur -r requirements_dev.txt
 	pip install -r requirements_dev.txt
 
-test-all: ## run tests on every Python version with tox
-	tox
-
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source $(MODULE) -m pytest
-	coverage report -m
-	coverage html
+coverage: ## code coverage using only the unit tests (fast!)
+	pytest --cov-report term --cov-report html:htmlcov --cov $(MODULE)  tests/
 	$(BROWSER) htmlcov/index.html
+
+coverage-all: ## code coverage using all tests (slow)
+	pytest --cov-report term --cov-report html:htmlcov --cov $(MODULE)  --integration --timing tests/
+	$(BROWSER) htmlcov/index.html
+
+coverage-integration: ## code coverage using only the integration tests
+	pytest --cov-report term --cov-report html:htmlcov --cov $(MODULE)  --no-unit --integration tests/
+	$(BROWSER) htmlcov/index.html
+
+coverage-report: ## code coverage using only the unit tests (fast!) with only a text report
+	pytest --cov-report term --cov $(MODULE)  tests/
+
+coverage-all-report: ## code coverage using all tests (slow) with only a text report
+	pytest --cov-report term --cov $(MODULE)  --integration --timing tests/
+
+coverage-integration-report: ## code coverage using only the integration tests with only a text report
+	pytest --cov-report term --cov $(MODULE)  --no-unit --integration tests/
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/developer/$(MODULE).rst

@@ -4,4 +4,4 @@ channels:
 dependencies:
   - python
     # Executables, etc.
-  - packmol
+  - packmol==20.2.2

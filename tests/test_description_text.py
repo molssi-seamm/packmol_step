@@ -15,12 +15,14 @@ def instance():
     return instance
 
 
+@pytest.mark.unit
 def test_construction():
     """Simplest test that we can make a PACKMOL object"""
     instance = packmol_step.Packmol()
     assert str(type(instance)) == "<class 'packmol_step.packmol.Packmol'>"
 
 
+@pytest.mark.unit
 def test_version():
     """Test that the object returns a version"""
     instance = packmol_step.Packmol()
@@ -28,6 +30,7 @@ def test_version():
     assert isinstance(result, str) and len(result) > 0
 
 
+@pytest.mark.unit
 def test_git_revision():
     """Test that the object returns a git revision"""
     instance = packmol_step.Packmol()
@@ -35,6 +38,7 @@ def test_git_revision():
     assert isinstance(result, str) and len(result) > 0
 
 
+@pytest.mark.unit
 def test_description_text_default(instance):
     """Test the default description text"""
 
@@ -52,6 +56,7 @@ def test_description_text_default(instance):
     )
 
 
+@pytest.mark.unit
 def test_description_text_expr_expr(instance):
     """Test the default description text"""
 
@@ -69,6 +74,7 @@ def test_description_text_expr_expr(instance):
     )
 
 
+@pytest.mark.unit
 def test_description_text_cubic_expr(instance):
     """Test the description text"""
 
@@ -85,6 +91,7 @@ def test_description_text_cubic_expr(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_cubic_density(instance):
     """Test the description text"""
 
@@ -105,6 +112,7 @@ def test_description_text_cubic_density(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_cubic_nmolecules(instance):
     """Test the description text"""
 
@@ -125,6 +133,7 @@ def test_description_text_cubic_nmolecules(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_cubic_natoms(instance):
     """Test the description text"""
 
@@ -145,6 +154,7 @@ def test_description_text_cubic_natoms(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_volume_nmolecules(instance):
     """Test the description text"""
 
@@ -166,6 +176,7 @@ def test_description_text_volume_nmolecules(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_nmolecules_volume(instance):
     """Test the description text"""
 
@@ -187,6 +198,7 @@ def test_description_text_nmolecules_volume(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_natoms_cubic(instance):
     """Test the description text"""
 
@@ -208,6 +220,7 @@ def test_description_text_natoms_cubic(instance):
     assert re.fullmatch(reference, result) is not None
 
 
+@pytest.mark.unit
 def test_description_text_method_error(instance):
     """Test the description text"""
 
@@ -215,6 +228,7 @@ def test_description_text_method_error(instance):
         instance.description_text({"method": "junk"})
 
 
+@pytest.mark.unit
 def test_description_text_submethod_error(instance):
     """Test the description text"""
 

@@ -4,13 +4,15 @@
 
 import logging
 import os.path
+import pprint
+
+from molsystem import SystemDB
 import seamm
 import seamm_util
 from seamm_util import ureg, Q_, units_class  # noqa: F401
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import packmol_step
-import pprint
 
 logger = logging.getLogger(__name__)
 job = printing.getPrinter()
@@ -99,6 +101,11 @@ class Packmol(seamm.Node):
             text += "containing {number of molecules} molecules"
         elif "atoms" in P["method"]:
             text += "containing about {approximate number of atoms} atoms"
+        elif "pressure" in P["method"]:
+            text += (
+                " with P = {ideal gas pressure} and "
+                "T = {ideal gas temperature}, assuming an ideal gas"
+            )
         else:
             raise RuntimeError("Don't recognize the method {}".format(P["method"]))
 
@@ -114,6 +121,11 @@ class Packmol(seamm.Node):
             text += " containing {number of molecules} molecules"
         elif "atoms" in P["submethod"]:
             text += " containing about {approximate number of atoms} atoms"
+        elif "pressure" in P["submethod"]:
+            text += (
+                " with P = {ideal gas pressure} and "
+                "T = {ideal gas temperature}, assuming an ideal gas"
+            )
         else:
             raise RuntimeError(
                 "Don't recognize the submethod {}".format(P["submethod"])
@@ -128,7 +140,6 @@ class Packmol(seamm.Node):
 
         # Get the system
         system_db = self.get_variable("_system_db")
-        configuration = system_db.system.configuration
 
         # The options from command line, config file ...
         path = self.options["packmol_path"]
@@ -144,8 +155,12 @@ class Packmol(seamm.Node):
         self.logger.info("   method = {}".format(P["method"]))
         self.logger.info("submethod = {}".format(P["submethod"]))
 
-        # Print what we are doing
-        printer.important(__(self.description_text(P), indent=self.indent))
+        # Print what we are doing. Have to fix formatting for printing...
+        PP = dict(P)
+        for key in PP:
+            if isinstance(PP[key], units_class):
+                PP[key] = "{:~P}".format(PP[key])
+        printer.important(__(self.description_text(PP), indent=self.indent))
 
         size = None
         volume = None
@@ -165,6 +180,9 @@ class Packmol(seamm.Node):
             n_molecules = P["number of molecules"]
         elif "atoms" in P["method"]:
             n_atoms = P["approximate number of atoms"]
+        elif "pressure" in P["method"]:
+            pressure = P["ideal gas pressure"]
+            temperature = P["ideal gas temperature"]
         else:
             raise RuntimeError("Don't recognize the method {}".format(P["method"]))
 
@@ -178,13 +196,49 @@ class Packmol(seamm.Node):
             n_molecules = P["number of molecules"]
         elif "atoms" in P["submethod"]:
             n_atoms = P["approximate number of atoms"]
+        elif "temperature" in P["submethod"]:
+            pass
         else:
             raise RuntimeError(
                 "Don't recognize the submethod {}".format(P["submethod"])
             )
 
+        source = P["molecule source"]
+        if source == "current configuration":
+            configuration = system_db.system.configuration
+            if configuration.n_atoms == 0:
+                self.logger.error("Packmol calculate: there is no structure!")
+                raise RuntimeError("Packmol calculate: there is no structure!")
+
+            input_n_molecules = 1
+            input_n_atoms = configuration.n_atoms
+            input_mass = configuration.mass * ureg.g / ureg.mol  # g/mol
+            input_mass.ito("kg")
+        elif source == "SMILES":
+            # Need to create the molecules.
+            tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
+            molecules = []
+            input_n_molecules = 0
+            input_n_atoms = 0
+            input_mass = 0.0
+            for molecule in self.parameters["molecules"].value:
+                SMILES = molecule["molecule"]
+                tmp = {"SMILES": SMILES}
+                system = tmp_db.create_system(name=SMILES)
+                configuration = system.create_configuration(name="default")
+                tmp["configuration"] = configuration
+                configuration.from_smiles(SMILES)
+                count = tmp["count"] = int(molecule["count"])
+                molecules.append(tmp)
+                input_n_molecules += count
+                input_n_atoms += count * configuration.n_atoms
+                input_mass += count * configuration.mass * ureg.g / ureg.mol
+            input_mass.ito("kg")
+
         tmp = self.calculate(
-            configuration,
+            input_n_molecules=input_n_molecules,
+            input_n_atoms=input_n_atoms,
+            input_mass=input_mass,
             size=size,
             volume=volume,
             density=density,
@@ -192,26 +246,50 @@ class Packmol(seamm.Node):
             n_atoms=n_atoms,
             n_moles=n_moles,
             mass=mass,
+            pressure=pressure,
+            temperature=temperature,
         )
 
         size = tmp["size"].to("Å").magnitude
+        n_copies = tmp["n_copies"]
         n_molecules = tmp["n_molecules"]
 
         gap = P["gap"].to("Å").magnitude
+
+        # Prepare the input
         lines = []
         lines.append("tolerance {}".format(gap))
         lines.append("output packmol.pdb")
         lines.append("filetype pdb")
-        lines.append("structure input.pdb")
-        lines.append("number {}".format(n_molecules))
-        lines.append("inside cube 0.0 0.0 0.0 {:.4f}".format(size - gap))
-        lines.append("end structure")
-        lines.append("")
+        lines.append("connect yes")
 
-        files = {"input.pdb": configuration.to_pdb_text()}
+        if source == "current configuration":
+            lines.append("structure input.pdb")
+            lines.append(f"   number {n_copies}")
+            lines.append(f"   inside cube 0.0 0.0 0.0 {size-gap:.4f}")
+            lines.append("end structure")
+            files = {"input.pdb": configuration.to_pdb_text()}
+        elif source == "SMILES":
+            files = {}
+            for i, molecule in enumerate(molecules, start=1):
+                count = molecule["count"]
+                lines.append(f"structure input_{i}.pdb")
+                lines.append(f"   number {n_copies * count}")
+                lines.append(f"   inside cube 0.0 0.0 0.0 {size-gap:.4f}")
+                lines.append("end structure")
+                configuration = molecule["configuration"]
+                files[f"input_{i}.pdb"] = configuration.to_pdb_text()
+
+        lines.append("")
         files["input.inp"] = "\n".join(lines)
 
         self.logger.log(0, pprint.pformat(files))
+
+        # Save the files to disk.
+        os.makedirs(self.directory, exist_ok=True)
+        for filename in files:
+            with open(os.path.join(self.directory, filename), mode="w") as fd:
+                fd.write(files[filename])
 
         local = seamm.ExecLocal()
         result = local.run(
@@ -223,57 +301,38 @@ class Packmol(seamm.Node):
 
         self.logger.debug(pprint.pformat(result))
 
+        # And write the output files out.
         with open(os.path.join(self.directory, "packmol.out"), "w") as fd:
             fd.write(result["stdout"])
 
-        # Ouch! Packmol just gives back atoms and coordinates, so we
-        # need to graft to the original structure.
+        for filename in result["files"]:
+            with open(os.path.join(self.directory, filename), mode="w") as fd:
+                if result[filename]["data"] is not None:
+                    fd.write(result[filename]["data"])
+                else:
+                    fd.write(result[filename]["exception"])
 
-        # Create a new, temporary system and get the coordinates
-        tmp_sys = system_db.create_system("tmp_sys", make_current=False)
-        tmp_configuration = tmp_sys.create_configuration("tmp")
-        tmp_configuration.from_pdb_text(result["packmol.pdb"]["data"])
-        tmp_atoms = tmp_configuration.atoms
-        n_atoms = tmp_atoms.n_atoms
-        xs = [*tmp_atoms["x"]]
-        ys = [*tmp_atoms["y"]]
-        zs = [*tmp_atoms["z"]]
-        system_db.delete_system(tmp_sys)
+        if source == "current configuration":
+            bond_orders = configuration.bonds.get_column_data("bondorder")
+            configuration.bonds.get_column("bondorder")[:] = bond_orders * n_copies
+        elif source == "SMILES":
+            system, configuration = self.get_system_configuration(P)
+            # Remove anything in the system
+            configuration.clear()
+            # Create the configuration from the PDB output of PACKMOL
+            configuration.from_pdb_text(result["packmol.pdb"]["data"])
+            # And patch up the bond orders...
+            bond_orders = []
+            for molecule in molecules:
+                n = n_copies * molecule["count"]
+                orders = molecule["configuration"].bonds.get_column_data("bondorder")
+                bond_orders.extend(orders * n)
+            configuration.bonds.get_column("bondorder")[:] = bond_orders
 
-        n_atoms_per_molecule = configuration.n_atoms
-        if n_atoms_per_molecule * n_molecules != n_atoms:
-            raise RuntimeError(
-                "Serious problem in Packmol with the number of atoms"
-                " {} != {}".format(n_atoms, n_atoms_per_molecule * n_molecules)
-            )
+            # Remove the temporary database
+            tmp_db.close()
 
-        # Get a copy of the current atom and bond data
-        atoms = configuration.atoms
-        atom_data = atoms.get_as_dict()
-        # index of atoms to use for bonds
-        index = {j: i for i, j in enumerate(atom_data["id"])}
-        del atom_data["id"]
-        bonds = configuration.bonds
-        bond_data = bonds.get_as_dict()
-        del bond_data["id"]
-
-        i_index = [index[i] for i in bond_data["i"]]
-        j_index = [index[j] for j in bond_data["j"]]
-
-        # Append the atoms and bonds n_molecules-1 times to give n_molecules
-        for copy in range(1, n_molecules):
-            new_atoms = configuration.atoms.append(**atom_data)
-
-            bond_data["i"] = [new_atoms[i] for i in i_index]
-            bond_data["j"] = [new_atoms[j] for j in j_index]
-            configuration.bonds.append(**bond_data)
-
-        # And set the coordinates to the correct ones
-        configuration.atoms["x"] = xs
-        configuration.atoms["y"] = ys
-        configuration.atoms["z"] = zs
-
-        # make periodic of correct size
+        # Finally, make periodic of correct size
         configuration.periodicity = 3
         configuration.cell.parameters = (size, size, size, 90.0, 90.0, 90.0)
 
@@ -293,19 +352,14 @@ class Packmol(seamm.Node):
             level=1,
             note="The principle PACKMOL citation.",
         )
-        self.references.cite(
-            raw=self._bibliography["packmol_step"],
-            alias="packmol_step",
-            module="packmol_step",
-            level=1,
-            note="The principle citation for the PACKMOL step in SEAMM.",
-        )
 
         return next_node
 
     def calculate(
         self,
-        configuration,
+        input_n_molecules=1,
+        input_n_atoms=None,
+        input_mass=None,
         size=None,
         volume=None,
         density=None,
@@ -313,17 +367,10 @@ class Packmol(seamm.Node):
         n_atoms=None,
         n_moles=None,
         mass=None,
+        pressure=None,
+        temperature=None,
     ):
         """Work out the other variables given any two independent ones"""
-
-        if configuration.n_atoms == 0:
-            self.logger.error("Packmol calculate: there is no structure!")
-            raise RuntimeError("Packmol calculate: there is no structure!")
-
-        elements = configuration.atoms.symbols
-        n_atoms_per_molecule = len(elements)
-        molecular_mass = configuration.mass * ureg.g / ureg.mol  # g/mol
-        molecular_mass.ito("kg")
 
         n_parameters = 0
         if size is not None:
@@ -339,6 +386,8 @@ class Packmol(seamm.Node):
         if n_moles is not None:
             n_parameters += 1
         if mass is not None:
+            n_parameters += 1
+        if pressure is not None:
             n_parameters += 1
 
         if n_parameters != 2:
@@ -359,72 +408,127 @@ class Packmol(seamm.Node):
             if density is not None:
                 # rho = mass/volume
                 mass = density * volume
-                n_molecules = int(round(mass / molecular_mass))
-                if n_molecules == 0:
-                    n_molecules = 1
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_copies = int(round(mass / input_mass))
+                if n_copies == 0:
+                    n_copies = 1
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
             elif n_molecules is not None:
-                mass = n_molecules * molecular_mass
+                n_copies = int(round(n_molecules / input_n_molecules))
+                if n_copies == 0:
+                    n_copies = 1
+                mass = n_molecules * input_mass
                 density = mass / volume
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
             elif n_atoms is not None:
-                n_molecules = round(n_atoms / n_atoms_per_molecule)
-                if n_molecules == 0:
-                    n_molecules = 1
-                mass = n_molecules * molecular_mass
+                n_copies = round(n_atoms / input_n_atoms)
+                if n_copies == 0:
+                    n_copies = 1
+                mass = n_copies * input_mass
                 density = mass / volume
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
             elif n_moles is not None:
                 n_molecules = int(round(n_moles * ureg.N_A))
-                if n_molecules == 0:
-                    n_molecules = 1
-                mass = n_molecules * molecular_mass
+                n_copies = int(n_molecules / input_n_molecules)
+                if n_copies == 0:
+                    n_copies = 1
+                n_molecules = n_copies * input_n_molecules
+                mass = n_molecules * input_mass
                 density = mass / volume
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_atoms = n_molecules * input_n_atoms
             elif mass is not None:
                 density = mass / volume
-                n_molecules = int(round(mass / molecular_mass))
-                if n_molecules == 0:
-                    n_molecules = 1
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_copies = int(round(mass / input_mass))
+                if n_copies == 0:
+                    n_copies = 1
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
+            elif pressure is not None:
+                # PV = nRT
+                n_molecules = pressure * volume / (temperature * ureg.k)
+                n_copies = int(n_molecules / input_n_molecules)
+                if n_copies == 0:
+                    n_copies = 1
+                n_molecules = n_copies * input_n_molecules
+                volume = n_molecules * temperature * ureg.k / pressure
+                mass = n_molecules * input_mass
+                density = mass / volume
+                n_atoms = n_molecules * input_n_atoms
         elif density is not None:
             if n_molecules is not None:
-                mass = n_molecules * molecular_mass
+                n_copies = int(n_molecules / input_n_molecules)
+                if n_copies == 0:
+                    n_copies = 1
+                mass = n_copies * input_mass
                 volume = mass / density
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
             elif n_atoms is not None:
-                n_molecules = int(round(n_atoms / n_atoms_per_molecule))
-                if n_molecules == 0:
-                    n_molecules = 1
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_copies = int(round(n_atoms / input_n_atoms))
+                if n_copies == 0:
+                    n_copies = 1
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
-                mass = n_molecules * molecular_mass
+                mass = n_copies * input_mass
                 volume = mass / density
             elif n_moles is not None:
-                n_molecules = int(round(n_moles * ureg.N_A))
-                if n_molecules == 0:
-                    n_molecules = 1
-                mass = n_molecules * molecular_mass
+                n_copies = int(round(n_moles * ureg.N_A / input_n_molecules))
+                if n_copies == 0:
+                    n_copies = 1
+                n_molecules = n_copies * input_n_molecules
+                mass = n_molecules * input_mass
                 volume = mass / density
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_atoms = n_molecules * input_n_atoms
             elif mass is not None:
                 volume = mass / density
-                n_molecules = int(round(mass / molecular_mass))
-                if n_molecules == 0:
-                    n_molecules = 1
-                n_atoms = n_molecules * n_atoms_per_molecule
+                n_copies = int(round(mass / input_mass))
+                if n_copies == 0:
+                    n_copies = 1
+                n_atoms = n_copies * input_n_atoms
+                n_molecules = n_copies * input_n_molecules
                 n_moles = n_molecules / ureg.N_A
             size = volume ** (1 / 3)
+        elif n_molecules is not None:
+            if pressure is None or temperature is None:
+                raise RuntimeError(
+                    "For ideal gas, the number of molecules or atoms, plus the "
+                    "pressure and temperature must be given."
+                )
+            n_copies = int(n_molecules / input_n_molecules)
+            if n_copies == 0:
+                n_copies = 1
+            n_molecules = n_copies * input_n_molecules
+            # PV = nRT
+            volume = n_molecules * temperature * ureg.k / pressure
+            size = volume ** (1 / 3)
+            density = n_copies * input_mass / volume
+            n_atoms = n_copies * input_n_atoms
+        elif n_atoms is not None:
+            if pressure is None or temperature is None:
+                raise RuntimeError(
+                    "For ideal gas, the number of molecules or atoms, plus the "
+                    "pressure and temperature must be given."
+                )
+            n_copies = int(round(n_atoms / input_n_atoms))
+            if n_copies == 0:
+                n_copies = 1
+            n_molecules = input_n_molecules * n_copies
+            # PV = nRT
+            volume = n_molecules * temperature * ureg.k / pressure
+            size = volume ** (1 / 3)
+            density = n_copies * input_mass / volume
+            n_atoms = n_copies * input_n_atoms
         else:
             raise RuntimeError(
-                "Number of molecules, number of atoms, "
-                "number of moles or the mass are not independenet "
-                "quantities!"
+                "The number of moles or the mass are not independent quantities!"
             )
         # make the units pretty
         size.ito("Å")
@@ -443,4 +547,5 @@ class Packmol(seamm.Node):
             "density": density,
             "n_molecules": n_molecules,
             "n_atoms": n_atoms,
+            "n_copies": n_copies,
         }
