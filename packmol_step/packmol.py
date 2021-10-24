@@ -169,6 +169,8 @@ class Packmol(seamm.Node):
         n_atoms = None
         n_moles = None
         mass = None
+        pressure = None
+        temperature = None
 
         if "cubic" in P["method"]:
             size = P["size of cubic cell"]
