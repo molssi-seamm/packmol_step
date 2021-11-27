@@ -314,25 +314,31 @@ class Packmol(seamm.Node):
                 else:
                     fd.write(result[filename]["exception"])
 
+        extra_data = {}
         if source == "current configuration":
-            bond_orders = configuration.bonds.get_column_data("bondorder")
-            configuration.bonds.get_column("bondorder")[:] = bond_orders * n_copies
+            bond_orders = configuration.bonds.get_column_data("bondorder") * n_copies
+            atoms = configuration.atoms
+            for key in atoms.keys():
+                if "atom_types_" in key or "charges_" in key:
+                    extra_data[key] = atoms.get_column_data(key) * n_copies
         elif source == "SMILES":
             system, configuration = self.get_system_configuration(P)
-            # Remove anything in the system
-            configuration.clear()
-            # Create the configuration from the PDB output of PACKMOL
-            configuration.from_pdb_text(result["packmol.pdb"]["data"])
+        # Remove anything in the system
+        configuration.clear()
+        # Create the configuration from the PDB output of PACKMOL
+        configuration.from_pdb_text(result["packmol.pdb"]["data"])
+        if source == "SMILES":
             # And patch up the bond orders...
             bond_orders = []
             for molecule in molecules:
                 n = n_copies * molecule["count"]
                 orders = molecule["configuration"].bonds.get_column_data("bondorder")
                 bond_orders.extend(orders * n)
-            configuration.bonds.get_column("bondorder")[:] = bond_orders
-
             # Remove the temporary database
             tmp_db.close()
+        configuration.bonds.get_column("bondorder")[:] = bond_orders
+        for key, values in extra_data.items():
+            atoms.get_column(key)[:] = values
 
         # Finally, make periodic of correct size
         configuration.periodicity = 3
