@@ -81,7 +81,7 @@ jobs:
     - name: Run tests
       shell: bash -l {0}
       run: |
-        pytest -v --cov=packmol_step --cov-report=xml --color=yes --integration tests/
+        pytest -v --cov=packmol_step --cov-report=xml --color=yes tests/
     - name: CodeCov
       uses: codecov/codecov-action@v2
       with:
