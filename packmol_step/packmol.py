@@ -409,7 +409,7 @@ class Packmol(seamm.Node):
                 if volume is not None:
                     raise RuntimeError("Size and volume are not independent!")
 
-                volume = size ** 3
+                volume = size**3
             else:
                 size = volume ** (1 / 3)
 
