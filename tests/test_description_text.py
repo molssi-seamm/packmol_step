@@ -42,36 +42,37 @@ def test_git_revision():
 def test_description_text_default(instance):
     """Test the default description text"""
 
-    assert (
-        re.fullmatch(
-            (
-                r"Step 1: Packmol  [-+.0-9a-z]+\n"
-                r"    Creating a cubic supercell with a density of 0.7 g/ml "
-                r"containing about 2000\n"
-                r"    atoms"
-            ),
-            instance.description_text(),
-        )
-        is not None
-    )
+    reference = r"""Step 1: Packmol  [-+.0-9a-z]+
+    Create a cubic supercell \(box\) of fluid from the current system with a
+    density of 0\.7 g/ml containing about 2000 atoms"""
+
+    result = instance.description_text()
+
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
 def test_description_text_expr_expr(instance):
     """Test the default description text"""
 
-    assert (
-        re.fullmatch(
-            (
-                r"Step 1: Packmol  [-+.0-9a-z]+\n"
-                r"    Creating a cubic supercell with the method given by "
-                r"\$method and a submethod\n"
-                r"    given by \$submethod"
-            ),
-            instance.description_text({"method": "$method", "submethod": "$submethod"}),
-        )
-        is not None
+    reference = r"""Step 1: Packmol  [-+.0-9a-z]+
+    Create a cubic supercell \(box\) of fluid from the current system with the
+    method given by \$method and a submethod given by \$submethod"""
+
+    result = instance.description_text(
+        {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
+            "method": "$method",
+            "submethod": "$submethod",
+        }
     )
+
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -79,16 +80,22 @@ def test_description_text_cubic_expr(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell 10.0 Å on a side and a submethod given by
-    \$submethod"""
+    Create a cubic supercell \(box\) of fluid from the current system 10.0 Å on a
+    side and a submethod given by \$submethod"""
 
     result = instance.description_text(
-        {"method": "cubic", "size of cubic cell": "10.0 Å", "submethod": "$submethod"}
+        {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
+            "method": "cubic",
+            "size of cubic cell": "10.0 Å",
+            "submethod": "$submethod",
+        }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -96,10 +103,13 @@ def test_description_text_cubic_density(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell 10.0 Å on a side with a density of 1.0 g/mL"""
+    Create a cubic supercell \(box\) of fluid from the current system 10.0 Å on a
+    side with a density of 1.0 g/mL"""
 
     result = instance.description_text(
         {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
             "method": "cubic",
             "size of cubic cell": "10.0 Å",
             "submethod": "density",
@@ -107,9 +117,9 @@ def test_description_text_cubic_density(instance):
         }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -117,10 +127,13 @@ def test_description_text_cubic_nmolecules(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell 10.0 Å on a side containing 50 molecules"""
+    Create a cubic supercell \(box\) of fluid from the current system 10.0 Å on a
+    side containing 50 molecules"""
 
     result = instance.description_text(
         {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
             "method": "cubic",
             "size of cubic cell": "10.0 Å",
             "submethod": "number of molecules",
@@ -128,9 +141,9 @@ def test_description_text_cubic_nmolecules(instance):
         }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -138,10 +151,13 @@ def test_description_text_cubic_natoms(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell 10.0 Å on a side containing about 2000 atoms"""
+    Create a cubic supercell \(box\) of fluid from the current system 10.0 Å on a
+    side containing about 2000 atoms"""
 
     result = instance.description_text(
         {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
             "method": "cubic",
             "size of cubic cell": "10.0 Å",
             "submethod": "approximate number of atoms",
@@ -149,9 +165,9 @@ def test_description_text_cubic_natoms(instance):
         }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -159,11 +175,13 @@ def test_description_text_volume_nmolecules(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell with a volume of 1000\.0 Å\^3 containing 50
-    molecules"""
+    Create a cubic supercell \(box\) of fluid from the current system with a
+    volume of 1000.0 Å\^3 containing 50 molecules"""
 
     result = instance.description_text(
         {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
             "method": "volume",
             "volume": "1000.0 Å^3",
             "submethod": "number of molecules",
@@ -171,9 +189,9 @@ def test_description_text_volume_nmolecules(instance):
         }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -181,11 +199,13 @@ def test_description_text_nmolecules_volume(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell containing 50 molecules with a volume of 1000\.0
-    Å\^3"""
+    Create a cubic supercell \(box\) of fluid from the current system containing
+    50 molecules with a volume of 1000\.0 Å\^3"""
 
     result = instance.description_text(
         {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
             "method": "number of molecules",
             "number of molecules": "50",
             "submethod": "volume",
@@ -193,9 +213,9 @@ def test_description_text_nmolecules_volume(instance):
         }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -203,11 +223,13 @@ def test_description_text_natoms_cubic(instance):
     """Test the description text"""
 
     reference = r"""Step 1: Packmol  [-+.0-9a-z]+
-    Creating a cubic supercell containing about 999 atoms in a cell 10.0 Å on a
-    side"""
+    Create a cubic supercell \(box\) of fluid from the current system containing
+    about 999 atoms in a cell 10.0 Å on a side"""
 
     result = instance.description_text(
         {
+            "molecule source": "current configuration",
+            "operation": "create a fluid box",
             "method": "approximate number of atoms",
             "approximate number of atoms": "999",
             "submethod": "cubic",
@@ -215,9 +237,9 @@ def test_description_text_natoms_cubic(instance):
         }
     )
 
-    # print(result)
-
-    assert re.fullmatch(reference, result) is not None
+    if re.fullmatch(reference, result) is None:
+        print(result)
+        assert False
 
 
 @pytest.mark.unit
@@ -225,7 +247,13 @@ def test_description_text_method_error(instance):
     """Test the description text"""
 
     with pytest.raises(RuntimeError, match=r"Don't recognize the method junk"):
-        instance.description_text({"method": "junk"})
+        instance.description_text(
+            {
+                "molecule source": "current configuration",
+                "operation": "create a fluid box",
+                "method": "junk",
+            }
+        )
 
 
 @pytest.mark.unit
@@ -235,6 +263,8 @@ def test_description_text_submethod_error(instance):
     with pytest.raises(RuntimeError, match=r"Don't recognize the submethod junk"):
         instance.description_text(
             {
+                "molecule source": "current configuration",
+                "operation": "create a fluid box",
                 "method": "number of molecules",
                 "number of molecules": "50",
                 "submethod": "junk",

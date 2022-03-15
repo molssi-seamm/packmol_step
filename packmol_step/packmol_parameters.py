@@ -51,6 +51,19 @@ class PackmolParameters(seamm.Parameters):
     }
 
     parameters = {
+        "operation": {
+            "default": "create a fluid box",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": (
+                "create a fluid box",
+                "solvate the current molecule in a box",
+                "solvate the current molecule as a droplet",
+            ),
+            "format_string": "s",
+            "description": "What to do:",
+            "help_text": "Specify the type of system to create.",
+        },
         "molecule source": {
             "default": "current configuration",
             "kind": "string",

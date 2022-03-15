@@ -70,7 +70,7 @@ class TkPackmol(seamm.TkNode):
                 {"type": _type, "molecule": value, "count": count}
             )
 
-        for key in ("molecule source", "method", "submethod"):
+        for key in ("operation", "molecule source", "method", "submethod"):
             self[key].combobox.bind("<<ComboboxSelected>>", self.reset_dialog)
             self[key].combobox.bind("<Return>", self.reset_dialog)
             self[key].combobox.bind("<FocusOut>", self.reset_dialog)
@@ -80,6 +80,7 @@ class TkPackmol(seamm.TkNode):
     def reset_dialog(self, widget=None):
         methods = packmol_step.PackmolParameters.methods
 
+        operation = self["operation"].get()
         molecule_source = self["molecule source"].get()
         method = self["method"].get()
         submethod = self["submethod"].get()
@@ -93,10 +94,14 @@ class TkPackmol(seamm.TkNode):
             slave.grid_forget()
 
         row = 0
-        self["molecule source"].grid(row=row, column=0, columnspan=3, sticky=tk.EW)
+        self["operation"].grid(row=row, column=0, columnspan=3, sticky=tk.EW)
         row += 1
 
-        if molecule_source == "SMILES":
+        if operation == "create a fluid box":
+            self["molecule source"].grid(row=row, column=0, columnspan=3, sticky=tk.EW)
+            row += 1
+
+        if molecule_source == "SMILES" or "solvate" in operation:
             self["molecules"].grid(row=row, column=0, columnspan=3, sticky=tk.NSEW)
             frame.grid_rowconfigure(row, weight=1, minsize=200)
             frame.grid_columnconfigure(2, weight=1)
