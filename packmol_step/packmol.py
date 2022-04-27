@@ -243,22 +243,22 @@ class Packmol(seamm.Node):
                 self.logger.error("Packmol calculate: there is no structure!")
                 raise RuntimeError("Packmol calculate: there is no structure!")
 
-            mass = configuration.mass * ureg.g / ureg.mol  # g/mol
-            mass.ito("kg")
+            tmp_mass = configuration.mass * ureg.g / ureg.mol  # g/mol
+            tmp_mass.ito("kg")
             if solvation:
                 n_solute_molecules += 1
                 n_solute_atoms += configuration.n_atoms
-                solute_mass += mass
+                solute_mass += tmp_mass
             else:
                 input_n_molecules += 1
                 input_n_atoms += configuration.n_atoms
-                input_mass += mass
+                input_mass += tmp_mass
 
             tmp = {
                 "configuration": configuration,
                 "count": 1,
                 "type": "solute",
-                "mass": mass,
+                "mass": tmp_mass,
             }
             molecules.append(tmp)
 
@@ -272,24 +272,24 @@ class Packmol(seamm.Node):
                 tmp_configuration.from_smiles(SMILES)
 
                 count = int(molecule["count"])
-                mass = count * tmp_configuration.mass * ureg.g / ureg.mol
-                mass.ito("kg")
+                tmp_mass = count * tmp_configuration.mass * ureg.g / ureg.mol
+                tmp_mass.ito("kg")
 
                 if solvation:
                     input_n_molecules += count
                     input_n_atoms += count * tmp_configuration.n_atoms
-                    input_mass += mass
+                    input_mass += tmp_mass
                 else:
                     n_solute_molecules += count
                     n_solute_atoms += count * tmp_configuration.n_atoms
-                    solute_mass += mass
+                    solute_mass += tmp_mass
 
                 tmp = {
                     "SMILES": SMILES,
                     "configuration": tmp_configuration,
                     "count": count,
                     "type": "solvent",
-                    "mass": mass,
+                    "mass": tmp_mass,
                 }
                 molecules.append(tmp)
 
@@ -461,6 +461,14 @@ class Packmol(seamm.Node):
             n_parameters += 1
 
         if n_parameters != 2:
+            print(f"{size=}")
+            print(f"{volume=}")
+            print(f"{density=}")
+            print(f"{n_molecules=}")
+            print(f"{n_atoms=}")
+            print(f"{n_moles=}")
+            print(f"{mass=}")
+            print(f"{pressure=}")
             raise RuntimeError(
                 "Exactly two independent parameters "
                 "must be given, not {}".format(n_parameters)
