@@ -257,7 +257,7 @@ class Packmol(seamm.Node):
             tmp = {
                 "configuration": configuration,
                 "count": 1,
-                "type": "solute",
+                "type": "solute" if solvation else "fluid",
                 "mass": tmp_mass,
             }
             molecules.append(tmp)
@@ -392,13 +392,15 @@ class Packmol(seamm.Node):
                         extra_data[key] = atoms.get_column_data(key) * n
 
         # Remove the temporary database
-        tmp_db.close()
+        if source == "SMILES" or solvation:
+            tmp_db.close()
 
         # Get the system to fill and make sure it is empty
         system, configuration = self.get_system_configuration(P)
         configuration.clear()
 
         # Create the configuration from the PDB output of PACKMOL
+        configuration.coordinate_system = "Cartesian"
         configuration.from_pdb_text(result["packmol.pdb"]["data"])
 
         # And set the bond orders and extra data we saved earlier.
