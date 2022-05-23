@@ -97,6 +97,13 @@ coverage-all-report: ## code coverage using all tests (slow) with only a text re
 coverage-integration-report: ## code coverage using only the integration tests with only a text report
 	pytest --cov-report term --cov $(MODULE)  --no-unit --integration tests/
 
+html: ## generate Sphinx HTML documentation, including API docs
+	rm -f docs/developer/$(MODULE).rst
+	rm -f docs/developer/modules.rst
+	sphinx-apidoc -o docs/developer $(MODULE)
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
+
 docs: html ## Make the html docs and show in the browser
 	$(BROWSER) docs/_build/html/index.html
 
