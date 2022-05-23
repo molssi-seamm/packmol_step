@@ -11,68 +11,27 @@ logger = logging.getLogger(__name__)
 class PackmolParameters(seamm.Parameters):
     """The control parameters for Packmol packing fluids"""
 
-    methods = {
-        "size of cubic cell": (
-            "density",
-            "number of molecules",
-            "approximate number of atoms",
-            "ideal gas pressure",
-        ),
-        "volume": (
-            "density",
-            "number of molecules",
-            "approximate number of atoms",
-            "ideal gas pressure",
-        ),
-        "density": (
-            "size of cubic cell",
-            "volume",
-            "number of molecules",
-            "approximate number of atoms",
-        ),
-        "number of molecules": (
-            "size of cubic cell",
-            "volume",
-            "density",
-            "ideal gas pressure",
-        ),
-        "approximate number of atoms": (
-            "size of cubic cell",
-            "volume",
-            "density",
-            "ideal gas pressure",
-        ),
-        "ideal gas pressure": (
-            "size of cubic cell",
-            "volume",
-            "number of molecules",
-            "approximate number of atoms",
-        ),
-    }
+    shapes = (
+        "cubic",
+        "rectangular",
+        "spherical",
+    )
+    periodic_shapes = (
+        "cubic",
+        "rectangular",
+    )
+    amounts = (
+        "rounding this number of atoms",
+        "rounding this number of molecules",
+        "using the density",
+        "using the Ideal Gas Law",
+    )
+    amounts_for_density = (
+        "rounding this number of atoms",
+        "rounding this number of molecules",
+    )
 
     parameters = {
-        "operation": {
-            "default": "create a fluid box",
-            "kind": "string",
-            "default_units": "",
-            "enumeration": (
-                "create a fluid box",
-                "solvate the current molecule in a box",
-                "solvate the current molecule as a droplet",
-            ),
-            "format_string": "s",
-            "description": "What to do:",
-            "help_text": "Specify the type of system to create.",
-        },
-        "molecule source": {
-            "default": "current configuration",
-            "kind": "string",
-            "default_units": "",
-            "enumeration": ("current configuration", "SMILES"),
-            "format_string": "s",
-            "description": "Molecule(s) to pack:",
-            "help_text": "Where to get the molecules from.",
-        },
         "molecules": {
             "default": [],
             "kind": "list",
@@ -82,23 +41,86 @@ class PackmolParameters(seamm.Parameters):
             "description": "The molecules",
             "help_text": "An internal place to put the molecule definitions.",
         },
-        "method": {
-            "default": "density",
-            "kind": "enumeration",
+        "periodic": {
+            "default": "No",
+            "kind": "boolean",
             "default_units": "",
-            "enumeration": tuple(methods.keys()),
+            "enumeration": (
+                "Yes",
+                "No",
+            ),
             "format_string": "s",
-            "description": "Set the",
-            "help_text": "The first parameter controlling the size of the cell.",
+            "description": "Create periodic system:",
+            "help_text": "Whether to create a periodic system or not.",
         },
-        "submethod": {
-            "default": "approximate number of atoms",
+        "shape": {
+            "default": "spherical",
             "kind": "enumeration",
             "default_units": "",
-            "enumeration": tuple(methods.keys()),
+            "enumeration": shapes,
             "format_string": "s",
-            "description": "and set the",
-            "help_text": "The second parameter controlling the size of the cell.",
+            "description": "Shape of the region:",
+            "help_text": "The shape of the desired region.",
+        },
+        "dimensions": {
+            "default": "calculated from the density",
+            "kind": "enumeration",
+            "default_units": "",
+            "enumeration": (
+                "given explicitly",
+                "calculated from the volume",
+                "calculated from the solute dimensions",
+                "calculated from the density",
+                "calculated using the Ideal Gas Law",
+            ),
+            "format_string": "s",
+            "description": "The dimensions will be",
+            "help_text": "How to get the dimensions of the region",
+        },
+        "fluid amount": {
+            "default": "rounding this number of atoms",
+            "kind": "enumeration",
+            "default_units": "",
+            "enumeration": amounts_for_density,
+            "format_string": "s",
+            "description": "Get number of fluid molecules by",
+            "help_text": "How to get the number of fluid molecules",
+        },
+        "density": {
+            "default": 0.7,
+            "kind": "float",
+            "default_units": "g/ml",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "Density:",
+            "help_text": ("The target density of the cell."),
+        },
+        "volume": {
+            "default": 8.0,
+            "kind": "float",
+            "default_units": "nm^3",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "The volume of the cell:",
+            "help_text": ("The volume of the target cell."),
+        },
+        "temperature": {
+            "default": 298.15,
+            "kind": "float",
+            "default_units": "K",
+            "enumeration": tuple(),
+            "format_string": ".2f",
+            "description": "T:",
+            "help_text": ("The temperature using an ideal gas model (PV=nRT)."),
+        },
+        "pressure": {
+            "default": 1.0,
+            "kind": "float",
+            "default_units": "atm",
+            "enumeration": tuple(),
+            "format_string": ".2f",
+            "description": "P:",
+            "help_text": ("The pressure using an ideal gas model (PV=nRT)."),
         },
         "gap": {
             "default": 2.0,
@@ -114,23 +136,68 @@ class PackmolParameters(seamm.Parameters):
                 "that molecules at the boundary do not hit images"
             ),
         },
-        "size of cubic cell": {
-            "default": 4.0,
+        "edge length": {
+            "default": 20,
             "kind": "float",
-            "default_units": "nm",
+            "default_units": "Å",
             "enumeration": tuple(),
             "format_string": ".1f",
             "description": "Length of the cube edge:",
             "help_text": ("The length of the cube edge."),
         },
-        "number of molecules": {
+        "a": {
+            "default": 20,
+            "kind": "float",
+            "default_units": "Å",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "a:",
+            "help_text": "The length of the first side of the box.",
+        },
+        "b": {
+            "default": 20,
+            "kind": "float",
+            "default_units": "Å",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "b:",
+            "help_text": "The length of the second side of the box.",
+        },
+        "c": {
+            "default": 20,
+            "kind": "float",
+            "default_units": "Å",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "c:",
+            "help_text": "The length of the third side of the box.",
+        },
+        "diameter": {
+            "default": 20.0,
+            "kind": "float",
+            "default_units": "Å",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "The diameter:",
+            "help_text": "The diameter of the sphere or cylinder.",
+        },
+        "solvent thickness": {
+            "default": 10.0,
+            "kind": "float",
+            "default_units": "Å",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "Solvent thickness:",
+            "help_text": "The thickness of the layer of solvent around the solute",
+        },
+        "approximate number of molecules": {
             "default": 100,
             "kind": "integer",
             "default_units": "",
             "enumeration": tuple(),
             "format_string": "d",
-            "description": "Number of molecules:",
-            "help_text": ("The number of molecules to pack in the cell."),
+            "description": "Approximate number of molecules:",
+            "help_text": ("The approximate number of molecules to pack in the cell."),
         },
         "approximate number of atoms": {
             "default": 2000,
@@ -144,42 +211,6 @@ class PackmolParameters(seamm.Parameters):
                 "cell. This will be rounded to give whole molecules"
             ),
         },
-        "volume": {
-            "default": 64.0,
-            "kind": "float",
-            "default_units": "nm^3",
-            "enumeration": tuple(),
-            "format_string": ".1f",
-            "description": "The volume of the cell:",
-            "help_text": ("The volume of the target cell."),
-        },
-        "density": {
-            "default": 0.7,
-            "kind": "float",
-            "default_units": "g/ml",
-            "enumeration": tuple(),
-            "format_string": ".1f",
-            "description": "Density:",
-            "help_text": ("The target density of the cell."),
-        },
-        "ideal gas pressure": {
-            "default": 1.0,
-            "kind": "float",
-            "default_units": "atm",
-            "enumeration": tuple(),
-            "format_string": ".2f",
-            "description": "Ideal gas pressure:",
-            "help_text": ("The pressure using an ideal gas model (PV=nRT)."),
-        },
-        "ideal gas temperature": {
-            "default": 298.15,
-            "kind": "float",
-            "default_units": "K",
-            "enumeration": tuple(),
-            "format_string": ".2f",
-            "description": "Ideal gas temperature:",
-            "help_text": ("The temperature using an ideal gas model (PV=nRT)."),
-        },
     }
 
     def __init__(self, defaults={}, data=None):
@@ -187,5 +218,10 @@ class PackmolParameters(seamm.Parameters):
         parameters given in the class"""
 
         super().__init__(
-            defaults={**PackmolParameters.parameters, **defaults}, data=data
+            defaults={
+                **PackmolParameters.parameters,
+                **seamm.standard_parameters.structure_handling_parameters,
+                **defaults,
+            },
+            data=data,
         )

@@ -3,12 +3,12 @@
 """The graphical part of a Packmol step"""
 
 import logging
-import seamm
-import seamm_widgets as sw
-import packmol_step
-import Pmw
 import tkinter as tk
 import tkinter.ttk as ttk
+
+from packmol_step import PackmolParameters
+import seamm
+import seamm_widgets as sw
 
 logger = logging.getLogger(__name__)
 
@@ -34,18 +34,7 @@ class TkPackmol(seamm.TkNode):
 
     def create_dialog(self):
         """Create the dialog!"""
-        self.dialog = Pmw.Dialog(
-            self.toplevel,
-            buttons=("OK", "Help", "Cancel"),
-            master=self.toplevel,
-            title="Edit Packmol step",
-            command=self.handle_dialog,
-        )
-        self.dialog.withdraw()
-
-        frame = ttk.Frame(self.dialog.interior())
-        frame.pack(expand=tk.YES, fill=tk.BOTH)
-        self["frame"] = frame
+        frame = super().create_dialog(title="Edit PACKMOL parameters")
 
         # Create all the widgets
         P = self.node.parameters
@@ -53,24 +42,19 @@ class TkPackmol(seamm.TkNode):
             if key not in ("molecules",):
                 self[key] = P[key].widget(frame)
 
-        self["molecule source"].combobox.config(state="readonly")
-
         # Frame for specifying molecules
         self["molecules"] = sw.ScrolledFrame(frame, height=500)
         w = self["molecules"].interior()
-        self["smiles"] = ttk.Label(w, text="SMILES")
-        self["stoichiometry"] = ttk.Label(w, text="stoichiometry")
+        self["component"] = ttk.Label(w, text="Component")
+        self["source"] = ttk.Label(w, text="Source")
+        self["definition"] = ttk.Label(w, text="Definition")
+        self["stoichiometry"] = ttk.Label(w, text="proportion")
 
         # And the molecule data
         for molecule in P["molecules"].value:
-            _type = molecule["type"]
-            value = molecule["molecule"]
-            count = molecule["count"]
-            self._molecule_data.append(
-                {"type": _type, "molecule": value, "count": count}
-            )
+            self._molecule_data.append({**molecule})
 
-        for key in ("operation", "molecule source", "method", "submethod"):
+        for key in ("periodic", "shape", "dimensions", "fluid amount"):
             self[key].combobox.bind("<<ComboboxSelected>>", self.reset_dialog)
             self[key].combobox.bind("<Return>", self.reset_dialog)
             self[key].combobox.bind("<FocusOut>", self.reset_dialog)
@@ -78,126 +62,133 @@ class TkPackmol(seamm.TkNode):
         self.reset_dialog()
 
     def reset_dialog(self, widget=None):
-        methods = packmol_step.PackmolParameters.methods
-
-        operation = self["operation"].get()
-        molecule_source = self["molecule source"].get()
-        method = self["method"].get()
-        submethod = self["submethod"].get()
-
-        logger.debug("reset_dialog: {} {}".format(method, submethod))
-
+        """Layout the widgets in the dialog contingent on the parameter values."""
         frame = self["frame"]
-        frame.grid_rowconfigure(1, weight=0, minsize=0)
-        frame.grid_columnconfigure(2, weight=0)
+
+        # Reset everything
+        columns, rows = frame.grid_size()
+        for col in range(columns):
+            frame.grid_columnconfigure(col, weight=0, minsize=0)
+        for row in range(rows):
+            frame.grid_rowconfigure(row, weight=0, minsize=0)
         for slave in frame.grid_slaves():
             slave.grid_forget()
 
-        row = 0
-        self["operation"].grid(row=row, column=0, columnspan=3, sticky=tk.EW)
-        row += 1
-
-        if operation == "create a fluid box":
-            self["molecule source"].grid(row=row, column=0, columnspan=3, sticky=tk.EW)
-            row += 1
-
-        if molecule_source == "SMILES" or "solvate" in operation:
-            self["molecules"].grid(row=row, column=0, columnspan=3, sticky=tk.NSEW)
-            frame.grid_rowconfigure(row, weight=1, minsize=200)
-            frame.grid_columnconfigure(2, weight=1)
-            row += 1
-            self.reset_molecules()
-
-        self["method"].grid(row=row, column=0, sticky=tk.E)
-        if method[0] != "$":
-            self[method].grid(row=row, column=1, sticky=tk.W)
-            self[method].show("combobox", "entry", "units")
-        row += 1
-
-        if "pressure" in method:
-            key = "ideal gas temperature"
-            self[key].grid(row=row, column=0, sticky=tk.W)
-            self[key].show("all")
-            row += 1
-            sw.align_labels([self["method"], self[key]])
-
-        if method[0] == "$":
-            self["submethod"].combobox.config(values=[*methods])
-            self["submethod"].set(submethod)
-            if submethod[0] == "$":
-                # Both are variables, so any combination is possible
-                self["submethod"].grid(row=row, column=0, sticky=tk.E)
-                row += 1
-                widgets = []
-                for key in (
-                    *methods,
-                    "ideal gas temperature",
-                ):
-                    widgets.append(self[key])
-                    self[key].grid(row=row, column=1, sticky=tk.EW)
-                    self[key].show("all")
-                    row += 1
-                sw.align_labels(widgets)
-            else:
-                # Submethod is given, so it controls the choices for the method
-                widgets = []
-                for key in methods[submethod]:
-                    widgets.append(self[key])
-                    self[key].grid(row=row, column=1, sticky=tk.EW)
-                    self[key].show("all")
-                    row += 1
-
-                if "pressure" in methods[submethod]:
-                    key = "ideal gas temperature"
-                    widgets.append(self[key])
-                    self[key].grid(row=row, column=1, sticky=tk.EW)
-                    self[key].show("all")
-                    row += 1
-
-                sw.align_labels(widgets)
-                self["submethod"].grid(row=row, column=0, sticky=tk.E)
-                self[submethod].grid(row=row, column=1, sticky=tk.W)
-                self[submethod].show("combobox", "entry", "units")
+        # The possible shapes depend on the periodicity
+        periodic = self["periodic"].get()
+        shape = self["shape"].get()
+        if periodic == "Yes":
+            shapes = PackmolParameters.periodic_shapes
         else:
-            if submethod[0] == "$":
-                self["submethod"].grid(row=row, column=0, sticky=tk.E)
-                row += 1
-                widgets = []
-                for key in methods[method]:
-                    widgets.append(self[key])
-                    self[key].grid(row=row, column=1, sticky=tk.EW)
-                    self[key].show("all")
-                    row += 1
+            shapes = PackmolParameters.shapes
+        self["shape"].combobox.config(values=shapes)
+        if shape not in shapes:
+            shape = shapes[0]
+        self["shape"].set(shape)
 
-                if "pressure" in methods[submethod]:
-                    for key in (
-                        "ideal gas pressure",
-                        "ideal gas temperature",
-                    ):
-                        widgets.append(self[key])
-                        self[key].grid(row=row, column=0, sticky=tk.EW)
-                        self[key].show("all")
-                        row += 1
+        # The dimensions control the remaining widgets
+        dimensions = self["dimensions"].get()
 
-                sw.align_labels(widgets)
+        widgets = []
+        row = 0
+        for key in ("periodic", "shape", "dimensions"):
+            self[key].grid(row=row, column=0, sticky=tk.EW)
+            row += 1
+            widgets.append(self[key])
+
+        if dimensions == "given explicitly":
+            if shape == "cubic":
+                keys = ("edge length",)
+            elif shape == "rectangular":
+                keys = ("a", "b", "c")
+            elif shape == "spherical":
+                keys = ("diameter",)
             else:
-                self["submethod"].combobox.config(values=methods[method])
-                if submethod in methods[method]:
-                    self["submethod"].set(submethod)
-                else:
-                    self["submethod"].combobox.current(0)
-                    submethod = self["submethod"].get()
-
-                self["submethod"].grid(row=row, column=0, sticky=tk.E)
-                self[submethod].grid(row=row, column=1, sticky=tk.W)
-                self[submethod].show("combobox", "entry", "units")
+                raise RuntimeError(f"Do not recognize shape '{shape}'")
+            for key in keys:
+                self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
+                widgets.append(self[key])
+        elif dimensions == "calculated from the volume":
+            for key in ("volume",):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        elif dimensions == "calculated from the solute dimensions":
+            for key in ("solvent thickness",):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        elif dimensions == "calculated from the density":
+            for key in ("density",):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        elif dimensions == "calculated using the Ideal Gas Law":
+            for key in ("temperature", "pressure"):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        else:
+            raise RuntimeError(f"Do not recognize dimensions '{dimensions}'")
 
-                if "pressure" in submethod:
-                    key = "ideal gas temperature"
-                    self[key].grid(row=row, column=1, sticky=tk.EW)
-                    self[key].show("combobox", "entry", "units")
+        # Next we need the amount of material. However the options change depending on
+        # the above
+        amount = self["fluid amount"].get()
+        if dimensions in ("using the density", "using the Ideal Gas Law"):
+            amounts = PackmolParameters.amounts_for_density
+        else:
+            amounts = PackmolParameters.amounts
+        self["fluid amount"].combobox.config(values=amounts)
+        if amount not in amounts:
+            amount = amounts[0]
+        self["fluid amount"].set(amount)
+
+        for key in ("fluid amount",):
+            self[key].grid(row=row, column=0, sticky=tk.EW)
+            row += 1
+            widgets.append(self[key])
+
+            if amount == "rounding this number of atoms":
+                for key in ("approximate number of atoms",):
+                    self[key].grid(row=row, column=0, sticky=tk.EW)
                     row += 1
+                    widgets.append(self[key])
+            elif "rounding this number of molecules":
+                for key in ("approximate number of molecules",):
+                    self[key].grid(row=row, column=0, sticky=tk.EW)
+                    row += 1
+                    widgets.append(self[key])
+            elif "using the density":
+                for key in ("density",):
+                    self[key].grid(row=row, column=0, sticky=tk.EW)
+                    row += 1
+                    widgets.append(self[key])
+            elif "using the Ideal Gas Law":
+                for key in ("temperature", "pressure"):
+                    self[key].grid(row=row, column=0, sticky=tk.EW)
+                    row += 1
+                    widgets.append(self[key])
+            else:
+                raise RuntimeError(f"Do not recognize amount '{amount}'")
+
+        sw.align_labels(widgets, sticky=tk.E)
+
+        # The table of molecules to use
+        self["molecules"].grid(row=row, column=0, columnspan=2, sticky=tk.NSEW)
+        frame.grid_rowconfigure(row, weight=1, minsize=500)
+        frame.grid_columnconfigure(1, weight=1)
+        row += 1
+        self.reset_molecules()
+
+        # And finally, where to put the new system
+        widgets = []
+        for key in ("structure handling", "system name", "configuration name"):
+            self[key].grid(row=row, column=0, sticky=tk.EW)
+            row += 1
+            widgets.append(self[key])
+
+        sw.align_labels(widgets, sticky=tk.E)
 
     def reset_molecules(self):
         """Layout the table of molecules to use."""
@@ -210,13 +201,13 @@ class TkPackmol(seamm.TkNode):
 
         # Put in the column headers.
         row = 0
-        self["smiles"].grid(row=row, column=1, sticky=tk.EW)
-        self["stoichiometry"].grid(row=row, column=2, sticky=tk.EW)
+        self["component"].grid(row=row, column=1, sticky=tk.EW)
+        self["source"].grid(row=row, column=2, sticky=tk.EW)
+        self["definition"].grid(row=row, column=3, sticky=tk.EW)
+        self["stoichiometry"].grid(row=row, column=4, sticky=tk.EW)
         row += 1
 
         for data in self._molecule_data:
-            molecule = data["molecule"]
-            self.logger.debug(molecule)
             if "widgets" not in data:
                 widgets = data["widgets"] = {}
             else:
@@ -232,10 +223,34 @@ class TkPackmol(seamm.TkNode):
                     takefocus=True,
                 )
 
-            if "molecule" not in widgets:
-                # the molecule (SMILES at the moment)
-                widgets["molecule"] = ttk.Entry(frame, width=50, takefocus=True)
-                widgets["molecule"].insert("end", molecule)
+            if "component" not in widgets:
+                # the type of component
+                widgets["component"] = ttk.Combobox(
+                    frame,
+                    values=("solute", "fluid"),
+                    height=4,
+                    width=6,
+                    state="readonly",
+                    takefocus=True,
+                )
+                widgets["component"].set(data["component"])
+
+            if "source" not in widgets:
+                # the type of source
+                widgets["source"] = ttk.Combobox(
+                    frame,
+                    values=("configuration", "SMILES"),
+                    height=4,
+                    width=10,
+                    state="readonly",
+                    takefocus=True,
+                )
+                widgets["source"].set(data["source"])
+
+            if "definition" not in widgets:
+                # the SMILES ot system/configuration
+                widgets["definition"] = ttk.Entry(frame, width=50, takefocus=True)
+                widgets["definition"].insert("end", data["definition"])
 
             if "count" not in widgets:
                 # The count for the stoichiometry
@@ -244,8 +259,10 @@ class TkPackmol(seamm.TkNode):
 
             self.logger.debug("  widgets: " + str(widgets))
             widgets["remove"].grid(row=row, column=0, sticky=tk.W)
-            widgets["molecule"].grid(row=row, column=1, stick=tk.EW)
-            widgets["count"].grid(row=row, column=2, stick=tk.EW)
+            widgets["component"].grid(row=row, column=1, stick=tk.EW)
+            widgets["source"].grid(row=row, column=2, stick=tk.EW)
+            widgets["definition"].grid(row=row, column=3, stick=tk.EW)
+            widgets["count"].grid(row=row, column=4, stick=tk.EW)
 
             row += 1
 
@@ -262,7 +279,7 @@ class TkPackmol(seamm.TkNode):
         self._add_molecule.lift()
         self._add_molecule.grid(row=row, column=0, columnspan=3, sticky=tk.W)
 
-        frame.grid_columnconfigure(1, weight=1)
+        frame.grid_columnconfigure(3, weight=1, minsize=200)
 
     def right_click(self, event):
         """Probably need to add our dialog..."""
@@ -284,12 +301,7 @@ class TkPackmol(seamm.TkNode):
             self._molecule_data = []
             P = self.node.parameters
             for molecule in P["molecules"].value:
-                _type = molecule["type"]
-                value = molecule["molecule"]
-                count = molecule["count"]
-                self._molecule_data.append(
-                    {"type": _type, "molecule": value, "count": count}
-                )
+                self._molecule_data.append({**molecule})
 
             super().handle_dialog(result)
 
@@ -318,8 +330,9 @@ class TkPackmol(seamm.TkNode):
             widgets = data["widgets"]
             molecules.append(
                 {
-                    "type": data["type"],
-                    "molecule": widgets["molecule"].get(),
+                    "component": widgets["component"].get(),
+                    "source": widgets["source"].get(),
+                    "definition": widgets["definition"].get(),
                     "count": widgets["count"].get(),
                 }
             )
@@ -327,7 +340,14 @@ class TkPackmol(seamm.TkNode):
 
     def add_molecule(self):
         """Add a new row to the molecule table."""
-        self._molecule_data.append({"type": "smiles", "molecule": "", "count": "1"})
+        self._molecule_data.append(
+            {
+                "component": "fluid",
+                "source": "SMILES",
+                "definition": "",
+                "count": "1",
+            }
+        )
         self.reset_molecules()
 
     def remove_molecule(self, row):
