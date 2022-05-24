@@ -105,12 +105,13 @@ class Packmol(seamm.Node):
         table = {
             "Component": [],
             "Structure": [],
-            "Number": [],
+            "Ratio": [],
         }
         for molecule in self.parameters["molecules"].value:
             table["Component"].append(molecule["component"])
             table["Structure"].append(molecule["definition"])
-            table["Number"].append(molecule["count"])
+            if molecule["component"] != "solute":
+                table["Ratio"].append(molecule["count"])
 
         description = self.header + "\n" + str(__(text, indent=self.indent + 4 * " "))
         text_lines = tabulate(table, headers="keys", tablefmt="psql")
@@ -171,10 +172,6 @@ class Packmol(seamm.Node):
     def run(self):
         """Run a Packmol building step"""
 
-        # Return the translation from points a to b
-        def recenter(a, b):
-            return b[0] - a[0], b[1] - a[1], b[2] - a[2]
-
         next_node = super().run(printer)
 
         # Get the system database
@@ -190,6 +187,7 @@ class Packmol(seamm.Node):
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
         )
+        periodic = P["periodic"]
 
         # Print what we are doing. Have to fix formatting for printing...
         PP = dict(P)
@@ -198,8 +196,100 @@ class Packmol(seamm.Node):
                 PP[key] = "{:~P}".format(PP[key])
         printer.important(self.description_text(PP))
 
-        # Start by handling the molecules
+        # Get the input files and any more output to print
+        tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
+        molecules, files, output, cell = get_input(P, system_db, tmp_db)
 
+        self.logger.log(0, pprint.pformat(files))
+
+        # Save the files to disk.
+        os.makedirs(self.directory, exist_ok=True)
+        for filename in files:
+            with open(os.path.join(self.directory, filename), mode="w") as fd:
+                fd.write(files[filename])
+
+        local = seamm.ExecLocal()
+        result = local.run(
+            cmd=(packmol_exe + " < input.inp"),
+            shell=True,
+            files=files,
+            return_files=["packmol.pdb"],
+        )
+
+        self.logger.debug(pprint.pformat(result))
+
+        # And write the output files out.
+        with open(os.path.join(self.directory, "packmol.out"), "w") as fd:
+            fd.write(result["stdout"])
+
+        for filename in result["files"]:
+            with open(os.path.join(self.directory, filename), mode="w") as fd:
+                if result[filename]["data"] is not None:
+                    fd.write(result[filename]["data"])
+                else:
+                    fd.write(result[filename]["exception"])
+
+        # Get the bond orders and extra parameters like ff atom types
+        bond_orders = []
+        extra_data = {}
+        for molecule in molecules:
+            n = molecule["number"]
+            orders = molecule["configuration"].bonds.get_column_data("bondorder")
+            bond_orders.extend(orders * n)
+
+            atoms = molecule["configuration"].atoms
+            for key in atoms.keys():
+                if "atom_types_" in key or "charges" in key:
+                    if key in extra_data:
+                        extra_data[key].extend(atoms.get_column_data(key) * n)
+                    else:
+                        extra_data[key] = atoms.get_column_data(key) * n
+
+        # Remove the temporary database
+        tmp_db.close()
+
+        # Get the system to fill and make sure it is empty
+        system, configuration = self.get_system_configuration(P)
+        configuration.clear()
+
+        # Create the configuration from the PDB output of PACKMOL
+        configuration.coordinate_system = "Cartesian"
+        configuration.from_pdb_text(result["packmol.pdb"]["data"])
+
+        # And set the bond orders and extra data we saved earlier.
+        configuration.bonds.get_column("bondorder")[:] = bond_orders
+        for key, values in extra_data.items():
+            atoms.get_column(key)[:] = values
+
+        # Finally, make periodic of correct size
+        if periodic:
+            configuration.periodicity = 3
+            a, b, c = cell
+            configuration.cell.parameters = (a, b, c, 90.0, 90.0, 90.0)
+
+        printer.important(__(output, indent=4 * " "))
+        printer.important("")
+
+        # Since we have succeeded, add the citation.
+
+        self.references.cite(
+            raw=self._bibliography["doi:10.1002/jcc.21224"],
+            alias="packmol",
+            module="packmol_step",
+            level=1,
+            note="The principle PACKMOL citation.",
+        )
+
+        return next_node
+
+    @staticmethod
+    def get_input(P, system_db, tmp_db):
+        """Create the input for PACKMOL."""
+        # Return the translation from points a to b
+        def recenter(a, b):
+            return b[0] - a[0], b[1] - a[1], b[2] - a[2]
+
+        # Start by handling the molecules
         n_solute_molecules = 0
         n_solute_atoms = 0
         solute_mass = 0.0
@@ -210,8 +300,7 @@ class Packmol(seamm.Node):
         # May need to create molecules.
         solute_configuration = None
         molecules = []
-        tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
-        for molecule in self.parameters["molecules"].value:
+        for molecule in P["molecules"]:
             component = molecule["component"]
             source = molecule["source"]
             definition = molecule["definition"]
@@ -244,7 +333,7 @@ class Packmol(seamm.Node):
                 if solute_configuration is None:
                     solute_configuration = tmp_configuration
                 else:
-                    raise RuntimeError("More than one sulute system!")
+                    raise RuntimeError("More than one solute system!")
             else:
                 n_fluid_molecules += count
                 n_fluid_atoms += count * tmp_configuration.n_atoms
@@ -256,6 +345,7 @@ class Packmol(seamm.Node):
                     "count": count,
                     "type": component,
                     "mass": tmp_mass,
+                    "definition": definition,
                 }
             )
 
@@ -542,8 +632,10 @@ class Packmol(seamm.Node):
                 lines.append("   center")
                 lines.append(fixed)
                 lines.append("   number 1")
+                molecule["number"] = 1
             else:
                 lines.append(f"   number {n_copies * count}")
+                molecule["number"] = n_copies * count
             lines.append("end structure")
             configuration = molecule["configuration"]
             files[f"input_{i}.pdb"] = configuration.to_pdb_text()
@@ -551,90 +643,22 @@ class Packmol(seamm.Node):
         lines.append("")
         files["input.inp"] = "\n".join(lines)
 
-        self.logger.log(0, pprint.pformat(files))
-
-        # Save the files to disk.
-        os.makedirs(self.directory, exist_ok=True)
-        for filename in files:
-            with open(os.path.join(self.directory, filename), mode="w") as fd:
-                fd.write(files[filename])
-
-        local = seamm.ExecLocal()
-        result = local.run(
-            cmd=(packmol_exe + " < input.inp"),
-            shell=True,
-            files=files,
-            return_files=["packmol.pdb"],
-        )
-
-        self.logger.debug(pprint.pformat(result))
-
-        # And write the output files out.
-        with open(os.path.join(self.directory, "packmol.out"), "w") as fd:
-            fd.write(result["stdout"])
-
-        for filename in result["files"]:
-            with open(os.path.join(self.directory, filename), mode="w") as fd:
-                if result[filename]["data"] is not None:
-                    fd.write(result[filename]["data"])
-                else:
-                    fd.write(result[filename]["exception"])
-
-        # Get the bond orders and extra parameters like ff atom types
-        bond_orders = []
-        extra_data = {}
-        for molecule in molecules:
-            if molecule["type"] == "solute":
-                n = 1
-            else:
-                n = n_copies * molecule["count"]
-            orders = molecule["configuration"].bonds.get_column_data("bondorder")
-            bond_orders.extend(orders * n)
-
-            atoms = molecule["configuration"].atoms
-            for key in atoms.keys():
-                if "atom_types_" in key or "charges" in key:
-                    if key in extra_data:
-                        extra_data[key].extend(atoms.get_column_data(key) * n)
-                    else:
-                        extra_data[key] = atoms.get_column_data(key) * n
-
-        # Remove the temporary database
-        tmp_db.close()
-
-        # Get the system to fill and make sure it is empty
-        system, configuration = self.get_system_configuration(P)
-        configuration.clear()
-
-        # Create the configuration from the PDB output of PACKMOL
-        configuration.coordinate_system = "Cartesian"
-        configuration.from_pdb_text(result["packmol.pdb"]["data"])
-
-        # And set the bond orders and extra data we saved earlier.
-        configuration.bonds.get_column("bondorder")[:] = bond_orders
-        for key, values in extra_data.items():
-            atoms.get_column(key)[:] = values
-
-        # Finally, make periodic of correct size
         string = "\n"
+        cell = None
         if periodic:
-            configuration.periodicity = 3
             if shape == "cubic":
-                configuration.cell.parameters = (a, a, a, 90.0, 90.0, 90.0)
                 string += f"Created a periodic cubic cell {a:.2f} Å on a side"
+                cell = (a, a, a)
             else:
-                configuration.cell.parameters = (a, b, c, 90.0, 90.0, 90.0)
                 string += f"Created a periodic {a:.2f} x {b:.2f} x {c:.2f} Å cell"
+                cell = (a, b, c)
         else:
             if shape == "cubic":
                 string += f"Created a cubic region {a:.2f} Å on a side"
             elif shape == "rectangular":
                 string += f"Created a rectangular {a:.2f} x {b:.2f} x {c:.2f} Å region"
             else:
-                string += (
-                    f"Created a spherical region with a diameter of {diameter:.2f} Å"
-                )
-
+                string += f"Created a spherical region with a diameter of {diameter:.2f} Å"
         volume = Q_(volume, "Å^3")
         density = mass / volume
         density.ito("g/ml")
@@ -642,26 +666,29 @@ class Packmol(seamm.Node):
         if n_solute_molecules > 0:
             string += (
                 f" with the solute and {n_molecules-n_solute_molecules} solvent "
-                "molecules"
+                "molecules\n\n"
             )
         else:
-            string += f" with {n_molecules} fluid molecules"
-        string += f" for a total of {n_atoms} atoms in the cell"
-        string += f" and a density of {density:.5~P}."
-        printer.important(__(string, indent=4 * " "))
-        printer.important("")
+            string += f" with {n_molecules} fluid molecules\n\n"
 
-        # Since we have succeeded, add the citation.
+        # Reprint table of molecules
+        table = {
+            "Component": [],
+            "Structure": [],
+            "Number": [],
+        }
+        for molecule in molecules:
+            table["Component"].append(molecule["type"])
+            table["Structure"].append(molecule["definition"])
+            table["Number"].append(molecule["number"])
 
-        self.references.cite(
-            raw=self._bibliography["doi:10.1002/jcc.21224"],
-            alias="packmol",
-            module="packmol_step",
-            level=1,
-            note="The principle PACKMOL citation.",
-        )
+        text_lines = tabulate(table, headers="keys", tablefmt="psql")
+        string += textwrap.indent(text_lines, 4 * " ")
 
-        return next_node
+        string += f"\n\nThere are a total of {n_atoms} atoms in the cell"
+        string += f" giving a density of {density:.5~P}."
+
+        return molecules, files, string, cell
 
 
 def bounding_sphere(points):

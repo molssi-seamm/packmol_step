@@ -1,0 +1,22 @@
+{
+    "molecules": [
+        {
+            "component": "fluid",
+            "source": "SMILES",
+            "definition": "S",
+            "count": 1
+        },
+        {
+            "component": "fluid",
+            "source": "SMILES",
+            "definition": "O",
+            "count": 1
+        }
+    ],
+    "periodic": false,
+    "shape": "spherical",
+    "dimensions": "calculated from the density",
+    "fluid amount": "rounding this number of molecules",
+    "density": 1.0,
+    "approximate number of molecules": 500
+}
