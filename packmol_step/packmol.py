@@ -658,7 +658,9 @@ class Packmol(seamm.Node):
             elif shape == "rectangular":
                 string += f"Created a rectangular {a:.2f} x {b:.2f} x {c:.2f} Å region"
             else:
-                string += f"Created a spherical region with a diameter of {diameter:.2f} Å"
+                string += (
+                    f"Created a spherical region with a diameter of {diameter:.2f} Å"
+                )
         volume = Q_(volume, "Å^3")
         density = mass / volume
         density.ito("g/ml")

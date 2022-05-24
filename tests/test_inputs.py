@@ -12,9 +12,7 @@ from molsystem import SystemDB
 import packmol_step
 
 test_dir = Path(__file__).resolve().parent
-inputs = [
-    test_dir / path for path in sorted(test_dir.glob("inputs/*.json"))
-]
+inputs = [test_dir / path for path in sorted(test_dir.glob("inputs/*.json"))]
 
 
 @pytest.fixture
