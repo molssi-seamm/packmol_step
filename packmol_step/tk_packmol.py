@@ -110,22 +110,38 @@ class TkPackmol(seamm.TkNode):
                 row += 1
                 widgets.append(self[key])
         elif dimensions == "calculated from the volume":
-            for key in ("volume",):
+            if shape == "rectangular":
+                keys = ("volume", "a_ratio", "b_ratio", "c_ratio")
+            else:
+                keys = ("volume",)
+            for key in keys:
                 self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
                 widgets.append(self[key])
         elif dimensions == "calculated from the solute dimensions":
-            for key in ("solvent thickness",):
+            if shape == "rectangular":
+                keys = ("solvent thickness", "a_ratio", "b_ratio", "c_ratio")
+            else:
+                keys == ("solvent thickness",)
+            for key in keys:
                 self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
                 widgets.append(self[key])
         elif dimensions == "calculated from the density":
-            for key in ("density",):
+            if shape == "rectangular":
+                keys = ("density", "a_ratio", "b_ratio", "c_ratio")
+            else:
+                keys = ("density",)
+            for key in keys:
                 self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
                 widgets.append(self[key])
         elif dimensions == "calculated using the Ideal Gas Law":
-            for key in ("temperature", "pressure"):
+            if shape == "rectangular":
+                keys = ("temperature", "pressure", "a_ratio", "b_ratio", "c_ratio")
+            else:
+                keys = ("temperature", "pressure")
+            for key in keys:
                 self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
                 widgets.append(self[key])
@@ -137,6 +153,8 @@ class TkPackmol(seamm.TkNode):
         amount = self["fluid amount"].get()
         if dimensions in ("using the density", "using the Ideal Gas Law"):
             amounts = PackmolParameters.amounts_for_density
+        elif dimensions in ("calculated from the solute dimensions",):
+            amounts = PackmolParameters.amounts_for_layer
         else:
             amounts = PackmolParameters.amounts
         self["fluid amount"].combobox.config(values=amounts)
@@ -154,17 +172,17 @@ class TkPackmol(seamm.TkNode):
                     self[key].grid(row=row, column=0, sticky=tk.EW)
                     row += 1
                     widgets.append(self[key])
-            elif "rounding this number of molecules":
+            elif amount == "rounding this number of molecules":
                 for key in ("approximate number of molecules",):
                     self[key].grid(row=row, column=0, sticky=tk.EW)
                     row += 1
                     widgets.append(self[key])
-            elif "using the density":
+            elif amount == "using the density":
                 for key in ("density",):
                     self[key].grid(row=row, column=0, sticky=tk.EW)
                     row += 1
                     widgets.append(self[key])
-            elif "using the Ideal Gas Law":
+            elif amount == "using the Ideal Gas Law":
                 for key in ("temperature", "pressure"):
                     self[key].grid(row=row, column=0, sticky=tk.EW)
                     row += 1

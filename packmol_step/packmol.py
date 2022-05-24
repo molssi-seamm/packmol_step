@@ -198,7 +198,7 @@ class Packmol(seamm.Node):
 
         # Get the input files and any more output to print
         tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
-        molecules, files, output, cell = get_input(P, system_db, tmp_db)
+        molecules, files, output, cell = Packmol.get_input(P, system_db, tmp_db)
 
         self.logger.log(0, pprint.pformat(files))
 

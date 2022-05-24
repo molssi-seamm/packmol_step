@@ -26,6 +26,10 @@ class PackmolParameters(seamm.Parameters):
         "using the density",
         "using the Ideal Gas Law",
     )
+    amounts_for_layer = (
+        "using the density",
+        "using the Ideal Gas Law",
+    )
     amounts_for_density = (
         "rounding this number of atoms",
         "rounding this number of molecules",
@@ -171,6 +175,33 @@ class PackmolParameters(seamm.Parameters):
             "format_string": ".1f",
             "description": "c:",
             "help_text": "The length of the third side of the box.",
+        },
+        "a_ratio": {
+            "default": 1,
+            "kind": "float",
+            "default_units": "",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "a ratio:",
+            "help_text": "The ratio for the first side of the box.",
+        },
+        "b_ratio": {
+            "default": 1,
+            "kind": "float",
+            "default_units": "",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "b ratio:",
+            "help_text": "The ratio for the second side of the box.",
+        },
+        "c_ratio": {
+            "default": 1,
+            "kind": "float",
+            "default_units": "",
+            "enumeration": tuple(),
+            "format_string": ".1f",
+            "description": "c ratio:",
+            "help_text": "The ratio for the third side of the box.",
         },
         "diameter": {
             "default": 20.0,
