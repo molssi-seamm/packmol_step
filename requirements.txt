@@ -1,1 +1,2 @@
 seamm==2021.2.2
+tabulate
