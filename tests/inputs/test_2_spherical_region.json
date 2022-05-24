@@ -1,8 +1,8 @@
 {
-    "molecules": {
+        "molecules": {
         "value": [
             {
-                "component": "solute",
+                "component": "fluid",
                 "source": "SMILES",
                 "definition": "c1ccccc1c2ccccc2",
                 "count": "1"
@@ -11,7 +11,7 @@
                 "component": "fluid",
                 "source": "SMILES",
                 "definition": "O",
-                "count": "1"
+                "count": "50"
             }
         ],
         "units": null

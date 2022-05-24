@@ -17,11 +17,11 @@
         "units": null
     },
     "periodic": {
-        "value": "No",
+        "value": "Yes",
         "units": null
     },
     "shape": {
-        "value": "spherical",
+        "value": "cubic",
         "units": null
     },
     "dimensions": {

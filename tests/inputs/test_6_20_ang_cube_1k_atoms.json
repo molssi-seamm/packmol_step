@@ -2,7 +2,7 @@
     "molecules": {
         "value": [
             {
-                "component": "solute",
+                "component": "fluid",
                 "source": "SMILES",
                 "definition": "c1ccccc1c2ccccc2",
                 "count": "1"
@@ -11,7 +11,7 @@
                 "component": "fluid",
                 "source": "SMILES",
                 "definition": "O",
-                "count": "1"
+                "count": "50"
             }
         ],
         "units": null
@@ -21,11 +21,11 @@
         "units": null
     },
     "shape": {
-        "value": "spherical",
+        "value": "cubic",
         "units": null
     },
     "dimensions": {
-        "value": "calculated from the density",
+        "value": "given explicitly",
         "units": null
     },
     "fluid amount": {
@@ -67,6 +67,18 @@
     "c": {
         "value": "20",
         "units": "\u00c5"
+    },
+    "a_ratio": {
+        "value": "1",
+        "units": null
+    },
+    "b_ratio": {
+        "value": "1",
+        "units": null
+    },
+    "c_ratio": {
+        "value": "1",
+        "units": null
     },
     "diameter": {
         "value": "20.0",

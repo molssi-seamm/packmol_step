@@ -21,7 +21,7 @@
         "units": null
     },
     "shape": {
-        "value": "spherical",
+        "value": "cubic",
         "units": null
     },
     "dimensions": {

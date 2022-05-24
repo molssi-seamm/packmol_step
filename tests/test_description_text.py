@@ -43,10 +43,10 @@ def test_description_text_default(instance):
 
     reference = r"""    Will create a spherical region containing the following molecules:
 
-        +-------------+-------------+----------+
-        | Component   | Structure   | Number   |
-        |-------------+-------------+----------|
-        +-------------+-------------+----------+
+        +-------------+-------------+---------+
+        | Component   | Structure   | Ratio   |
+        |-------------+-------------+---------|
+        +-------------+-------------+---------+
 
     The dimensions of the region will be calculated from the density 0.7 g/ml.
     The number of molecules of the fluid will be obtained by rounding 2000 atoms

@@ -1,0 +1,14 @@
+tolerance 2.0
+output packmol.pdb
+filetype pdb
+connect yes
+structure input_1.pdb
+   inside sphere 0.0 0.0 0.0 13.3688
+   center
+   fixed -0.6957 2.0477 -0.1418 0.0 0.0 0.0
+   number 1
+end structure
+structure input_2.pdb
+   inside sphere 0.0 0.0 0.0 13.3688
+   number 326
+end structure
