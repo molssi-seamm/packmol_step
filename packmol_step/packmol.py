@@ -353,6 +353,7 @@ class Packmol(seamm.Node):
         shape = P["shape"]
         dimensions = P["dimensions"]
         amount = P["fluid amount"]
+        cell = None
 
         # Get information about the solute for placing it
         if solute_configuration is not None:
@@ -369,6 +370,7 @@ class Packmol(seamm.Node):
             if shape == "cubic":
                 a = P["edge length"].to("Å").magnitude
                 if periodic:
+                    cell = (a, a, a)
                     a -= P["gap"].to("Å").magnitude
                 region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
@@ -380,6 +382,7 @@ class Packmol(seamm.Node):
                 b = P["b"].to("Å").magnitude
                 c = P["c"].to("Å").magnitude
                 if periodic:
+                    cell = (a, b, c)
                     gap = P["gap"].to("Å").magnitude
                     a -= gap
                     b -= gap
@@ -403,6 +406,7 @@ class Packmol(seamm.Node):
             if shape == "cubic":
                 a = volume ** (1 / 3)
                 if periodic:
+                    cell = (a, a, a)
                     a -= P["gap"].to("Å").magnitude
                 region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
@@ -418,6 +422,7 @@ class Packmol(seamm.Node):
                 b *= factor
                 c *= factor
                 if periodic:
+                    cell = (a, b, c)
                     gap = P["gap"].to("Å").magnitude
                     a -= gap
                     b -= gap
@@ -447,7 +452,9 @@ class Packmol(seamm.Node):
                     a = max(a, b, c)
                     if periodic:
                         volume = (a + thickness) ** 3
-                        a += thickness - P["gap"].to("Å").magnitude
+                        a += thickness
+                        cell = (a, a, a)
+                        a -= P["gap"].to("Å").magnitude
                     else:
                         a += 2 * thickness
                         volume = a**3
@@ -457,11 +464,15 @@ class Packmol(seamm.Node):
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 else:
                     if periodic:
-                        volume = (a + thickness) * (b + thickness) + (c * thickness)
+                        a += thickness
+                        b += thickness
+                        c += thickness
+                        cell = (a, b, c)
+                        volume = a * b * c
                         gap = P["gap"].to("Å").magnitude
-                        a += thickness - gap
-                        b += thickness - gap
-                        c += thickness - gap
+                        a -= gap
+                        b -= gap
+                        c -= gap
                     else:
                         a += 2 * thickness
                         b += 2 * thickness
@@ -497,6 +508,7 @@ class Packmol(seamm.Node):
             if shape == "cubic":
                 a = volume ** (1 / 3)
                 if periodic:
+                    cell = (a, a, a)
                     a -= P["gap"].to("Å").magnitude
                 region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
@@ -512,6 +524,7 @@ class Packmol(seamm.Node):
                 b *= factor
                 c *= factor
                 if periodic:
+                    cell = (a, b, c)
                     gap = P["gap"].to("Å").magnitude
                     a -= gap
                     b -= gap
@@ -554,6 +567,7 @@ class Packmol(seamm.Node):
             if shape == "cubic":
                 a = volume ** (1 / 3)
                 if periodic:
+                    cell = (a, a, a)
                     a -= P["gap"].to("Å").magnitude
                 region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
@@ -569,6 +583,7 @@ class Packmol(seamm.Node):
                 b *= factor
                 c *= factor
                 if periodic:
+                    cell = (a, b, c)
                     gap = P["gap"].to("Å").magnitude
                     a -= gap
                     b -= gap
@@ -644,14 +659,12 @@ class Packmol(seamm.Node):
         files["input.inp"] = "\n".join(lines)
 
         string = "\n"
-        cell = None
         if periodic:
+            a, b, c = cell
             if shape == "cubic":
                 string += f"Created a periodic cubic cell {a:.2f} Å on a side"
-                cell = (a, a, a)
             else:
                 string += f"Created a periodic {a:.2f} x {b:.2f} x {c:.2f} Å cell"
-                cell = (a, b, c)
         else:
             if shape == "cubic":
                 string += f"Created a cubic region {a:.2f} Å on a side"
