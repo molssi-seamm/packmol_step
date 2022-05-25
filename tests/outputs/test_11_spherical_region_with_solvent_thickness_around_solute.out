@@ -7,17 +7,19 @@
         |    fluid    | O                |       1 |
         +-------------+------------------+---------+
 
-    The dimensions of the region will be calculated from the density 1.0 g/ml.
-    The number of molecules of the fluid will be obtained by rounding 1000 atoms
-    to give a whole number of molecules with the requested ratios.
+    The dimensions of the region will be calculated from the solute dimensions.
+    If the input structure is periodic, its dimensions will be used. Otherwise
+    for molecules, a the region will be a box with extra space of 10.0 Å around
+    the molecule. The number of molecules of the fluid will be obtained by
+    rounding 100 molecules to give the requested ratios of species.
 
-Created a spherical region with a diameter of 26.74 Å with the solute and 326 solvent molecules
+Created a spherical region with a diameter of 29.06 Å with the solute and 421 solvent molecules
 
     +-------------+------------------+----------+
     |  Component  | Structure        |   Number |
     |-------------+------------------+----------|
     |   solute    | c1ccccc1c2ccccc2 |        1 |
-    |    fluid    | O                |      326 |
+    |    fluid    | O                |      421 |
     +-------------+------------------+----------+
 
-There are a total of 1000 atoms in the cell giving a density of 1.0 g/ml.
+There are a total of 1285 atoms in the cell giving a density of 1.0006 g/ml.

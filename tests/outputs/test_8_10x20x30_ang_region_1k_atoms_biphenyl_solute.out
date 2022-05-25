@@ -1,14 +1,24 @@
-tolerance 2.0
-output packmol.pdb
-filetype pdb
-connect yes
-structure input_1.pdb
-   inside box 0.0 0.0 0.0 10.0000 20.0000 30.0000
-   center
-   fixed 4.8276 12.0477 15.0909 0.0 0.0 0.0
-   number 1
-end structure
-structure input_2.pdb
-   inside box 0.0 0.0 0.0 10.0000 20.0000 30.0000
-   number 326
-end structure
+    Will create a rectangular region containing the following molecules:
+
+        +-------------+------------------+---------+
+        |  Component  | Structure        |   Ratio |
+        |-------------+------------------+---------|
+        |   solute    | c1ccccc1c2ccccc2 |         |
+        |    fluid    | O                |       1 |
+        +-------------+------------------+---------+
+
+    The dimensions of the region will be given explicitly by the three sides
+    10.0 Å x20.0 Å x30.0 Å. The number of molecules of the fluid will be
+    obtained by rounding 1000 atoms to give a whole number of molecules with the
+    requested ratios.
+
+Created a rectangular 10.00 x 20.00 x 30.00 Å region with the solute and 326 solvent molecules
+
+    +-------------+------------------+----------+
+    |  Component  | Structure        |   Number |
+    |-------------+------------------+----------|
+    |   solute    | c1ccccc1c2ccccc2 |        1 |
+    |    fluid    | O                |      326 |
+    +-------------+------------------+----------+
+
+There are a total of 1000 atoms in the cell giving a density of 1.6681 g/ml.

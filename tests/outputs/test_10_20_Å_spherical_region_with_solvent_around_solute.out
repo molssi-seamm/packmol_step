@@ -1,4 +1,4 @@
-    Will create a rectangular region containing the following molecules:
+    Will create a spherical region containing the following molecules:
 
         +-------------+------------------+---------+
         |  Component  | Structure        |   Ratio |
@@ -7,12 +7,11 @@
         |    fluid    | O                |       1 |
         +-------------+------------------+---------+
 
-    The dimensions of the region will be given explicitly by the three sides
-    10.0 Å x20.0 Å x30.0 Å. The number of molecules of the fluid will be
-    obtained by rounding 1000 atoms to give a whole number of molecules with the
-    requested ratios.
+    The dimensions of the region will be given explicitly by the diameter 20.0
+    Å. The number of molecules of the fluid will be obtained by rounding 1000
+    atoms to give a whole number of molecules with the requested ratios.
 
-Created a periodic 10.00 x 20.00 x 30.00 Å cell with the solute and 326 solvent molecules
+Created a spherical region with a diameter of 20.00 Å with the solute and 326 solvent molecules
 
     +-------------+------------------+----------+
     |  Component  | Structure        |   Number |
@@ -21,4 +20,4 @@ Created a periodic 10.00 x 20.00 x 30.00 Å cell with the solute and 326 solvent
     |    fluid    | O                |      326 |
     +-------------+------------------+----------+
 
-There are a total of 1000 atoms in the cell giving a density of 2.4823 g/ml.
+There are a total of 1000 atoms in the cell giving a density of 2.3894 g/ml.

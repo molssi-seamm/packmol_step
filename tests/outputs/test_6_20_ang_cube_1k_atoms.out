@@ -1,12 +1,23 @@
-tolerance 2.0
-output packmol.pdb
-filetype pdb
-connect yes
-structure input_1.pdb
-   inside cube 0.0 0.0 0.0 20.0000
-   number 6
-end structure
-structure input_2.pdb
-   inside cube 0.0 0.0 0.0 20.0000
-   number 300
-end structure
+    Will create a cubic region containing the following molecules:
+
+        +-------------+------------------+---------+
+        |  Component  | Structure        |   Ratio |
+        |-------------+------------------+---------|
+        |    fluid    | c1ccccc1c2ccccc2 |       1 |
+        |    fluid    | O                |      50 |
+        +-------------+------------------+---------+
+
+    The dimensions of the region will be given explicitly by the edge length
+    20.0 Å. The number of molecules of the fluid will be obtained by rounding
+    1000 atoms to give a whole number of molecules with the requested ratios.
+
+Created a cubic region 20.00 Å on a side with 306 fluid molecules
+
+    +-------------+------------------+----------+
+    |  Component  | Structure        |   Number |
+    |-------------+------------------+----------|
+    |    fluid    | c1ccccc1c2ccccc2 |        6 |
+    |    fluid    | O                |      300 |
+    +-------------+------------------+----------+
+
+There are a total of 1032 atoms in the cell giving a density of 1.3139 g/ml.
