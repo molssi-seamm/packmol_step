@@ -110,11 +110,15 @@ class Packmol(seamm.Node):
         for molecule in self.parameters["molecules"].value:
             table["Component"].append(molecule["component"])
             table["Structure"].append(molecule["definition"])
-            if molecule["component"] != "solute":
+            if molecule["component"] == "solute":
+                table["Ratio"].append("")
+            else:
                 table["Ratio"].append(molecule["count"])
 
         description = self.header + "\n" + str(__(text, indent=self.indent + 4 * " "))
-        text_lines = tabulate(table, headers="keys", tablefmt="psql")
+        text_lines = tabulate(
+            table, headers="keys", tablefmt="psql", colalign=("center", "left", "right")
+        )
         description += textwrap.indent(text_lines, self.indent + 8 * " ")
 
         # And the rest of the control
@@ -445,10 +449,12 @@ class Packmol(seamm.Node):
                 region = f"   inside sphere 0.0 0.0 0.0 {solute_radius+thickness:.4f}"
                 dx, dy, dz = center
                 fixed = f"   fixed {-dx:.4f} {-dy:.4f} {-dz:.4f} 0.0 0.0 0.0"
+                diameter = 2 * (solute_radius + thickness)
+                volume = 4 / 3 * math.pi * (diameter / 2) ** 3
             else:
                 thickness = P["solvent thickness"].to("Å").magnitude
+                a, b, c = sides
                 if shape == "cubic":
-                    a, b, c = sides
                     a = max(a, b, c)
                     if periodic:
                         volume = (a + thickness) ** 3
@@ -619,7 +625,14 @@ class Packmol(seamm.Node):
             n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
             mass = n_copies * fluid_mass + solute_mass
         elif amount == "using the density":
-            pass
+            density = P["density"]
+            mass = Q_(volume, "Å^3") * density
+            mass.ito("kg")
+            n_copies = int(round((mass - solute_mass) / fluid_mass))
+            n_copies = 1 if n_copies < 1 else n_copies
+            n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
+            n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
+            mass = n_copies * fluid_mass + solute_mass
         elif amount == "using the Ideal Gas Law":
             # PV = NRT
             n_molecules = pressure * volume / (temperature * ureg.k)
@@ -697,7 +710,9 @@ class Packmol(seamm.Node):
             table["Structure"].append(molecule["definition"])
             table["Number"].append(molecule["number"])
 
-        text_lines = tabulate(table, headers="keys", tablefmt="psql")
+        text_lines = tabulate(
+            table, headers="keys", tablefmt="psql", colalign=("center", "left", "right")
+        )
         string += textwrap.indent(text_lines, 4 * " ")
 
         string += f"\n\nThere are a total of {n_atoms} atoms in the cell"
