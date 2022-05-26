@@ -61,6 +61,9 @@ class TkPackmol(seamm.TkNode):
 
         self.reset_dialog()
 
+        # Resize the dialog to fill the screen, more or less.
+        self.fit_dialog()
+
     def reset_dialog(self, widget=None):
         """Layout the widgets in the dialog contingent on the parameter values."""
         frame = self["frame"]
@@ -194,7 +197,7 @@ class TkPackmol(seamm.TkNode):
 
         # The table of molecules to use
         self["molecules"].grid(row=row, column=0, columnspan=2, sticky=tk.NSEW)
-        frame.grid_rowconfigure(row, weight=1, minsize=500)
+        frame.grid_rowconfigure(row, weight=1, minsize=100)
         frame.grid_columnconfigure(1, weight=1)
         row += 1
         self.reset_molecules()
