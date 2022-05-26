@@ -5,6 +5,7 @@
 
 import json
 from pathlib import Path
+import seamm
 from seamm_util import units_class
 
 import pytest
@@ -19,15 +20,19 @@ inputs = [test_dir / path for path in sorted(test_dir.glob("inputs/*.json"))]
 @pytest.mark.unit
 @pytest.mark.parametrize("input_file", inputs)
 def test_spherical_region(input_file):
-    """Test making a spherical region"""
+    """Test the PACKMOL input and description"""
 
-    # The parameters fpr the test
+    # The parameters for the test
     with open(input_file) as fd:
         tmp = json.load(fd)
+
+    # Handle any local variables that need definition
+    variables = tmp.pop("_variables_", {})
+    seamm.flowchart_variables = seamm.Variables(**variables)
+
     parameters = packmol_step.PackmolParameters()
     parameters.from_dict(tmp)
-    P = parameters.current_values_to_dict()
-
+    P = parameters.current_values_to_dict(context=seamm.flowchart_variables._data)
     # The golden output file and PACKMOL input file
     output = test_dir / "outputs" / input_file.with_suffix(".out").name
     input = test_dir / "outputs" / input_file.with_suffix(".inp").name
@@ -51,7 +56,9 @@ def test_spherical_region(input_file):
     output_text = "\n".join(description.splitlines()[1:])
 
     # And get the input for PACKMOL
-    molecules, files, text, cell = packmol_step.Packmol.get_input(P, system_db, tmp_db)
+    molecules, files, text, cell = packmol_step.Packmol.get_input(
+        P, system_db, tmp_db, seamm.flowchart_variables
+    )
 
     output_text += "\n"
     output_text += text
