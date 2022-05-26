@@ -95,9 +95,11 @@ class Packmol(seamm.Node):
             P = self.parameters.values_to_dict()
 
         periodic = P["periodic"]
+        if isinstance(periodic, str):
+            periodic = periodic.lower() == "yes"
         shape = P["shape"]
 
-        if periodic == "Yes":
+        if periodic:
             text = f"Will create a {shape} periodic cell"
         else:
             text = f"Will create a {shape} region"
@@ -297,6 +299,45 @@ class Packmol(seamm.Node):
         def recenter(a, b):
             return b[0] - a[0], b[1] - a[1], b[2] - a[2]
 
+        # Work out integer numbers of molecules, atoms, etc.
+        def round_copies(n_copies, molecules):
+            total_atoms = 0
+            total_molecules = 0
+            total_mass = 0.0
+            total = 0.0
+            total_count = 0.0
+            for molecule in molecules:
+                count = molecule["count"]
+                component = molecule["type"]
+                mass = molecule["mass"]
+                n_atoms = molecule["n_atoms"]
+
+                if component == "solute":
+                    total_atoms += n_atoms
+                    total_molecules += 1
+                    total_mass += mass
+                    molecule["number"] = 1
+                else:
+                    n = int(round(n_copies * count))
+                    if n > 0:
+                        total_atoms += n * n_atoms
+                        total_molecules += n
+                        total_mass += n * mass
+                    molecule["number"] = n
+                    total_count += molecule["count"]
+                    total += n
+
+            # Get the actual mol percent
+            for molecule in molecules:
+                if molecule["type"] == "solute":
+                    molecule["actual %"] = ""
+                    molecule["requested %"] = ""
+                else:
+                    molecule["actual %"] = f"{molecule['number']/total*100:.3f}"
+                    molecule["requested %"] = f"{molecule['count']/total_count*100:.3f}"
+
+            return total_atoms, total_molecules, total_mass
+
         # Start by handling the molecules
         n_solute_molecules = 0
         n_solute_atoms = 0
@@ -321,7 +362,7 @@ class Packmol(seamm.Node):
             count = molecule["count"]
             if is_expr(count):
                 count = context.value(count)
-            count = int(count)
+            count = float(count)
 
             if source == "SMILES":
                 tmp_system = tmp_db.create_system(name=definition)
@@ -339,13 +380,13 @@ class Packmol(seamm.Node):
                         confname = definition
                     tmp_configuration = tmp_system.get_configuration(confname)
 
-            tmp_mass = count * tmp_configuration.mass * ureg.g / ureg.mol
+            tmp_mass = tmp_configuration.mass * ureg.g / ureg.mol
             tmp_mass.ito("kg")
 
             if component == "solute":
                 n_solute_molecules += count
                 n_solute_atoms += count * tmp_configuration.n_atoms
-                solute_mass += tmp_mass
+                solute_mass += count * tmp_mass
                 if solute_configuration is None:
                     solute_configuration = tmp_configuration
                 else:
@@ -353,7 +394,7 @@ class Packmol(seamm.Node):
             else:
                 n_fluid_molecules += count
                 n_fluid_atoms += count * tmp_configuration.n_atoms
-                fluid_mass += tmp_mass
+                fluid_mass += count * tmp_mass
 
             molecules.append(
                 {
@@ -361,6 +402,7 @@ class Packmol(seamm.Node):
                     "count": count,
                     "type": component,
                     "mass": tmp_mass,
+                    "n_atoms": tmp_configuration.n_atoms,
                     "definition": definition,
                 }
             )
@@ -387,8 +429,12 @@ class Packmol(seamm.Node):
                 a = P["edge length"].to("Å").magnitude
                 if periodic:
                     cell = (a, a, a)
-                    a -= P["gap"].to("Å").magnitude
-                region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -403,7 +449,10 @@ class Packmol(seamm.Node):
                     a -= gap
                     b -= gap
                     c -= gap
-                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -423,8 +472,12 @@ class Packmol(seamm.Node):
                 a = volume ** (1 / 3)
                 if periodic:
                     cell = (a, a, a)
-                    a -= P["gap"].to("Å").magnitude
-                region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -443,7 +496,10 @@ class Packmol(seamm.Node):
                     a -= gap
                     b -= gap
                     c -= gap
-                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -472,11 +528,14 @@ class Packmol(seamm.Node):
                         volume = (a + thickness) ** 3
                         a += thickness
                         cell = (a, a, a)
-                        a -= P["gap"].to("Å").magnitude
+                        gap = P["gap"].to("Å").magnitude
+                        a -= gap
+                        x0 = f"{gap/2:.4f}"
+                        region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
                     else:
                         a += 2 * thickness
                         volume = a**3
-                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                        region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                     # Move the solute molecule to the center of the box
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -491,12 +550,14 @@ class Packmol(seamm.Node):
                         a -= gap
                         b -= gap
                         c -= gap
+                        x0 = f"{gap/2:.4f}"
+                        region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
                     else:
                         a += 2 * thickness
                         b += 2 * thickness
                         c += 2 * thickness
                         volume = a * b * c
-                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                        region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
                     # Move the solute molecule to the center of the box
                     dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -504,34 +565,29 @@ class Packmol(seamm.Node):
             density = P["density"]
             if amount == "rounding this number of atoms":
                 n_atoms = P["approximate number of atoms"]
-                n_copies = int(round((n_atoms - n_solute_atoms) / n_fluid_atoms))
-                n_copies = 1 if n_copies < 1 else n_copies
-                n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-                n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-                mass = n_copies * fluid_mass + solute_mass
-                volume = mass / density
+                n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
             elif amount == "rounding this number of molecules":
                 n_molecules = P["approximate number of molecules"]
-                n_copies = int(round(n_molecules / n_fluid_molecules))
-                n_copies = 1 if n_copies < 1 else n_copies
-                n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-                n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-                mass = n_copies * fluid_mass + solute_mass
-                volume = mass / density
+                n_copies = n_molecules / n_fluid_molecules
             else:
                 raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
-
+            n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
+            volume = mass / density
             volume = volume.to("Å^3").magnitude
 
             if shape == "cubic":
                 a = volume ** (1 / 3)
-                if periodic:
-                    cell = (a, a, a)
-                    a -= P["gap"].to("Å").magnitude
-                region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                if periodic:
+                    cell = (a, a, a)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
             elif shape == "rectangular":
                 a = P["a"].to("Å").magnitude
                 b = P["b"].to("Å").magnitude
@@ -541,16 +597,19 @@ class Packmol(seamm.Node):
                 a *= factor
                 b *= factor
                 c *= factor
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, b, c)
                     gap = P["gap"].to("Å").magnitude
                     a -= gap
                     b -= gap
                     c -= gap
-                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
-                if solute_configuration is not None:
-                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
-                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
             elif shape == "spherical":
                 diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
                 region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
@@ -564,33 +623,30 @@ class Packmol(seamm.Node):
             pressure = P["pressure"]
             if amount == "rounding this number of atoms":
                 n_atoms = P["approximate number of atoms"]
-                n_copies = int(round((n_atoms - n_solute_atoms) / n_fluid_atoms))
-                n_copies = 1 if n_copies < 1 else n_copies
-                n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-                n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-                mass = n_copies * fluid_mass + solute_mass
+                n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
             elif amount == "rounding this number of molecules":
                 n_molecules = P["approximate number of molecules"]
-                n_copies = int(round(n_molecules / n_fluid_molecules))
-                n_copies = 1 if n_copies < 1 else n_copies
-                n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-                n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-                mass = n_copies * fluid_mass + solute_mass
+                n_copies = n_molecules / n_fluid_molecules
             else:
                 raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+            n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
 
             # PV = NRT
             volume = n_molecules * temperature * ureg.k / pressure
             volume = volume.to("Å^3").magnitude
             if shape == "cubic":
                 a = volume ** (1 / 3)
-                if periodic:
-                    cell = (a, a, a)
-                    a -= P["gap"].to("Å").magnitude
-                region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                if periodic:
+                    cell = (a, a, a)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
             elif shape == "rectangular":
                 a = P["a"].to("Å").magnitude
                 b = P["b"].to("Å").magnitude
@@ -600,16 +656,19 @@ class Packmol(seamm.Node):
                 a *= factor
                 b *= factor
                 c *= factor
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, b, c)
                     gap = P["gap"].to("Å").magnitude
                     a -= gap
                     b -= gap
                     c -= gap
-                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
-                if solute_configuration is not None:
-                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
-                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
             elif shape == "spherical":
                 diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
                 region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
@@ -624,37 +683,22 @@ class Packmol(seamm.Node):
         # Now that we have the volume, get the number of molecules
         if amount == "rounding this number of atoms":
             n_atoms = P["approximate number of atoms"]
-            n_copies = int(round((n_atoms - n_solute_atoms) / n_fluid_atoms))
-            n_copies = 1 if n_copies < 1 else n_copies
-            n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-            n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-            mass = n_copies * fluid_mass + solute_mass
+            n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
         elif amount == "rounding this number of molecules":
             n_molecules = P["approximate number of molecules"]
-            n_copies = int(round(n_molecules / n_fluid_molecules))
-            n_copies = 1 if n_copies < 1 else n_copies
-            n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-            n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-            mass = n_copies * fluid_mass + solute_mass
+            n_copies = n_molecules / n_fluid_molecules
         elif amount == "using the density":
             density = P["density"]
             mass = Q_(volume, "Å^3") * density
             mass.ito("kg")
-            n_copies = int(round((mass - solute_mass) / fluid_mass))
-            n_copies = 1 if n_copies < 1 else n_copies
-            n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-            n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-            mass = n_copies * fluid_mass + solute_mass
+            n_copies = (mass - solute_mass) / fluid_mass
         elif amount == "using the Ideal Gas Law":
             # PV = NRT
             n_molecules = pressure * volume / (temperature * ureg.k)
-            n_copies = int(round(n_molecules / n_fluid_molecules))
-            n_copies = 1 if n_copies < 1 else n_copies
-            n_atoms = n_copies * n_fluid_atoms + n_solute_atoms
-            n_molecules = n_copies * n_fluid_molecules + n_solute_molecules
-            mass = n_copies * fluid_mass + solute_mass
+            n_copies = n_molecules / n_fluid_molecules
         else:
             raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+        n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
 
         # Prepare the input
         lines = []
@@ -665,17 +709,14 @@ class Packmol(seamm.Node):
 
         files = {}
         for i, molecule in enumerate(molecules, start=1):
-            count = molecule["count"]
             lines.append(f"structure input_{i}.pdb")
             lines.append(region)
             if molecule["type"] == "solute":
                 lines.append("   center")
                 lines.append(fixed)
                 lines.append("   number 1")
-                molecule["number"] = 1
             else:
-                lines.append(f"   number {n_copies * count}")
-                molecule["number"] = n_copies * count
+                lines.append(f"   number {molecule['number']}")
             lines.append("end structure")
             configuration = molecule["configuration"]
             files[f"input_{i}.pdb"] = configuration.to_pdb_text()
@@ -715,12 +756,16 @@ class Packmol(seamm.Node):
         table = {
             "Component": [],
             "Structure": [],
+            "Requested %": [],
             "Number": [],
+            "Actual %": [],
         }
         for molecule in molecules:
             table["Component"].append(molecule["type"])
             table["Structure"].append(molecule["definition"])
+            table["Requested %"].append(molecule["requested %"])
             table["Number"].append(molecule["number"])
+            table["Actual %"].append(molecule["actual %"])
 
         text_lines = tabulate(
             table, headers="keys", tablefmt="psql", colalign=("center", "left", "right")
