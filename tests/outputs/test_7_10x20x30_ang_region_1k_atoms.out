@@ -12,13 +12,13 @@
     obtained by rounding 1000 atoms to give a whole number of molecules with the
     requested ratios.
 
-Created a rectangular 10.00 x 20.00 x 30.00 Å region with 306 fluid molecules
+Created a rectangular 10.00 x 20.00 x 30.00 Å region with 297 fluid molecules
 
-    +-------------+------------------+----------+
-    |  Component  | Structure        |   Number |
-    |-------------+------------------+----------|
-    |    fluid    | c1ccccc1c2ccccc2 |        6 |
-    |    fluid    | O                |      300 |
-    +-------------+------------------+----------+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
+    |-------------+------------------+---------------+----------+------------|
+    |    fluid    | c1ccccc1c2ccccc2 |         1.961 |        6 |       2.02 |
+    |    fluid    | O                |        98.039 |      291 |      97.98 |
+    +-------------+------------------+---------------+----------+------------+
 
-There are a total of 1032 atoms in the cell giving a density of 1.7518 g/ml.
+There are a total of 1005 atoms in the cell giving a density of 1.707 g/ml.

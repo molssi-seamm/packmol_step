@@ -8,5 +8,5 @@ structure input_1.pdb
 end structure
 structure input_2.pdb
    inside cube 0.0 0.0 0.0 20.0000
-   number 300
+   number 291
 end structure

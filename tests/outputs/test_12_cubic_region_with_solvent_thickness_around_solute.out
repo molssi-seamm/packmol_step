@@ -13,13 +13,13 @@
     the molecule. The number of molecules of the fluid will be obtained by
     rounding 100 molecules to give the requested ratios of species.
 
-Created a cubic region 28.47 Å on a side with the solute and 763 solvent molecules
+Created a cubic region 28.47 Å on a side with the solute and 763.0 solvent molecules
 
-    +-------------+------------------+----------+
-    |  Component  | Structure        |   Number |
-    |-------------+------------------+----------|
-    |   solute    | c1ccccc1c2ccccc2 |        1 |
-    |    fluid    | O                |      763 |
-    +-------------+------------------+----------+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |-------------+------------------+---------------+----------+------------|
+    |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
+    |    fluid    | O                |       100.000 |      763 | 100.000    |
+    +-------------+------------------+---------------+----------+------------+
 
 There are a total of 2311 atoms in the cell giving a density of 0.99998 g/ml.

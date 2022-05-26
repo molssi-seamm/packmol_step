@@ -11,13 +11,13 @@
     The number of molecules of the fluid will be obtained by rounding 1000 atoms
     to give a whole number of molecules with the requested ratios.
 
-Created a spherical region with a diameter of 26.74 Å with the solute and 326 solvent molecules
+Created a spherical region with a diameter of 26.74 Å with the solute and 326.0 solvent molecules
 
-    +-------------+------------------+----------+
-    |  Component  | Structure        |   Number |
-    |-------------+------------------+----------|
-    |   solute    | c1ccccc1c2ccccc2 |        1 |
-    |    fluid    | O                |      326 |
-    +-------------+------------------+----------+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |-------------+------------------+---------------+----------+------------|
+    |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
+    |    fluid    | O                |       100.000 |      326 | 100.000    |
+    +-------------+------------------+---------------+----------+------------+
 
 There are a total of 1000 atoms in the cell giving a density of 1.0 g/ml.

@@ -8,5 +8,5 @@ structure input_1.pdb
 end structure
 structure input_2.pdb
    inside box 0.0 0.0 0.0 10.0000 20.0000 30.0000
-   number 300
+   number 291
 end structure

@@ -1,4 +1,4 @@
-    Will create a spherical region containing the following molecules:
+    Will create a cubic periodic cell containing the following molecules:
 
         +-------------+-------------+---------+
         |  Component  | Structure   |   Ratio |
@@ -7,17 +7,17 @@
         |    fluid    | O           |     $nb |
         +-------------+-------------+---------+
 
-    The dimensions of the region will be calculated from the density 0.9 g/ml.
+    The dimensions of the region will be calculated from the volume 10.0 nm³.
     The number of molecules of the fluid will be obtained by rounding 300
     molecules to give the requested ratios of species.
 
-Created a spherical region with a diameter of 32.69 Å with 300 fluid molecules
+Created a periodic cubic cell 21.54 Å on a side with 164 fluid molecules
 
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |
     |-------------+-------------+---------------+----------+------------|
-    |    fluid    | c1ccccc1    |            25 |       75 |         25 |
-    |    fluid    | O           |            75 |      225 |         75 |
+    |    fluid    | c1ccccc1    |            25 |       41 |         25 |
+    |    fluid    | O           |            75 |      123 |         75 |
     +-------------+-------------+---------------+----------+------------+
 
-There are a total of 1575 atoms in the cell giving a density of 0.9 g/ml.
+There are a total of 861 atoms in the cell giving a density of 0.89976 g/ml.

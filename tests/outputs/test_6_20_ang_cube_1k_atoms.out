@@ -11,13 +11,13 @@
     20.0 Å. The number of molecules of the fluid will be obtained by rounding
     1000 atoms to give a whole number of molecules with the requested ratios.
 
-Created a cubic region 20.00 Å on a side with 306 fluid molecules
+Created a cubic region 20.00 Å on a side with 297 fluid molecules
 
-    +-------------+------------------+----------+
-    |  Component  | Structure        |   Number |
-    |-------------+------------------+----------|
-    |    fluid    | c1ccccc1c2ccccc2 |        6 |
-    |    fluid    | O                |      300 |
-    +-------------+------------------+----------+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
+    |-------------+------------------+---------------+----------+------------|
+    |    fluid    | c1ccccc1c2ccccc2 |         1.961 |        6 |       2.02 |
+    |    fluid    | O                |        98.039 |      291 |      97.98 |
+    +-------------+------------------+---------------+----------+------------+
 
-There are a total of 1032 atoms in the cell giving a density of 1.3139 g/ml.
+There are a total of 1005 atoms in the cell giving a density of 1.2802 g/ml.
