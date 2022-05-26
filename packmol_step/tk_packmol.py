@@ -270,7 +270,7 @@ class TkPackmol(seamm.TkNode):
 
             if "definition" not in widgets:
                 # the SMILES ot system/configuration
-                widgets["definition"] = ttk.Entry(frame, width=50, takefocus=True)
+                widgets["definition"] = ttk.Entry(frame, width=20, takefocus=True)
                 widgets["definition"].insert("end", data["definition"])
 
             if "count" not in widgets:
@@ -300,7 +300,7 @@ class TkPackmol(seamm.TkNode):
         self._add_molecule.lift()
         self._add_molecule.grid(row=row, column=0, columnspan=3, sticky=tk.W)
 
-        frame.grid_columnconfigure(3, weight=1, minsize=200)
+        frame.grid_columnconfigure(3, weight=1)
 
     def right_click(self, event):
         """Probably need to add our dialog..."""
