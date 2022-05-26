@@ -18,6 +18,8 @@ import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import packmol_step
 
+is_expr = seamm.Node.is_expr
+
 logger = logging.getLogger(__name__)
 job = printing.getPrinter()
 printer = printing.getPrinter("packmol")
@@ -202,7 +204,9 @@ class Packmol(seamm.Node):
 
         # Get the input files and any more output to print
         tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
-        molecules, files, output, cell = Packmol.get_input(P, system_db, tmp_db)
+        molecules, files, output, cell = Packmol.get_input(
+            P, system_db, tmp_db, seamm.flowchart_variables
+        )
 
         self.logger.log(0, pprint.pformat(files))
 
@@ -287,7 +291,7 @@ class Packmol(seamm.Node):
         return next_node
 
     @staticmethod
-    def get_input(P, system_db, tmp_db):
+    def get_input(P, system_db, tmp_db, context):
         """Create the input for PACKMOL."""
         # Return the translation from points a to b
         def recenter(a, b):
@@ -306,9 +310,18 @@ class Packmol(seamm.Node):
         molecules = []
         for molecule in P["molecules"]:
             component = molecule["component"]
+            if is_expr(component):
+                component = context.value(component)
             source = molecule["source"]
+            if is_expr(source):
+                source = context.value(source)
             definition = molecule["definition"]
+            if is_expr(definition):
+                definition = context.value(definition)
             count = molecule["count"]
+            if is_expr(count):
+                count = context.value(count)
+            count = int(count)
 
             if source == "SMILES":
                 tmp_system = tmp_db.create_system(name=definition)
@@ -326,7 +339,6 @@ class Packmol(seamm.Node):
                         confname = definition
                     tmp_configuration = tmp_system.get_configuration(confname)
 
-            count = int(molecule["count"])
             tmp_mass = count * tmp_configuration.mass * ureg.g / ureg.mol
             tmp_mass.ito("kg")
 
