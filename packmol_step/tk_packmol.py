@@ -170,28 +170,28 @@ class TkPackmol(seamm.TkNode):
             row += 1
             widgets.append(self[key])
 
-            if amount == "rounding this number of atoms":
-                for key in ("approximate number of atoms",):
-                    self[key].grid(row=row, column=0, sticky=tk.EW)
-                    row += 1
-                    widgets.append(self[key])
-            elif amount == "rounding this number of molecules":
-                for key in ("approximate number of molecules",):
-                    self[key].grid(row=row, column=0, sticky=tk.EW)
-                    row += 1
-                    widgets.append(self[key])
-            elif amount == "using the density":
-                for key in ("density",):
-                    self[key].grid(row=row, column=0, sticky=tk.EW)
-                    row += 1
-                    widgets.append(self[key])
-            elif amount == "using the Ideal Gas Law":
-                for key in ("temperature", "pressure"):
-                    self[key].grid(row=row, column=0, sticky=tk.EW)
-                    row += 1
-                    widgets.append(self[key])
-            else:
-                raise RuntimeError(f"Do not recognize amount '{amount}'")
+        if amount == "rounding this number of atoms":
+            for key in ("approximate number of atoms",):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        elif amount == "rounding this number of molecules":
+            for key in ("approximate number of molecules",):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        elif amount == "using the density":
+            for key in ("density",):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        elif amount == "using the Ideal Gas Law":
+            for key in ("temperature", "pressure"):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
+                widgets.append(self[key])
+        else:
+            raise RuntimeError(f"Do not recognize amount '{amount}'")
 
         sw.align_labels(widgets, sticky=tk.E)
 
