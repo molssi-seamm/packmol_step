@@ -8,8 +8,8 @@
         +-------------+-------------+---------+
 
     The dimensions of the region will be calculated from the volume 6.0 nm³. The
-    number of molecules of the fluid will be obtained by rounding 300 molecules
-    to give the requested ratios of species.
+    number of molecules of the fluid will be obtained  by using the density 0.9
+    g/ml.
 
 Created a periodic 10.00 x 20.00 x 30.00 Å cell with 99 fluid molecules
 

@@ -10,8 +10,8 @@
     The dimensions of the region will be calculated from the solute dimensions.
     If the input structure is periodic, its dimensions will be used. Otherwise
     for molecules, a the region will be a box with extra space of 10.0 Å around
-    the molecule. The number of molecules of the fluid will be obtained by
-    rounding 100 molecules to give the requested ratios of species.
+    the molecule. The number of molecules of the fluid will be obtained  by
+    using the density 1.0 g/ml.
 
 Created a cubic region 28.47 Å on a side with the solute and 763.0 solvent molecules
 

@@ -159,14 +159,14 @@ class Packmol(seamm.Node):
                 f"by rounding {P['approximate number of atoms']} atoms to give "
                 "a whole number of molecules with the requested ratios."
             )
-        elif "rounding this number of molecules":
+        elif amount == "rounding this number of molecules":
             text += (
                 f"by rounding {P['approximate number of molecules']} molecules to give "
                 "the requested ratios of species."
             )
-        elif "using the density":
+        elif amount == "using the density":
             text += f" by using the density {P['density']}."
-        elif "using the Ideal Gas Law":
+        elif amount == "using the Ideal Gas Law":
             text += (
                 f" by using the Ideal Gas Law (PV=NRT) with P={P['pressure']} and "
                 f"T={P['temperature']}."

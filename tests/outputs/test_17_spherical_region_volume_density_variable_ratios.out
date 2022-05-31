@@ -8,8 +8,8 @@
         +-------------+-------------+---------+
 
     The dimensions of the region will be calculated from the volume 10.0 nm³.
-    The number of molecules of the fluid will be obtained by rounding 300
-    molecules to give the requested ratios of species.
+    The number of molecules of the fluid will be obtained  by using the density
+    0.9 g/ml.
 
 Created a spherical region with a diameter of 26.73 Å with 164 fluid molecules
 
