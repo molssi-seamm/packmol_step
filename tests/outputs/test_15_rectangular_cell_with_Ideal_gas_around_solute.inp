@@ -1,0 +1,14 @@
+tolerance 2.0
+output packmol.pdb
+filetype pdb
+connect yes
+structure input_1.pdb
+   inside box 1.0000 1.0000 1.0000 25.3153 52.6305 79.9458
+   center
+   fixed 13.4853 29.3630 41.0638 0.0 0.0 0.0
+   number 1
+end structure
+structure input_2.pdb
+   inside box 1.0000 1.0000 1.0000 25.3153 52.6305 79.9458
+   number 300
+end structure

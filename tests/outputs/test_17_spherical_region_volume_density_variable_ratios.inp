@@ -1,0 +1,12 @@
+tolerance 2.0
+output packmol.pdb
+filetype pdb
+connect yes
+structure input_1.pdb
+   inside sphere 0.0 0.0 0.0 13.3650
+   number 41
+end structure
+structure input_2.pdb
+   inside sphere 0.0 0.0 0.0 13.3650
+   number 123
+end structure

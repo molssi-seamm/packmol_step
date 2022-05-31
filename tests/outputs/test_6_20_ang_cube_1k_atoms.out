@@ -1,0 +1,23 @@
+    Will create a cubic region containing the following molecules:
+
+        +-------------+------------------+---------+
+        |  Component  | Structure        |   Ratio |
+        |-------------+------------------+---------|
+        |    fluid    | c1ccccc1c2ccccc2 |       1 |
+        |    fluid    | O                |      50 |
+        +-------------+------------------+---------+
+
+    The dimensions of the region will be given explicitly by the edge length
+    20.0 Å. The number of molecules of the fluid will be obtained by rounding
+    1000 atoms to give a whole number of molecules with the requested ratios.
+
+Created a cubic region 20.00 Å on a side with 297 fluid molecules
+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
+    |-------------+------------------+---------------+----------+------------|
+    |    fluid    | c1ccccc1c2ccccc2 |         1.961 |        6 |       2.02 |
+    |    fluid    | O                |        98.039 |      291 |      97.98 |
+    +-------------+------------------+---------------+----------+------------+
+
+There are a total of 1005 atoms in the cell giving a density of 1.2802 g/ml.

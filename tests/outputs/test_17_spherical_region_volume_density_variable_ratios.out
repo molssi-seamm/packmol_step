@@ -1,0 +1,23 @@
+    Will create a spherical region containing the following molecules:
+
+        +-------------+-------------+---------+
+        |  Component  | Structure   |   Ratio |
+        |-------------+-------------+---------|
+        |    fluid    | c1ccccc1    |     $na |
+        |    fluid    | O           |     $nb |
+        +-------------+-------------+---------+
+
+    The dimensions of the region will be calculated from the volume 10.0 nm³.
+    The number of molecules of the fluid will be obtained  by using the density
+    0.9 g/ml.
+
+Created a spherical region with a diameter of 26.73 Å with 164 fluid molecules
+
+    +-------------+-------------+---------------+----------+------------+
+    |  Component  | Structure   |   Requested % |   Number |   Actual % |
+    |-------------+-------------+---------------+----------+------------|
+    |    fluid    | c1ccccc1    |            25 |       41 |         25 |
+    |    fluid    | O           |            75 |      123 |         75 |
+    +-------------+-------------+---------------+----------+------------+
+
+There are a total of 861 atoms in the cell giving a density of 0.89976 g/ml.

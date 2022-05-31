@@ -1,0 +1,24 @@
+    Will create a rectangular periodic cell containing the following molecules:
+
+        +-------------+------------------+---------+
+        |  Component  | Structure        |   Ratio |
+        |-------------+------------------+---------|
+        |   solute    | c1ccccc1c2ccccc2 |         |
+        |    fluid    | O                |       1 |
+        +-------------+------------------+---------+
+
+    The dimensions of the region will be calculated using the Ideal Gas Law
+    (PV=NRT) with P=100.0 atm and T=298.15 K. The number of molecules of the
+    fluid will be obtained by rounding 300 molecules to give the requested
+    ratios of species.
+
+Created a periodic 27.32 x 54.63 x 81.95 Å cell with the solute and 300.0 solvent molecules
+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |-------------+------------------+---------------+----------+------------|
+    |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
+    |    fluid    | O                |       100.000 |      300 | 100.000    |
+    +-------------+------------------+---------------+----------+------------+
+
+There are a total of 922 atoms in the cell giving a density of 0.075486 g/ml.

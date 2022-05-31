@@ -1,0 +1,23 @@
+    Will create a cubic region containing the following molecules:
+
+        +-------------+------------------+---------+
+        |  Component  | Structure        |   Ratio |
+        |-------------+------------------+---------|
+        |   solute    | c1ccccc1c2ccccc2 |         |
+        |    fluid    | O                |       1 |
+        +-------------+------------------+---------+
+
+    The dimensions of the region will be calculated from the density 1.0 g/ml.
+    The number of molecules of the fluid will be obtained by rounding 1000 atoms
+    to give a whole number of molecules with the requested ratios.
+
+Created a cubic region 21.55 Å on a side with the solute and 326.0 solvent molecules
+
+    +-------------+------------------+---------------+----------+------------+
+    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |-------------+------------------+---------------+----------+------------|
+    |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
+    |    fluid    | O                |       100.000 |      326 | 100.000    |
+    +-------------+------------------+---------------+----------+------------+
+
+There are a total of 1000 atoms in the cell giving a density of 1.0 g/ml.

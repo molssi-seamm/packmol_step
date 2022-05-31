@@ -1,0 +1,23 @@
+    Will create a rectangular periodic cell containing the following molecules:
+
+        +-------------+-------------+---------+
+        |  Component  | Structure   |   Ratio |
+        |-------------+-------------+---------|
+        |    fluid    | c1ccccc1    |     $na |
+        |    fluid    | O           |     $nb |
+        +-------------+-------------+---------+
+
+    The dimensions of the region will be calculated from the volume 6.0 nm³. The
+    number of molecules of the fluid will be obtained  by using the density 0.9
+    g/ml.
+
+Created a periodic 10.00 x 20.00 x 30.00 Å cell with 99 fluid molecules
+
+    +-------------+-------------+---------------+----------+------------+
+    |  Component  | Structure   |   Requested % |   Number |   Actual % |
+    |-------------+-------------+---------------+----------+------------|
+    |    fluid    | c1ccccc1    |            25 |       25 |     25.253 |
+    |    fluid    | O           |            75 |       74 |     74.747 |
+    +-------------+-------------+---------------+----------+------------+
+
+There are a total of 522 atoms in the cell giving a density of 0.9094 g/ml.

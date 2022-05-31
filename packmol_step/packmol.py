@@ -3,8 +3,12 @@
 """A step for building fluids with Packmol in a SEAMM flowchart"""
 
 import logging
+import math
 import os.path
 import pprint
+import textwrap
+
+from tabulate import tabulate
 
 from molsystem import SystemDB
 import seamm
@@ -13,6 +17,8 @@ from seamm_util import ureg, Q_, units_class  # noqa: F401
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import packmol_step
+
+is_expr = seamm.Node.is_expr
 
 logger = logging.getLogger(__name__)
 job = printing.getPrinter()
@@ -88,202 +94,121 @@ class Packmol(seamm.Node):
         if not P:
             P = self.parameters.values_to_dict()
 
-        text = "Creating a cubic supercell "
-        if P["method"][0] == "$":
-            text += "with the method given by {method}"
-        elif "cubic" in P["method"]:
-            text += "{size of cubic cell} on a side"
-        elif "volume" in P["method"]:
-            text += "with a volume of {volume}"
-        elif "density" in P["method"]:
-            text += "with a density of {density}"
-        elif "molecules" in P["method"]:
-            text += "containing {number of molecules} molecules"
-        elif "atoms" in P["method"]:
-            text += "containing about {approximate number of atoms} atoms"
-        elif "pressure" in P["method"]:
+        periodic = P["periodic"]
+        if isinstance(periodic, str):
+            periodic = periodic.lower() == "yes"
+        shape = P["shape"]
+
+        if periodic:
+            text = f"Will create a {shape} periodic cell"
+        else:
+            text = f"Will create a {shape} region"
+        text += " containing the following molecules:\n\n"
+
+        # Print table of molecules
+        table = {
+            "Component": [],
+            "Structure": [],
+            "Ratio": [],
+        }
+        for molecule in self.parameters["molecules"].value:
+            table["Component"].append(molecule["component"])
+            table["Structure"].append(molecule["definition"])
+            if molecule["component"] == "solute":
+                table["Ratio"].append("")
+            else:
+                table["Ratio"].append(molecule["count"])
+
+        description = self.header + "\n" + str(__(text, indent=self.indent + 4 * " "))
+        text_lines = tabulate(
+            table, headers="keys", tablefmt="psql", colalign=("center", "left", "right")
+        )
+        description += textwrap.indent(text_lines, self.indent + 8 * " ")
+
+        # And the rest of the control
+        dimensions = P["dimensions"]
+        text = f"\n\nThe dimensions of the region will be {dimensions}"
+        if dimensions == "given explicitly":
+            if shape == "cubic":
+                text += f" by the edge length {P['edge length']}."
+            elif shape == "rectangular":
+                text += f" by the three sides {P['a']} x{P['b']} x{P['c']}."
+            elif shape == "spherical":
+                text += f" by the diameter {P['diameter']}."
+            else:
+                raise RuntimeError(f"Do not recognize shape '{shape}'")
+        elif dimensions == "calculated from the volume":
+            text += f" {P['volume']}."
+        elif dimensions == "calculated from the solute dimensions":
             text += (
-                " with P = {ideal gas pressure} and "
-                "T = {ideal gas temperature}, assuming an ideal gas"
+                ". If the input structure is periodic, its dimensions will be used. "
+                "Otherwise for molecules, a the region will be a box with "
+                f"extra space of {P['solvent thickness']} around the molecule."
+            )
+        elif dimensions == "calculated from the density":
+            text += f" {P['density']}."
+        elif dimensions == "calculated using the Ideal Gas Law":
+            text += f" (PV=NRT) with P={P['pressure']} and T={P['temperature']}."
+        else:
+            raise RuntimeError(f"Do not recognize dimensions '{dimensions}'")
+
+        amount = P["fluid amount"]
+        text += " The number of molecules of the fluid will be obtained "
+        if amount == "rounding this number of atoms":
+            text += (
+                f"by rounding {P['approximate number of atoms']} atoms to give "
+                "a whole number of molecules with the requested ratios."
+            )
+        elif amount == "rounding this number of molecules":
+            text += (
+                f"by rounding {P['approximate number of molecules']} molecules to give "
+                "the requested ratios of species."
+            )
+        elif amount == "using the density":
+            text += f" by using the density {P['density']}."
+        elif amount == "using the Ideal Gas Law":
+            text += (
+                f" by using the Ideal Gas Law (PV=NRT) with P={P['pressure']} and "
+                f"T={P['temperature']}."
             )
         else:
-            raise RuntimeError("Don't recognize the method {}".format(P["method"]))
+            raise RuntimeError(f"Do not recognize amount '{amount}'")
 
-        if P["submethod"][0] == "$":
-            text += " and a submethod given by {submethod}"
-        elif "cubic" in P["submethod"]:
-            text += " in a cell {size of cubic cell} on a side"
-        elif "volume" in P["submethod"]:
-            text += " with a volume of {volume}"
-        elif "density" in P["submethod"]:
-            text += " with a density of {density}"
-        elif "molecules" in P["submethod"]:
-            text += " containing {number of molecules} molecules"
-        elif "atoms" in P["submethod"]:
-            text += " containing about {approximate number of atoms} atoms"
-        elif "pressure" in P["submethod"]:
-            text += (
-                " with P = {ideal gas pressure} and "
-                "T = {ideal gas temperature}, assuming an ideal gas"
-            )
-        else:
-            raise RuntimeError(
-                "Don't recognize the submethod {}".format(P["submethod"])
-            )
-
-        return self.header + "\n" + __(text, **P, indent=4 * " ").__str__()
+        description += str(__(text, indent=self.indent + 4 * " "))
+        return description
 
     def run(self):
         """Run a Packmol building step"""
 
         next_node = super().run(printer)
 
-        # Get the system
+        # Get the system database
         system_db = self.get_variable("_system_db")
 
         # The options from command line, config file ...
         path = self.options["packmol_path"]
 
+        # and the executable
         packmol_exe = os.path.join(path, "packmol")
-
         seamm_util.check_executable(packmol_exe)
 
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
         )
-
-        self.logger.info("   method = {}".format(P["method"]))
-        self.logger.info("submethod = {}".format(P["submethod"]))
+        periodic = P["periodic"]
 
         # Print what we are doing. Have to fix formatting for printing...
         PP = dict(P)
         for key in PP:
             if isinstance(PP[key], units_class):
                 PP[key] = "{:~P}".format(PP[key])
-        printer.important(__(self.description_text(PP), indent=self.indent))
+        printer.important(self.description_text(PP))
 
-        size = None
-        volume = None
-        density = None
-        n_molecules = None
-        n_atoms = None
-        n_moles = None
-        mass = None
-        pressure = None
-        temperature = None
-
-        if "cubic" in P["method"]:
-            size = P["size of cubic cell"]
-        elif "volume" in P["method"]:
-            volume = P["volume"]
-        elif "density" in P["method"]:
-            density = P["density"]
-        elif "molecules" in P["method"]:
-            n_molecules = P["number of molecules"]
-        elif "atoms" in P["method"]:
-            n_atoms = P["approximate number of atoms"]
-        elif "pressure" in P["method"]:
-            pressure = P["ideal gas pressure"]
-            temperature = P["ideal gas temperature"]
-        else:
-            raise RuntimeError("Don't recognize the method {}".format(P["method"]))
-
-        if "cubic" in P["submethod"]:
-            size = P["size of cubic cell"]
-        elif "volume" in P["submethod"]:
-            volume = P["volume"]
-        elif "density" in P["submethod"]:
-            density = P["density"]
-        elif "molecules" in P["submethod"]:
-            n_molecules = P["number of molecules"]
-        elif "atoms" in P["submethod"]:
-            n_atoms = P["approximate number of atoms"]
-        elif "temperature" in P["submethod"]:
-            pass
-        else:
-            raise RuntimeError(
-                "Don't recognize the submethod {}".format(P["submethod"])
-            )
-
-        source = P["molecule source"]
-        if source == "current configuration":
-            configuration = system_db.system.configuration
-            if configuration.n_atoms == 0:
-                self.logger.error("Packmol calculate: there is no structure!")
-                raise RuntimeError("Packmol calculate: there is no structure!")
-
-            input_n_molecules = 1
-            input_n_atoms = configuration.n_atoms
-            input_mass = configuration.mass * ureg.g / ureg.mol  # g/mol
-            input_mass.ito("kg")
-        elif source == "SMILES":
-            # Need to create the molecules.
-            tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
-            molecules = []
-            input_n_molecules = 0
-            input_n_atoms = 0
-            input_mass = 0.0
-            for molecule in self.parameters["molecules"].value:
-                SMILES = molecule["molecule"]
-                tmp = {"SMILES": SMILES}
-                system = tmp_db.create_system(name=SMILES)
-                configuration = system.create_configuration(name="default")
-                tmp["configuration"] = configuration
-                configuration.from_smiles(SMILES)
-                count = tmp["count"] = int(molecule["count"])
-                molecules.append(tmp)
-                input_n_molecules += count
-                input_n_atoms += count * configuration.n_atoms
-                input_mass += count * configuration.mass * ureg.g / ureg.mol
-            input_mass.ito("kg")
-
-        tmp = self.calculate(
-            input_n_molecules=input_n_molecules,
-            input_n_atoms=input_n_atoms,
-            input_mass=input_mass,
-            size=size,
-            volume=volume,
-            density=density,
-            n_molecules=n_molecules,
-            n_atoms=n_atoms,
-            n_moles=n_moles,
-            mass=mass,
-            pressure=pressure,
-            temperature=temperature,
+        # Get the input files and any more output to print
+        tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
+        molecules, files, output, cell = Packmol.get_input(
+            P, system_db, tmp_db, seamm.flowchart_variables
         )
-
-        size = tmp["size"].to("Å").magnitude
-        n_copies = tmp["n_copies"]
-        n_molecules = tmp["n_molecules"]
-
-        gap = P["gap"].to("Å").magnitude
-
-        # Prepare the input
-        lines = []
-        lines.append("tolerance {}".format(gap))
-        lines.append("output packmol.pdb")
-        lines.append("filetype pdb")
-        lines.append("connect yes")
-
-        if source == "current configuration":
-            lines.append("structure input.pdb")
-            lines.append(f"   number {n_copies}")
-            lines.append(f"   inside cube 0.0 0.0 0.0 {size-gap:.4f}")
-            lines.append("end structure")
-            files = {"input.pdb": configuration.to_pdb_text()}
-        elif source == "SMILES":
-            files = {}
-            for i, molecule in enumerate(molecules, start=1):
-                count = molecule["count"]
-                lines.append(f"structure input_{i}.pdb")
-                lines.append(f"   number {n_copies * count}")
-                lines.append(f"   inside cube 0.0 0.0 0.0 {size-gap:.4f}")
-                lines.append("end structure")
-                configuration = molecule["configuration"]
-                files[f"input_{i}.pdb"] = configuration.to_pdb_text()
-
-        lines.append("")
-        files["input.inp"] = "\n".join(lines)
 
         self.logger.log(0, pprint.pformat(files))
 
@@ -314,41 +239,45 @@ class Packmol(seamm.Node):
                 else:
                     fd.write(result[filename]["exception"])
 
+        # Get the bond orders and extra parameters like ff atom types
+        bond_orders = []
         extra_data = {}
-        if source == "current configuration":
-            bond_orders = configuration.bonds.get_column_data("bondorder") * n_copies
-            atoms = configuration.atoms
+        for molecule in molecules:
+            n = molecule["number"]
+            orders = molecule["configuration"].bonds.get_column_data("bondorder")
+            bond_orders.extend(orders * n)
+
+            atoms = molecule["configuration"].atoms
             for key in atoms.keys():
-                if "atom_types_" in key or "charges_" in key:
-                    extra_data[key] = atoms.get_column_data(key) * n_copies
-        elif source == "SMILES":
-            system, configuration = self.get_system_configuration(P)
-        # Remove anything in the system
+                if "atom_types_" in key or "charges" in key:
+                    if key in extra_data:
+                        extra_data[key].extend(atoms.get_column_data(key) * n)
+                    else:
+                        extra_data[key] = atoms.get_column_data(key) * n
+
+        # Remove the temporary database
+        tmp_db.close()
+
+        # Get the system to fill and make sure it is empty
+        system, configuration = self.get_system_configuration(P)
         configuration.clear()
+
         # Create the configuration from the PDB output of PACKMOL
+        configuration.coordinate_system = "Cartesian"
         configuration.from_pdb_text(result["packmol.pdb"]["data"])
-        if source == "SMILES":
-            # And patch up the bond orders...
-            bond_orders = []
-            for molecule in molecules:
-                n = n_copies * molecule["count"]
-                orders = molecule["configuration"].bonds.get_column_data("bondorder")
-                bond_orders.extend(orders * n)
-            # Remove the temporary database
-            tmp_db.close()
+
+        # And set the bond orders and extra data we saved earlier.
         configuration.bonds.get_column("bondorder")[:] = bond_orders
         for key, values in extra_data.items():
             atoms.get_column(key)[:] = values
 
         # Finally, make periodic of correct size
-        configuration.periodicity = 3
-        configuration.cell.parameters = (size, size, size, 90.0, 90.0, 90.0)
+        if periodic:
+            configuration.periodicity = 3
+            a, b, c = cell
+            configuration.cell.parameters = (a, b, c, 90.0, 90.0, 90.0)
 
-        string = "Created a cubic cell {size:.5~P} on a side"
-        string += " with {n_molecules} molecules"
-        string += " for a total of {n_atoms} atoms in the cell"
-        string += " and a density of {density:.5~P}."
-        printer.important(__(string, indent="    ", **tmp))
+        printer.important(__(output, indent=4 * " "))
         printer.important("")
 
         # Since we have succeeded, add the citation.
@@ -363,197 +292,549 @@ class Packmol(seamm.Node):
 
         return next_node
 
-    def calculate(
-        self,
-        input_n_molecules=1,
-        input_n_atoms=None,
-        input_mass=None,
-        size=None,
-        volume=None,
-        density=None,
-        n_molecules=None,
-        n_atoms=None,
-        n_moles=None,
-        mass=None,
-        pressure=None,
-        temperature=None,
-    ):
-        """Work out the other variables given any two independent ones"""
+    @staticmethod
+    def get_input(P, system_db, tmp_db, context):
+        """Create the input for PACKMOL."""
+        # Return the translation from points a to b
+        def recenter(a, b):
+            return b[0] - a[0], b[1] - a[1], b[2] - a[2]
 
-        n_parameters = 0
-        if size is not None:
-            n_parameters += 1
-        if volume is not None:
-            n_parameters += 1
-        if density is not None:
-            n_parameters += 1
-        if n_molecules is not None:
-            n_parameters += 1
-        if n_atoms is not None:
-            n_parameters += 1
-        if n_moles is not None:
-            n_parameters += 1
-        if mass is not None:
-            n_parameters += 1
-        if pressure is not None:
-            n_parameters += 1
+        # Work out integer numbers of molecules, atoms, etc.
+        def round_copies(n_copies, molecules):
+            total_atoms = 0
+            total_molecules = 0
+            total_mass = 0.0
+            total = 0.0
+            total_count = 0.0
+            for molecule in molecules:
+                count = molecule["count"]
+                component = molecule["type"]
+                mass = molecule["mass"]
+                n_atoms = molecule["n_atoms"]
 
-        if n_parameters != 2:
-            raise RuntimeError(
-                "Exactly two independent parameters "
-                "must be given, not {}".format(n_parameters)
-            )
+                if component == "solute":
+                    total_atoms += n_atoms
+                    total_molecules += 1
+                    total_mass += mass
+                    molecule["number"] = 1
+                else:
+                    n = int(round(n_copies * count))
+                    if n > 0:
+                        total_atoms += n * n_atoms
+                        total_molecules += n
+                        total_mass += n * mass
+                    molecule["number"] = n
+                    total_count += molecule["count"]
+                    total += n
 
-        if size is not None or volume is not None:
-            if size is not None:
-                if volume is not None:
-                    raise RuntimeError("Size and volume are not independent!")
+            # Get the actual mol percent
+            for molecule in molecules:
+                if molecule["type"] == "solute":
+                    molecule["actual %"] = ""
+                    molecule["requested %"] = ""
+                else:
+                    molecule["actual %"] = f"{molecule['number']/total*100:.3f}"
+                    molecule["requested %"] = f"{molecule['count']/total_count*100:.3f}"
 
-                volume = size ** 3
+            return total_atoms, total_molecules, total_mass
+
+        # Start by handling the molecules
+        n_solute_molecules = 0
+        n_solute_atoms = 0
+        solute_mass = 0.0
+        n_fluid_molecules = 0
+        n_fluid_atoms = 0
+        fluid_mass = 0.0
+
+        # May need to create molecules.
+        solute_configuration = None
+        molecules = []
+        for molecule in P["molecules"]:
+            component = molecule["component"]
+            if is_expr(component):
+                component = context.value(component)
+            source = molecule["source"]
+            if is_expr(source):
+                source = context.value(source)
+            definition = molecule["definition"]
+            if is_expr(definition):
+                definition = context.value(definition)
+            count = molecule["count"]
+            if is_expr(count):
+                count = context.value(count)
+            count = float(count)
+
+            if source == "SMILES":
+                tmp_system = tmp_db.create_system(name=definition)
+                tmp_configuration = tmp_system.create_configuration(name="default")
+                tmp_configuration.from_smiles(definition)
+            elif source == "configuration":
+                if definition == "" or definition == "current":
+                    tmp_system = system_db.system
+                    tmp_configuration = tmp_system.configuration
+                else:
+                    if "/" in definition:
+                        sysname, confname = definition.split("/")
+                        tmp_system = system_db.get_system(sysname)
+                    else:
+                        confname = definition
+                    tmp_configuration = tmp_system.get_configuration(confname)
+
+            tmp_mass = tmp_configuration.mass * ureg.g / ureg.mol
+            tmp_mass.ito("kg")
+
+            if component == "solute":
+                n_solute_molecules += count
+                n_solute_atoms += count * tmp_configuration.n_atoms
+                solute_mass += count * tmp_mass
+                if solute_configuration is None:
+                    solute_configuration = tmp_configuration
+                else:
+                    raise RuntimeError("More than one solute system!")
             else:
-                size = volume ** (1 / 3)
+                n_fluid_molecules += count
+                n_fluid_atoms += count * tmp_configuration.n_atoms
+                fluid_mass += count * tmp_mass
 
-            if density is not None:
-                # rho = mass/volume
-                mass = density * volume
-                n_copies = int(round(mass / input_mass))
-                if n_copies == 0:
-                    n_copies = 1
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-            elif n_molecules is not None:
-                n_copies = int(round(n_molecules / input_n_molecules))
-                if n_copies == 0:
-                    n_copies = 1
-                mass = n_molecules * input_mass
-                density = mass / volume
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-            elif n_atoms is not None:
-                n_copies = round(n_atoms / input_n_atoms)
-                if n_copies == 0:
-                    n_copies = 1
-                mass = n_copies * input_mass
-                density = mass / volume
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-            elif n_moles is not None:
-                n_molecules = int(round(n_moles * ureg.N_A))
-                n_copies = int(n_molecules / input_n_molecules)
-                if n_copies == 0:
-                    n_copies = 1
-                n_molecules = n_copies * input_n_molecules
-                mass = n_molecules * input_mass
-                density = mass / volume
-                n_atoms = n_molecules * input_n_atoms
-            elif mass is not None:
-                density = mass / volume
-                n_copies = int(round(mass / input_mass))
-                if n_copies == 0:
-                    n_copies = 1
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-            elif pressure is not None:
-                # PV = nRT
-                n_molecules = pressure * volume / (temperature * ureg.k)
-                n_copies = int(n_molecules / input_n_molecules)
-                if n_copies == 0:
-                    n_copies = 1
-                n_molecules = n_copies * input_n_molecules
-                volume = n_molecules * temperature * ureg.k / pressure
-                mass = n_molecules * input_mass
-                density = mass / volume
-                n_atoms = n_molecules * input_n_atoms
-        elif density is not None:
-            if n_molecules is not None:
-                n_copies = int(n_molecules / input_n_molecules)
-                if n_copies == 0:
-                    n_copies = 1
-                mass = n_copies * input_mass
-                volume = mass / density
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-            elif n_atoms is not None:
-                n_copies = int(round(n_atoms / input_n_atoms))
-                if n_copies == 0:
-                    n_copies = 1
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-                mass = n_copies * input_mass
-                volume = mass / density
-            elif n_moles is not None:
-                n_copies = int(round(n_moles * ureg.N_A / input_n_molecules))
-                if n_copies == 0:
-                    n_copies = 1
-                n_molecules = n_copies * input_n_molecules
-                mass = n_molecules * input_mass
-                volume = mass / density
-                n_atoms = n_molecules * input_n_atoms
-            elif mass is not None:
-                volume = mass / density
-                n_copies = int(round(mass / input_mass))
-                if n_copies == 0:
-                    n_copies = 1
-                n_atoms = n_copies * input_n_atoms
-                n_molecules = n_copies * input_n_molecules
-                n_moles = n_molecules / ureg.N_A
-            size = volume ** (1 / 3)
-        elif n_molecules is not None:
-            if pressure is None or temperature is None:
-                raise RuntimeError(
-                    "For ideal gas, the number of molecules or atoms, plus the "
-                    "pressure and temperature must be given."
-                )
-            n_copies = int(n_molecules / input_n_molecules)
-            if n_copies == 0:
-                n_copies = 1
-            n_molecules = n_copies * input_n_molecules
-            # PV = nRT
-            volume = n_molecules * temperature * ureg.k / pressure
-            size = volume ** (1 / 3)
-            density = n_copies * input_mass / volume
-            n_atoms = n_copies * input_n_atoms
-        elif n_atoms is not None:
-            if pressure is None or temperature is None:
-                raise RuntimeError(
-                    "For ideal gas, the number of molecules or atoms, plus the "
-                    "pressure and temperature must be given."
-                )
-            n_copies = int(round(n_atoms / input_n_atoms))
-            if n_copies == 0:
-                n_copies = 1
-            n_molecules = input_n_molecules * n_copies
-            # PV = nRT
-            volume = n_molecules * temperature * ureg.k / pressure
-            size = volume ** (1 / 3)
-            density = n_copies * input_mass / volume
-            n_atoms = n_copies * input_n_atoms
-        else:
-            raise RuntimeError(
-                "The number of moles or the mass are not independent quantities!"
+            molecules.append(
+                {
+                    "configuration": tmp_configuration,
+                    "count": count,
+                    "type": component,
+                    "mass": tmp_mass,
+                    "n_atoms": tmp_configuration.n_atoms,
+                    "definition": definition,
+                }
             )
-        # make the units pretty
-        size.ito("Å")
-        volume.ito("Å**3")
+
+        periodic = P["periodic"]
+        shape = P["shape"]
+        dimensions = P["dimensions"]
+        amount = P["fluid amount"]
+        cell = None
+
+        # Get information about the solute for placing it
+        if solute_configuration is not None:
+            xyzs = solute_configuration.atoms.get_coordinates(fractionals=False)
+            if shape == "cubic":
+                center, sides = bounding_box(xyzs)
+            elif shape == "rectangular":
+                center, sides = bounding_box(xyzs)
+            elif shape == "spherical":
+                center, solute_radius = bounding_sphere(xyzs)
+
+        # Work out the dimensions of the region
+        if dimensions == "given explicitly":
+            if shape == "cubic":
+                a = P["edge length"].to("Å").magnitude
+                if periodic:
+                    cell = (a, a, a)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                volume = a**3
+            elif shape == "rectangular":
+                a = P["a"].to("Å").magnitude
+                b = P["b"].to("Å").magnitude
+                c = P["c"].to("Å").magnitude
+                if periodic:
+                    cell = (a, b, c)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    b -= gap
+                    c -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                volume = a * b * c
+            elif shape == "spherical":
+                diameter = P["diameter"].to("Å").magnitude
+                region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = center
+                    fixed = f"   fixed {-dx:.4f} {-dy:.4f} {-dz:.4f} 0.0 0.0 0.0"
+                volume = 4 / 3 * math.pi * (diameter / 2) ** 3
+            else:
+                raise RuntimeError(f"Do not recognize shape '{shape}'")
+        elif dimensions == "calculated from the volume":
+            volume = P["volume"].to("Å^3").magnitude
+            if shape == "cubic":
+                a = volume ** (1 / 3)
+                if periodic:
+                    cell = (a, a, a)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+            elif shape == "rectangular":
+                a = P["a"].to("Å").magnitude
+                b = P["b"].to("Å").magnitude
+                c = P["c"].to("Å").magnitude
+                volume1 = a * b * c
+                factor = (volume / volume1) ** (1 / 3)
+                a *= factor
+                b *= factor
+                c *= factor
+                if periodic:
+                    cell = (a, b, c)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    b -= gap
+                    c -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+            elif shape == "spherical":
+                diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
+                region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = center
+                    fixed = f"   fixed {-dx:.4f} {-dy:.4f} {-dz:.4f} 0.0 0.0 0.0"
+            else:
+                raise RuntimeError(f"Do not recognize shape '{shape}'")
+        elif dimensions == "calculated from the solute dimensions":
+            if shape == "spherical":
+                thickness = P["solvent thickness"].to("Å").magnitude
+                region = f"   inside sphere 0.0 0.0 0.0 {solute_radius+thickness:.4f}"
+                dx, dy, dz = center
+                fixed = f"   fixed {-dx:.4f} {-dy:.4f} {-dz:.4f} 0.0 0.0 0.0"
+                diameter = 2 * (solute_radius + thickness)
+                volume = 4 / 3 * math.pi * (diameter / 2) ** 3
+            else:
+                thickness = P["solvent thickness"].to("Å").magnitude
+                a, b, c = sides
+                if shape == "cubic":
+                    a = max(a, b, c)
+                    if periodic:
+                        volume = (a + thickness) ** 3
+                        a += thickness
+                        cell = (a, a, a)
+                        gap = P["gap"].to("Å").magnitude
+                        a -= gap
+                        x0 = f"{gap/2:.4f}"
+                        region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                    else:
+                        a += 2 * thickness
+                        volume = a**3
+                        region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                    # Move the solute molecule to the center of the box
+                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                else:
+                    if periodic:
+                        a += thickness
+                        b += thickness
+                        c += thickness
+                        cell = (a, b, c)
+                        volume = a * b * c
+                        gap = P["gap"].to("Å").magnitude
+                        a -= gap
+                        b -= gap
+                        c -= gap
+                        x0 = f"{gap/2:.4f}"
+                        region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                    else:
+                        a += 2 * thickness
+                        b += 2 * thickness
+                        c += 2 * thickness
+                        volume = a * b * c
+                        region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                    # Move the solute molecule to the center of the box
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+        elif dimensions == "calculated from the density":
+            density = P["density"]
+            if amount == "rounding this number of atoms":
+                n_atoms = P["approximate number of atoms"]
+                n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
+            elif amount == "rounding this number of molecules":
+                n_molecules = P["approximate number of molecules"]
+                n_copies = n_molecules / n_fluid_molecules
+            else:
+                raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+            n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
+            volume = mass / density
+            volume = volume.to("Å^3").magnitude
+
+            if shape == "cubic":
+                a = volume ** (1 / 3)
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                if periodic:
+                    cell = (a, a, a)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+            elif shape == "rectangular":
+                a = P["a"].to("Å").magnitude
+                b = P["b"].to("Å").magnitude
+                c = P["c"].to("Å").magnitude
+                volume1 = a * b * c
+                factor = (volume / volume1) ** (1 / 3)
+                a *= factor
+                b *= factor
+                c *= factor
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                if periodic:
+                    cell = (a, b, c)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    b -= gap
+                    c -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+            elif shape == "spherical":
+                diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
+                region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = center
+                    fixed = f"   fixed {-dx:.4f} {-dy:.4f} {-dz:.4f} 0.0 0.0 0.0"
+            else:
+                raise RuntimeError(f"Do not recognize shape '{shape}'")
+        elif dimensions == "calculated using the Ideal Gas Law":
+            temperature = P["temperature"]
+            pressure = P["pressure"]
+            if amount == "rounding this number of atoms":
+                n_atoms = P["approximate number of atoms"]
+                n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
+            elif amount == "rounding this number of molecules":
+                n_molecules = P["approximate number of molecules"]
+                n_copies = n_molecules / n_fluid_molecules
+            else:
+                raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+            n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
+
+            # PV = NRT
+            volume = n_molecules * temperature * ureg.k / pressure
+            volume = volume.to("Å^3").magnitude
+            if shape == "cubic":
+                a = volume ** (1 / 3)
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                if periodic:
+                    cell = (a, a, a)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                else:
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+            elif shape == "rectangular":
+                a = P["a"].to("Å").magnitude
+                b = P["b"].to("Å").magnitude
+                c = P["c"].to("Å").magnitude
+                volume1 = a * b * c
+                factor = (volume / volume1) ** (1 / 3)
+                a *= factor
+                b *= factor
+                c *= factor
+                if solute_configuration is not None:
+                    dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
+                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                if periodic:
+                    cell = (a, b, c)
+                    gap = P["gap"].to("Å").magnitude
+                    a -= gap
+                    b -= gap
+                    c -= gap
+                    x0 = f"{gap/2:.4f}"
+                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                else:
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+            elif shape == "spherical":
+                diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
+                region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
+                if solute_configuration is not None:
+                    dx, dy, dz = center
+                    fixed = f"   fixed {-dx:.4f} {-dy:.4f} {-dz:.4f} 0.0 0.0 0.0"
+            else:
+                raise RuntimeError(f"Do not recognize shape '{shape}'")
+        else:
+            raise RuntimeError(f"Do not recognize dimensions '{dimensions}'")
+
+        # Now that we have the volume, get the number of molecules
+        if amount == "rounding this number of atoms":
+            n_atoms = P["approximate number of atoms"]
+            n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
+        elif amount == "rounding this number of molecules":
+            n_molecules = P["approximate number of molecules"]
+            n_copies = n_molecules / n_fluid_molecules
+        elif amount == "using the density":
+            density = P["density"]
+            mass = Q_(volume, "Å^3") * density
+            mass.ito("kg")
+            n_copies = (mass - solute_mass) / fluid_mass
+        elif amount == "using the Ideal Gas Law":
+            # PV = NRT
+            n_molecules = pressure * volume / (temperature * ureg.k)
+            n_copies = n_molecules / n_fluid_molecules
+        else:
+            raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+        n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
+
+        # Prepare the input
+        lines = []
+        lines.append("tolerance 2.0")
+        lines.append("output packmol.pdb")
+        lines.append("filetype pdb")
+        lines.append("connect yes")
+
+        files = {}
+        for i, molecule in enumerate(molecules, start=1):
+            lines.append(f"structure input_{i}.pdb")
+            lines.append(region)
+            if molecule["type"] == "solute":
+                lines.append("   center")
+                lines.append(fixed)
+                lines.append("   number 1")
+            else:
+                lines.append(f"   number {molecule['number']}")
+            lines.append("end structure")
+            configuration = molecule["configuration"]
+            files[f"input_{i}.pdb"] = configuration.to_pdb_text()
+
+        lines.append("")
+        files["input.inp"] = "\n".join(lines)
+
+        string = "\n"
+        if periodic:
+            a, b, c = cell
+            if shape == "cubic":
+                string += f"Created a periodic cubic cell {a:.2f} Å on a side"
+            else:
+                string += f"Created a periodic {a:.2f} x {b:.2f} x {c:.2f} Å cell"
+        else:
+            if shape == "cubic":
+                string += f"Created a cubic region {a:.2f} Å on a side"
+            elif shape == "rectangular":
+                string += f"Created a rectangular {a:.2f} x {b:.2f} x {c:.2f} Å region"
+            else:
+                string += (
+                    f"Created a spherical region with a diameter of {diameter:.2f} Å"
+                )
+        volume = Q_(volume, "Å^3")
+        density = mass / volume
         density.ito("g/ml")
 
-        self.logger.debug(" size = {:~P}".format(size))
-        self.logger.debug("             volume = {:~P}".format(volume))
-        self.logger.debug("            density = {:~P}".format(density))
-        self.logger.debug("number of molecules = {}".format(n_molecules))
-        self.logger.debug("    number of atoms = {}".format(n_atoms))
+        if n_solute_molecules > 0:
+            string += (
+                f" with the solute and {n_molecules-n_solute_molecules} solvent "
+                "molecules\n\n"
+            )
+        else:
+            string += f" with {n_molecules} fluid molecules\n\n"
 
-        return {
-            "size": size,
-            "volume": volume,
-            "density": density,
-            "n_molecules": n_molecules,
-            "n_atoms": n_atoms,
-            "n_copies": n_copies,
+        # Reprint table of molecules
+        table = {
+            "Component": [],
+            "Structure": [],
+            "Requested %": [],
+            "Number": [],
+            "Actual %": [],
         }
+        for molecule in molecules:
+            table["Component"].append(molecule["type"])
+            table["Structure"].append(molecule["definition"])
+            table["Requested %"].append(molecule["requested %"])
+            table["Number"].append(molecule["number"])
+            table["Actual %"].append(molecule["actual %"])
+
+        text_lines = tabulate(
+            table, headers="keys", tablefmt="psql", colalign=("center", "left", "right")
+        )
+        string += textwrap.indent(text_lines, 4 * " ")
+
+        string += f"\n\nThere are a total of {n_atoms} atoms in the cell"
+        string += f" giving a density of {density:.5~P}."
+
+        return molecules, files, string, cell
+
+
+def bounding_sphere(points):
+    """A fast, approximate method for finding the sphere containing a set of points.
+
+    See https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
+
+    This method is approximate. While the sphere is guaranteed to contain all the points
+    it is a few percent larger than necessary on average.
+    """
+    # euclidean metric
+    def dist(a, b):
+        return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) ** 0.5
+
+    def cent(a, b):
+        return ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2)
+
+    p0 = points[0]  # any arbitrary point in the point cloud works
+    # choose point y furthest away from x
+    p1 = max(points, key=lambda p: dist(p, p0))
+    # choose point z furthest away from y
+    p2 = max(points, key=lambda p: dist(p, p1))
+
+    # initial bounding sphere
+    center = cent(p1, p2)
+    radius = dist(p1, p2) / 2
+
+    # while there are points lying outside the bounding sphere, update the sphere by
+    # growing it to fit
+    for p in points:
+        distance = dist(p, center)
+        if distance > radius:
+            delta = (distance - radius) / 2
+            radius = (radius + distance) / 2
+
+            cx, cy, cz = center
+            x, y, z = p
+            cx += (x - cx) / distance * delta
+            cy += (y - cy) / distance * delta
+            cz += (z - cz) / distance * delta
+
+            center = (cx, cy, cz)
+
+    return (center, radius)
+
+
+def bounding_box(points):
+    minx, miny, minz = points[0]
+    maxx, maxy, maxz = points[0]
+    for p in points:
+        x, y, z = p
+        minx = x if x < minx else minx
+        miny = y if y < miny else miny
+        minz = z if z < minz else minz
+        maxx = x if x > maxx else maxx
+        maxy = y if y > maxy else maxy
+        maxz = z if z > maxz else maxz
+
+    return (
+        ((minx + maxx) / 2, (miny + maxy) / 2, (minz + maxz) / 2),
+        ((maxx - minx), (maxy - miny), (maxz - minz)),
+    )

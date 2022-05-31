@@ -1,0 +1,260 @@
+#!/usr/bin/env run_flowchart
+!MolSSI flowchart 2.0
+#metadata
+{
+    "title": "PACKMOL test flowchart #20, rectangular cell of 6 nm^3, using density, variables for ratios",
+    "description": "Test for the PACKMOL step.\n\nbenzene::water $na::$nb\n\nrectangules cell of 6 nm^3, side of 1::2::3\ndensity = 0.9 g/ml\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "keywords": [
+        ""
+    ],
+    "creators": [
+        {
+            "name": "Saxe, Paul",
+            "orcid": "0000-0002-8641-9448",
+            "affiliation": "The Molecular Sciences Software Institute (MolSSI)"
+        }
+    ],
+    "sha256": "2482d67d1749eedd21770b04d60c9297da2df84509e2c5de7a14f51c6fb8e3be",
+    "sha256_strict": "a43fef2f193e4e8ef83f8f4abdc177ff03d287ab2ba987fcae110c0a12e3749f"
+}
+#flowchart
+{
+    "item": "object",
+    "module": "seamm.flowchart",
+    "class": "Flowchart",
+    "extension": null,
+    "nodes": [
+        {
+            "item": "object",
+            "module": "seamm.start_node",
+            "class": "StartNode",
+            "version": "2022.2.24",
+            "extension": null,
+            "attributes": {
+                "_uuid": 1,
+                "_title": "Start",
+                "extension": null,
+                "parameters": null,
+                "x": 150,
+                "y": 35,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "packmol_step.packmol",
+            "class": "Packmol",
+            "version": "2022.3.14-rc1+18.gb1ef424.dirty",
+            "extension": "Packmol",
+            "attributes": {
+                "_uuid": 125322038245570861671717293616717035369,
+                "_title": "Packmol",
+                "extension": "Packmol",
+                "parameters": {
+                    "__class__": "PackmolParameters",
+                    "__module__": "packmol_step.packmol_parameters",
+                    "molecules": {
+                        "value": [
+                            {
+                                "component": "fluid",
+                                "source": "SMILES",
+                                "definition": "c1ccccc1",
+                                "count": "$na"
+                            },
+                            {
+                                "component": "fluid",
+                                "source": "SMILES",
+                                "definition": "O",
+                                "count": "$nb"
+                            }
+                        ],
+                        "units": null
+                    },
+                    "periodic": {
+                        "value": "Yes",
+                        "units": null
+                    },
+                    "shape": {
+                        "value": "rectangular",
+                        "units": null
+                    },
+                    "dimensions": {
+                        "value": "calculated from the volume",
+                        "units": null
+                    },
+                    "fluid amount": {
+                        "value": "using the density",
+                        "units": null
+                    },
+                    "density": {
+                        "value": "0.9",
+                        "units": "g/ml"
+                    },
+                    "volume": {
+                        "value": "6",
+                        "units": "nm^3"
+                    },
+                    "temperature": {
+                        "value": "298.15",
+                        "units": "K"
+                    },
+                    "pressure": {
+                        "value": "100",
+                        "units": "atm"
+                    },
+                    "gap": {
+                        "value": "2.0",
+                        "units": "\u00c5"
+                    },
+                    "edge length": {
+                        "value": "20",
+                        "units": "\u00c5"
+                    },
+                    "a": {
+                        "value": "10",
+                        "units": "\u00c5"
+                    },
+                    "b": {
+                        "value": "20",
+                        "units": "\u00c5"
+                    },
+                    "c": {
+                        "value": "30",
+                        "units": "\u00c5"
+                    },
+                    "a_ratio": {
+                        "value": "1",
+                        "units": null
+                    },
+                    "b_ratio": {
+                        "value": "2",
+                        "units": null
+                    },
+                    "c_ratio": {
+                        "value": "3",
+                        "units": null
+                    },
+                    "diameter": {
+                        "value": "20.0",
+                        "units": "\u00c5"
+                    },
+                    "solvent thickness": {
+                        "value": "10.0",
+                        "units": "\u00c5"
+                    },
+                    "approximate number of molecules": {
+                        "value": "300",
+                        "units": null
+                    },
+                    "approximate number of atoms": {
+                        "value": "1000",
+                        "units": null
+                    },
+                    "structure handling": {
+                        "value": "Create a new system and configuration",
+                        "units": null
+                    },
+                    "subsequent structure handling": {
+                        "value": "Create a new system and configuration",
+                        "units": null
+                    },
+                    "system name": {
+                        "value": "fluid",
+                        "units": null
+                    },
+                    "configuration name": {
+                        "value": "initial",
+                        "units": null
+                    }
+                },
+                "x": 150,
+                "y": 175,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "control_parameters_step.control_parameters",
+            "class": "ControlParameters",
+            "version": "2022.2.9",
+            "extension": "Parameters",
+            "attributes": {
+                "_uuid": 73671925989070066759886359619786184112,
+                "_title": "Parameters",
+                "extension": "Parameters",
+                "parameters": {
+                    "__class__": "ControlParametersParameters",
+                    "__module__": "control_parameters_step.control_parameters_parameters",
+                    "variables": {
+                        "value": {
+                            "na": {
+                                "optional": "Yes",
+                                "type": "int",
+                                "nargs": "a single value",
+                                "overwrite": "No",
+                                "default": "1",
+                                "choices": "[]",
+                                "help": "Number of ethanol molecules"
+                            },
+                            "nb": {
+                                "optional": "Yes",
+                                "type": "int",
+                                "nargs": "a single value",
+                                "overwrite": "No",
+                                "default": "3",
+                                "choices": "[]",
+                                "help": "Number of water molecules"
+                            }
+                        },
+                        "units": null
+                    }
+                },
+                "x": 150,
+                "y": 105,
+                "w": 200,
+                "h": 50
+            }
+        }
+    ],
+    "edges": [
+        {
+            "item": "edge",
+            "node1": 1,
+            "node2": 73671925989070066759886359619786184112,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 101,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    60,
+                    150,
+                    80
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 73671925989070066759886359619786184112,
+            "node2": 125322038245570861671717293616717035369,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 28,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    130,
+                    150,
+                    150
+                ]
+            }
+        }
+    ]
+}
+#end

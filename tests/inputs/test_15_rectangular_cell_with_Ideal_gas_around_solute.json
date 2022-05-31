@@ -1,0 +1,115 @@
+{
+    "molecules": {
+        "value": [
+            {
+                "component": "solute",
+                "source": "SMILES",
+                "definition": "c1ccccc1c2ccccc2",
+                "count": "1"
+            },
+            {
+                "component": "fluid",
+                "source": "SMILES",
+                "definition": "O",
+                "count": "1"
+            }
+        ],
+        "units": null
+    },
+    "periodic": {
+        "value": "Yes",
+        "units": null
+    },
+    "shape": {
+        "value": "rectangular",
+        "units": null
+    },
+    "dimensions": {
+        "value": "calculated using the Ideal Gas Law",
+        "units": null
+    },
+    "fluid amount": {
+        "value": "rounding this number of molecules",
+        "units": null
+    },
+    "density": {
+        "value": "1.0",
+        "units": "g/ml"
+    },
+    "volume": {
+        "value": "8.0",
+        "units": "nm^3"
+    },
+    "temperature": {
+        "value": "298.15",
+        "units": "K"
+    },
+    "pressure": {
+        "value": "100",
+        "units": "atm"
+    },
+    "gap": {
+        "value": "2.0",
+        "units": "\u00c5"
+    },
+    "edge length": {
+        "value": "20",
+        "units": "\u00c5"
+    },
+    "a": {
+        "value": "10",
+        "units": "\u00c5"
+    },
+    "b": {
+        "value": "20",
+        "units": "\u00c5"
+    },
+    "c": {
+        "value": "30",
+        "units": "\u00c5"
+    },
+    "a_ratio": {
+        "value": "1",
+        "units": null
+    },
+    "b_ratio": {
+        "value": "2",
+        "units": null
+    },
+    "c_ratio": {
+        "value": "3",
+        "units": null
+    },
+    "diameter": {
+        "value": "20.0",
+        "units": "\u00c5"
+    },
+    "solvent thickness": {
+        "value": "10.0",
+        "units": "\u00c5"
+    },
+    "approximate number of molecules": {
+        "value": "300",
+        "units": null
+    },
+    "approximate number of atoms": {
+        "value": "1000",
+        "units": null
+    },
+    "structure handling": {
+        "value": "Overwrite the current configuration",
+        "units": null
+    },
+    "subsequent structure handling": {
+        "value": "Create a new system and configuration",
+        "units": null
+    },
+    "system name": {
+        "value": "from file",
+        "units": null
+    },
+    "configuration name": {
+        "value": "use Canonical SMILES string",
+        "units": null
+    }
+}
