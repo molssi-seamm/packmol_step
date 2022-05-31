@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>packmol_step.packmol &mdash; SEAMM Packmol Plug-in 2021.11.27+7.gaac858e documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
+<!-- End Google Tag Manager -->
+
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PQXXTJ2"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+ 
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SEAMM Packmol Plug-in
+          </a>
+              <div class="version">
+                2021.11.27+7.gaac858e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/index.html">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://molssi-seamm.github.io">Main SEAMM documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SEAMM Packmol Plug-in</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>packmol_step.packmol</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for packmol_step.packmol</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;A step for building fluids with Packmol in a SEAMM flowchart&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="kn">from</span> <span class="nn">molsystem</span> <span class="kn">import</span> <span class="n">SystemDB</span>
+<span class="kn">import</span> <span class="nn">seamm</span>
+<span class="kn">import</span> <span class="nn">seamm_util</span>
+<span class="kn">from</span> <span class="nn">seamm_util</span> <span class="kn">import</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">Q_</span><span class="p">,</span> <span class="n">units_class</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">import</span> <span class="nn">seamm_util.printing</span> <span class="k">as</span> <span class="nn">printing</span>
+<span class="kn">from</span> <span class="nn">seamm_util.printing</span> <span class="kn">import</span> <span class="n">FormattedText</span> <span class="k">as</span> <span class="n">__</span>
+<span class="kn">import</span> <span class="nn">packmol_step</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">printing</span><span class="o">.</span><span class="n">getPrinter</span><span class="p">()</span>
+<span class="n">printer</span> <span class="o">=</span> <span class="n">printing</span><span class="o">.</span><span class="n">getPrinter</span><span class="p">(</span><span class="s2">&quot;packmol&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Packmol"><a class="viewcode-back" href="../../developer/packmol_step.html#packmol_step.packmol.Packmol">[docs]</a><span class="k">class</span> <span class="nc">Packmol</span><span class="p">(</span><span class="n">seamm</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flowchart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup the main Packmol step</span>
+
+<span class="sd">        Keyword arguments:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling arguments in Packmol </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">flowchart</span><span class="o">=</span><span class="n">flowchart</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Packmol&quot;</span><span class="p">,</span>
+            <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
+            <span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">packmol_step</span><span class="o">.</span><span class="n">PackmolParameters</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The semantic version of this module.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">packmol_step</span><span class="o">.</span><span class="n">__version__</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">git_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The git version of this module.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">packmol_step</span><span class="o">.</span><span class="n">__git_revision__</span>
+
+<div class="viewcode-block" id="Packmol.create_parser"><a class="viewcode-back" href="../../developer/packmol_step.html#packmol_step.packmol.Packmol.create_parser">[docs]</a>    <span class="k">def</span> <span class="nf">create_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup the command-line / config file parser&quot;&quot;&quot;</span>
+        <span class="n">parser_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_type</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">seamm_util</span><span class="o">.</span><span class="n">getParser</span><span class="p">()</span>
+
+        <span class="c1"># Remember if the parser exists ... this type of step may have been</span>
+        <span class="c1"># found before</span>
+        <span class="n">parser_exists</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parser_name</span><span class="p">)</span>
+
+        <span class="c1"># Create the standard options, e.g. log-level</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_parser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">parser_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parser_exists</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="c1"># Options for Packmol</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">step_type</span><span class="p">,</span>
+            <span class="s2">&quot;--packmol-path&quot;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;the path to the Packmol executables&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Packmol.description_text"><a class="viewcode-back" href="../../developer/packmol_step.html#packmol_step.packmol.Packmol.description_text">[docs]</a>    <span class="k">def</span> <span class="nf">description_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a short description of this step.</span>
+
+<span class="sd">        Return a nicely formatted string describing what this step will</span>
+<span class="sd">        do.</span>
+
+<span class="sd">        Keyword arguments:</span>
+<span class="sd">            P: a dictionary of parameter values, which may be variables</span>
+<span class="sd">                or final values. If None, then the parameters values will</span>
+<span class="sd">                be used as is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">P</span><span class="p">:</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values_to_dict</span><span class="p">()</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;operation&quot;</span><span class="p">]</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;molecule source&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;solvate&quot;</span> <span class="ow">in</span> <span class="n">operation</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;box&quot;</span> <span class="ow">in</span> <span class="n">operation</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Solvate the current molecule in a box with</span><span class="se">\n</span><span class="s2">:&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Solvate the current molecule in a droplet with:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Create a cubic supercell (box) of fluid from these molecules:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Create a cubic supercell (box) of fluid from the current system &quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;solvate&quot;</span> <span class="ow">in</span> <span class="n">operation</span> <span class="ow">or</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="n">SMILES</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;molecule&quot;</span><span class="p">]</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">SMILES</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The will be controlled &quot;</span>
+
+        <span class="k">if</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;$&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;with the method given by </span><span class="si">{method}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;cubic&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;{size of cubic cell} on a side&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;volume&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;with a volume of </span><span class="si">{volume}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;density&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;with a density of </span><span class="si">{density}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;molecules&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;containing {number of molecules} molecules&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;atoms&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;containing about {approximate number of atoms} atoms&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;pressure&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="s2">&quot; with P = {ideal gas pressure} and &quot;</span>
+                <span class="s2">&quot;T = {ideal gas temperature}, assuming an ideal gas&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t recognize the method </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;$&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; and a submethod given by </span><span class="si">{submethod}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;cubic&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; in a cell {size of cubic cell} on a side&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;volume&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; with a volume of </span><span class="si">{volume}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;density&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; with a density of </span><span class="si">{density}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;molecules&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; containing {number of molecules} molecules&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;atoms&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; containing about {approximate number of atoms} atoms&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;pressure&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="s2">&quot; with P = {ideal gas pressure} and &quot;</span>
+                <span class="s2">&quot;T = {ideal gas temperature}, assuming an ideal gas&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Don&#39;t recognize the submethod </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">__</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Packmol.run"><a class="viewcode-back" href="../../developer/packmol_step.html#packmol_step.packmol.Packmol.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run a Packmol building step&quot;&quot;&quot;</span>
+
+        <span class="n">next_node</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+
+        <span class="c1"># Get the system</span>
+        <span class="n">system_db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;_system_db&quot;</span><span class="p">)</span>
+
+        <span class="c1"># The options from command line, config file ...</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;packmol_path&quot;</span><span class="p">]</span>
+
+        <span class="n">packmol_exe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;packmol&quot;</span><span class="p">)</span>
+
+        <span class="n">seamm_util</span><span class="o">.</span><span class="n">check_executable</span><span class="p">(</span><span class="n">packmol_exe</span><span class="p">)</span>
+
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">current_values_to_dict</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">seamm</span><span class="o">.</span><span class="n">flowchart_variables</span><span class="o">.</span><span class="n">_data</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   method = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;submethod = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># Print what we are doing. Have to fix formatting for printing...</span>
+        <span class="n">PP</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">PP</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">PP</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">units_class</span><span class="p">):</span>
+                <span class="n">PP</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;{:~P}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PP</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">printer</span><span class="o">.</span><span class="n">important</span><span class="p">(</span><span class="n">__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description_text</span><span class="p">(</span><span class="n">PP</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">))</span>
+
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;operation&quot;</span><span class="p">]</span>
+        <span class="n">solvation</span> <span class="o">=</span> <span class="s2">&quot;solvate&quot;</span> <span class="ow">in</span> <span class="n">operation</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">density</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_molecules</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_moles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pressure</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="s2">&quot;cubic&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;size of cubic cell&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;volume&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;volume&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;density&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">density</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;molecules&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;number of molecules&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;atoms&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;approximate number of atoms&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;pressure&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]:</span>
+            <span class="n">pressure</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;ideal gas pressure&quot;</span><span class="p">]</span>
+            <span class="n">temperature</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;ideal gas temperature&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t recognize the method </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="s2">&quot;cubic&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;size of cubic cell&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;volume&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;volume&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;density&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">density</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;molecules&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;number of molecules&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;atoms&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;approximate number of atoms&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;temperature&quot;</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">]:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Don&#39;t recognize the submethod </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="s2">&quot;submethod&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;molecule source&quot;</span><span class="p">]</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">input_n_molecules</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">input_n_atoms</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">input_mass</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">n_solute_molecules</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_solute_atoms</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">solute_mass</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;current configuration&quot;</span> <span class="ow">or</span> <span class="n">solvation</span><span class="p">:</span>
+            <span class="n">configuration</span> <span class="o">=</span> <span class="n">system_db</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">configuration</span><span class="o">.</span><span class="n">n_atoms</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Packmol calculate: there is no structure!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Packmol calculate: there is no structure!&quot;</span><span class="p">)</span>
+
+            <span class="n">tmp_mass</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">mass</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mol</span>  <span class="c1"># g/mol</span>
+            <span class="n">tmp_mass</span><span class="o">.</span><span class="n">ito</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">solvation</span><span class="p">:</span>
+                <span class="n">n_solute_molecules</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">n_solute_atoms</span> <span class="o">+=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">n_atoms</span>
+                <span class="n">solute_mass</span> <span class="o">+=</span> <span class="n">tmp_mass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">input_n_molecules</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">input_n_atoms</span> <span class="o">+=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">n_atoms</span>
+                <span class="n">input_mass</span> <span class="o">+=</span> <span class="n">tmp_mass</span>
+
+            <span class="n">tmp</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;configuration&quot;</span><span class="p">:</span> <span class="n">configuration</span><span class="p">,</span>
+                <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;solute&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mass&quot;</span><span class="p">:</span> <span class="n">tmp_mass</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">molecules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;SMILES&quot;</span> <span class="ow">or</span> <span class="n">solvation</span><span class="p">:</span>
+            <span class="c1"># Need to create the molecules.</span>
+            <span class="n">tmp_db</span> <span class="o">=</span> <span class="n">SystemDB</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;file:tmp_db?mode=memory&amp;cache=shared&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="n">SMILES</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;molecule&quot;</span><span class="p">]</span>
+                <span class="n">tmp_system</span> <span class="o">=</span> <span class="n">tmp_db</span><span class="o">.</span><span class="n">create_system</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">SMILES</span><span class="p">)</span>
+                <span class="n">tmp_configuration</span> <span class="o">=</span> <span class="n">tmp_system</span><span class="o">.</span><span class="n">create_configuration</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+                <span class="n">tmp_configuration</span><span class="o">.</span><span class="n">from_smiles</span><span class="p">(</span><span class="n">SMILES</span><span class="p">)</span>
+
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])</span>
+                <span class="n">tmp_mass</span> <span class="o">=</span> <span class="n">count</span> <span class="o">*</span> <span class="n">tmp_configuration</span><span class="o">.</span><span class="n">mass</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mol</span>
+                <span class="n">tmp_mass</span><span class="o">.</span><span class="n">ito</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">solvation</span><span class="p">:</span>
+                    <span class="n">input_n_molecules</span> <span class="o">+=</span> <span class="n">count</span>
+                    <span class="n">input_n_atoms</span> <span class="o">+=</span> <span class="n">count</span> <span class="o">*</span> <span class="n">tmp_configuration</span><span class="o">.</span><span class="n">n_atoms</span>
+                    <span class="n">input_mass</span> <span class="o">+=</span> <span class="n">tmp_mass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">n_solute_molecules</span> <span class="o">+=</span> <span class="n">count</span>
+                    <span class="n">n_solute_atoms</span> <span class="o">+=</span> <span class="n">count</span> <span class="o">*</span> <span class="n">tmp_configuration</span><span class="o">.</span><span class="n">n_atoms</span>
+                    <span class="n">solute_mass</span> <span class="o">+=</span> <span class="n">tmp_mass</span>
+
+                <span class="n">tmp</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;SMILES&quot;</span><span class="p">:</span> <span class="n">SMILES</span><span class="p">,</span>
+                    <span class="s2">&quot;configuration&quot;</span><span class="p">:</span> <span class="n">tmp_configuration</span><span class="p">,</span>
+                    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;mass&quot;</span><span class="p">:</span> <span class="n">tmp_mass</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">molecules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span>
+            <span class="n">input_n_molecules</span><span class="o">=</span><span class="n">input_n_molecules</span><span class="p">,</span>
+            <span class="n">input_n_atoms</span><span class="o">=</span><span class="n">input_n_atoms</span><span class="p">,</span>
+            <span class="n">input_mass</span><span class="o">=</span><span class="n">input_mass</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+            <span class="n">n_molecules</span><span class="o">=</span><span class="n">n_molecules</span><span class="p">,</span>
+            <span class="n">n_atoms</span><span class="o">=</span><span class="n">n_atoms</span><span class="p">,</span>
+            <span class="n">n_moles</span><span class="o">=</span><span class="n">n_moles</span><span class="p">,</span>
+            <span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">n_solute_molecules</span><span class="o">=</span><span class="n">n_solute_molecules</span><span class="p">,</span>
+            <span class="n">n_solute_atoms</span><span class="o">=</span><span class="n">n_solute_atoms</span><span class="p">,</span>
+            <span class="n">solute_mass</span><span class="o">=</span><span class="n">solute_mass</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Å&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">n_copies</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="s2">&quot;n_copies&quot;</span><span class="p">]</span>
+        <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="s2">&quot;n_molecules&quot;</span><span class="p">]</span>
+
+        <span class="n">gap</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;gap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Å&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+
+        <span class="c1"># Prepare the input</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;tolerance </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gap</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;output packmol.pdb&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;filetype pdb&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;connect yes&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;current configuration&quot;</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;structure input.pdb&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   number </span><span class="si">{</span><span class="n">n_copies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   inside cube 0.0 0.0 0.0 </span><span class="si">{</span><span class="n">size</span><span class="o">-</span><span class="n">gap</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;end structure&quot;</span><span class="p">)</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input.pdb&quot;</span><span class="p">:</span> <span class="n">configuration</span><span class="o">.</span><span class="n">to_pdb_text</span><span class="p">()}</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">molecules</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;structure input_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   number </span><span class="si">{</span><span class="n">n_copies</span> <span class="o">*</span> <span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   inside cube 0.0 0.0 0.0 </span><span class="si">{</span><span class="n">size</span><span class="o">-</span><span class="n">gap</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;end structure&quot;</span><span class="p">)</span>
+                <span class="n">configuration</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span>
+                <span class="n">files</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;input_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">to_pdb_text</span><span class="p">()</span>
+
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">files</span><span class="p">[</span><span class="s2">&quot;input.inp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
+
+        <span class="c1"># Save the files to disk.</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="n">filename</span><span class="p">])</span>
+
+        <span class="n">local</span> <span class="o">=</span> <span class="n">seamm</span><span class="o">.</span><span class="n">ExecLocal</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">local</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="p">(</span><span class="n">packmol_exe</span> <span class="o">+</span> <span class="s2">&quot; &lt; input.inp&quot;</span><span class="p">),</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span>
+            <span class="n">return_files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;packmol.pdb&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
+        <span class="c1"># And write the output files out.</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;packmol.out&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;stdout&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="n">filename</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">filename</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">filename</span><span class="p">][</span><span class="s2">&quot;exception&quot;</span><span class="p">])</span>
+
+        <span class="n">extra_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;current configuration&quot;</span><span class="p">:</span>
+            <span class="n">bond_orders</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">get_column_data</span><span class="p">(</span><span class="s2">&quot;bondorder&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_copies</span>
+            <span class="n">atoms</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">atoms</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">atoms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="s2">&quot;atom_types_&quot;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">or</span> <span class="s2">&quot;charges_&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="n">extra_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_column_data</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_copies</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">:</span>
+            <span class="n">system</span><span class="p">,</span> <span class="n">configuration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_system_configuration</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+        <span class="c1"># Remove anything in the system</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># Create the configuration from the PDB output of PACKMOL</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">from_pdb_text</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;packmol.pdb&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">:</span>
+            <span class="c1"># And patch up the bond orders...</span>
+            <span class="n">bond_orders</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
+                <span class="n">orders</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">get_column_data</span><span class="p">(</span><span class="s2">&quot;bondorder&quot;</span><span class="p">)</span>
+                <span class="n">bond_orders</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">orders</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+            <span class="c1"># Remove the temporary database</span>
+            <span class="n">tmp_db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;bondorder&quot;</span><span class="p">)[:]</span> <span class="o">=</span> <span class="n">bond_orders</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">extra_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="n">key</span><span class="p">)[:]</span> <span class="o">=</span> <span class="n">values</span>
+
+        <span class="c1"># Finally, make periodic of correct size</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Created a cubic cell {size:.5~P} on a side&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; with </span><span class="si">{n_molecules}</span><span class="s2"> molecules&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; for a total of </span><span class="si">{n_atoms}</span><span class="s2"> atoms in the cell&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; and a density of {density:.5~P}.&quot;</span>
+        <span class="n">printer</span><span class="o">.</span><span class="n">important</span><span class="p">(</span><span class="n">__</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;    &quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">tmp</span><span class="p">))</span>
+        <span class="n">printer</span><span class="o">.</span><span class="n">important</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Since we have succeeded, add the citation.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="o">.</span><span class="n">cite</span><span class="p">(</span>
+            <span class="n">raw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bibliography</span><span class="p">[</span><span class="s2">&quot;doi:10.1002/jcc.21224&quot;</span><span class="p">],</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;packmol&quot;</span><span class="p">,</span>
+            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;packmol_step&quot;</span><span class="p">,</span>
+            <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">note</span><span class="o">=</span><span class="s2">&quot;The principle PACKMOL citation.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">next_node</span></div>
+
+<div class="viewcode-block" id="Packmol.calculate"><a class="viewcode-back" href="../../developer/packmol_step.html#packmol_step.packmol.Packmol.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_n_molecules</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">input_n_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_mass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">volume</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_molecules</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_moles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_solute_molecules</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">n_solute_atoms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">solute_mass</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Work out the other variables given any two independent ones&quot;&quot;&quot;</span>
+
+        <span class="n">n_parameters</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">volume</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">n_molecules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">n_atoms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">n_moles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">mass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">pressure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">n_parameters</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">size</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">volume</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">density</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_molecules</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_atoms</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_moles</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mass</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pressure</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Exactly two independent parameters &quot;</span>
+                <span class="s2">&quot;must be given, not </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_parameters</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">volume</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">volume</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Size and volume are not independent!&quot;</span><span class="p">)</span>
+
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">size</span><span class="o">**</span><span class="mi">3</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">volume</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># rho = mass/volume</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">density</span> <span class="o">*</span> <span class="n">volume</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">mass</span> <span class="o">-</span> <span class="n">solute_mass</span><span class="p">)</span> <span class="o">/</span> <span class="n">input_mass</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span> <span class="o">+</span> <span class="n">n_solute_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span> <span class="o">+</span> <span class="n">n_solute_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+            <span class="k">elif</span> <span class="n">n_molecules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                    <span class="nb">round</span><span class="p">((</span><span class="n">n_molecules</span> <span class="o">-</span> <span class="n">n_solute_molecules</span><span class="p">)</span> <span class="o">/</span> <span class="n">input_n_molecules</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_mass</span> <span class="o">+</span> <span class="n">solute_mass</span>
+                <span class="n">density</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">volume</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span> <span class="o">+</span> <span class="n">n_solute_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span> <span class="o">+</span> <span class="n">n_solute_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+            <span class="k">elif</span> <span class="n">n_atoms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">n_atoms</span> <span class="o">-</span> <span class="n">n_solute_atoms</span><span class="p">)</span> <span class="o">/</span> <span class="n">input_n_atoms</span><span class="p">)</span>
+                <span class="c1"># Am here!</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_mass</span>
+                <span class="n">density</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">volume</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+            <span class="k">elif</span> <span class="n">n_moles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_moles</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span><span class="p">))</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_molecules</span> <span class="o">/</span> <span class="n">input_n_molecules</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_mass</span>
+                <span class="n">density</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">volume</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+            <span class="k">elif</span> <span class="n">mass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">density</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">volume</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">mass</span> <span class="o">/</span> <span class="n">input_mass</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+            <span class="k">elif</span> <span class="n">pressure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># PV = nRT</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">pressure</span> <span class="o">*</span> <span class="n">volume</span> <span class="o">/</span> <span class="p">(</span><span class="n">temperature</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_molecules</span> <span class="o">/</span> <span class="n">input_n_molecules</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">temperature</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">k</span> <span class="o">/</span> <span class="n">pressure</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_mass</span>
+                <span class="n">density</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">volume</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+        <span class="k">elif</span> <span class="n">density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_molecules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_molecules</span> <span class="o">/</span> <span class="n">input_n_molecules</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_mass</span>
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">density</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+            <span class="k">elif</span> <span class="n">n_atoms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_atoms</span> <span class="o">/</span> <span class="n">input_n_atoms</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_mass</span>
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">density</span>
+            <span class="k">elif</span> <span class="n">n_moles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_moles</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span> <span class="o">/</span> <span class="n">input_n_molecules</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_mass</span>
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">density</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+            <span class="k">elif</span> <span class="n">mass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">density</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">mass</span> <span class="o">/</span> <span class="n">input_mass</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+                <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+                <span class="n">n_moles</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">N_A</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">volume</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">n_molecules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pressure</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">temperature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;For ideal gas, the number of molecules or atoms, plus the &quot;</span>
+                    <span class="s2">&quot;pressure and temperature must be given.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_molecules</span> <span class="o">/</span> <span class="n">input_n_molecules</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_molecules</span>
+            <span class="c1"># PV = nRT</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">temperature</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">k</span> <span class="o">/</span> <span class="n">pressure</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">volume</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">density</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_mass</span> <span class="o">/</span> <span class="n">volume</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+        <span class="k">elif</span> <span class="n">n_atoms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pressure</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">temperature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;For ideal gas, the number of molecules or atoms, plus the &quot;</span>
+                    <span class="s2">&quot;pressure and temperature must be given.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">n_copies</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_atoms</span> <span class="o">/</span> <span class="n">input_n_atoms</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">n_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">n_copies</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">input_n_molecules</span> <span class="o">*</span> <span class="n">n_copies</span>
+            <span class="c1"># PV = nRT</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">n_molecules</span> <span class="o">*</span> <span class="n">temperature</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">k</span> <span class="o">/</span> <span class="n">pressure</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">volume</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">density</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_mass</span> <span class="o">/</span> <span class="n">volume</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">n_copies</span> <span class="o">*</span> <span class="n">input_n_atoms</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;The number of moles or the mass are not independent quantities!&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># make the units pretty</span>
+        <span class="n">size</span><span class="o">.</span><span class="n">ito</span><span class="p">(</span><span class="s2">&quot;Å&quot;</span><span class="p">)</span>
+        <span class="n">volume</span><span class="o">.</span><span class="n">ito</span><span class="p">(</span><span class="s2">&quot;Å**3&quot;</span><span class="p">)</span>
+        <span class="n">density</span><span class="o">.</span><span class="n">ito</span><span class="p">(</span><span class="s2">&quot;g/ml&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; size = {:~P}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;             volume = {:~P}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">volume</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;            density = {:~P}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">density</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;number of molecules = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_molecules</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;    number of atoms = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+            <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="n">volume</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="n">density</span><span class="p">,</span>
+            <span class="s2">&quot;n_molecules&quot;</span><span class="p">:</span> <span class="n">n_molecules</span><span class="p">,</span>
+            <span class="s2">&quot;n_atoms&quot;</span><span class="p">:</span> <span class="n">n_atoms</span><span class="p">,</span>
+            <span class="s2">&quot;n_copies&quot;</span><span class="p">:</span> <span class="n">n_copies</span><span class="p">,</span>
+        <span class="p">}</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  
+
+<p>
+<div class="row">
+  <div class="column_left">
+    <a href="https://molssi.org/" target="_blank" title="Go to MolSSI in a new tab">
+      <img src="/_images/MolSSI.jpg" alt="The MolSSI" style="border:0;">
+    </a>
+  </div>
+  <div class="column">
+    &copy; Copyright 2019-2021, the Molecular Sciences Software Institute,
+    which receives funding from the National Science Foundation under awards OAC-1547580
+    and CHE-2136142.
+  </div>
+  <div class="column_right">
+    <a href="https://nsf.gov/" target="_blank" title="Go to the NSF in a new tab">
+      <img src="/_images/NSF_4-Color_bitmap_Logo.png" alt="The NSF" style="border:0;">
+    </a>
+  </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
