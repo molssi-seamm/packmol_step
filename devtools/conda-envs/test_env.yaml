@@ -28,6 +28,9 @@ dependencies:
 
   # Pip-only installs
   - pip:
+    # Testing
+    - control-parameters-step
+
     # Integration testing
     - custom-step
     - from-smiles-step
