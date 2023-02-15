@@ -2,6 +2,37 @@
 History
 =======
 
+2023.2.15 -- Restructured documentation and moved to new theme.
+
+2022.5.31 -- Substantial enhancements
+    Added ability to solvate molecules and increased the options to include
+
+    * spherical regions
+    * cubic and rectangular regions
+    * cubic and rectangular unit cells for periodic systems
+    * input molecules from any combination of system/configurations and SMILES
+    * reworked GUI to be more intuitive.
+
+2021.11.27 -- Fixed bug with atom types.
+
+2021.10.25 -- Bugfix for problems with ideal gas approach.
+
+2021.8.29 -- Multiple different molecules available via SMILES
+   This release adds
+
+   * the ability to directly generate multiple different molecules from SMILES, giving
+     the stoichiometry for packing into the fluid box.
+   * specifying the desired cell with the temperature and pressure, along with one of
+     the volume, length of the box side, number of molecules or number of atoms. This
+     uses the ideal gas law, so will only be reasonable at higher temperatures and lower
+     densities. 
+
+   Additionally, internally the release adds integration tests to check whether the module works properly in the SEAMM environment.
+
+2021.6.3 -- internal change for improvements in parsing the commandline
+
+2021.5.25 -- Added installer for Packmol executable.
+
 2021.2.11 (11 February 2021)
 ----------------------------
 

@@ -193,6 +193,11 @@ class TkPackmol(seamm.TkNode):
         else:
             raise RuntimeError(f"Do not recognize amount '{amount}'")
 
+        key = "assign forcefield"
+        self[key].grid(row=row, column=0, sticky=tk.EW)
+        row += 1
+        widgets.append(self[key])
+
         sw.align_labels(widgets, sticky=tk.E)
 
         # The table of molecules to use

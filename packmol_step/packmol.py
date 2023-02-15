@@ -204,10 +204,19 @@ class Packmol(seamm.Node):
                 PP[key] = "{:~P}".format(PP[key])
         printer.important(self.description_text(PP))
 
+        ff = None
+        if P["assign forcefield"] != "No":
+            try:
+                ff = self.get_variable("_forcefield")
+            except Exception:
+                ff = None
+            if ff == "OpenKIM":
+                ff = None
+
         # Get the input files and any more output to print
         tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")
         molecules, files, output, cell = Packmol.get_input(
-            P, system_db, tmp_db, seamm.flowchart_variables
+            P, system_db, tmp_db, seamm.flowchart_variables, ff=ff
         )
 
         self.logger.log(0, pprint.pformat(files))
@@ -242,10 +251,13 @@ class Packmol(seamm.Node):
         # Get the bond orders and extra parameters like ff atom types
         bond_orders = []
         extra_data = {}
+        total_q = 0.0
         for molecule in molecules:
             n = molecule["number"]
             orders = molecule["configuration"].bonds.get_column_data("bondorder")
             bond_orders.extend(orders * n)
+
+            total_q += n * molecule["configuration"].charge
 
             atoms = molecule["configuration"].atoms
             for key in atoms.keys():
@@ -261,6 +273,7 @@ class Packmol(seamm.Node):
         # Get the system to fill and make sure it is empty
         system, configuration = self.get_system_configuration(P)
         configuration.clear()
+        configuration.charge = total_q
 
         # Create the configuration from the PDB output of PACKMOL
         configuration.coordinate_system = "Cartesian"
@@ -269,7 +282,14 @@ class Packmol(seamm.Node):
         # And set the bond orders and extra data we saved earlier.
         configuration.bonds.get_column("bondorder")[:] = bond_orders
         for key, values in extra_data.items():
-            atoms.get_column(key)[:] = values
+            if key not in configuration.atoms:
+                if "atom_types_" in key:
+                    configuration.atoms.add_attribute(key, coltype="str")
+                elif "charges" in key:
+                    configuration.atoms.add_attribute(key, coltype="float")
+                else:
+                    raise RuntimeError(f"Can't handle extra column '{key}'")
+            configuration.atoms.get_column(key)[:] = values
 
         # Finally, make periodic of correct size
         if periodic:
@@ -293,8 +313,9 @@ class Packmol(seamm.Node):
         return next_node
 
     @staticmethod
-    def get_input(P, system_db, tmp_db, context):
+    def get_input(P, system_db, tmp_db, context, ff=None):
         """Create the input for PACKMOL."""
+
         # Return the translation from points a to b
         def recenter(a, b):
             return b[0] - a[0], b[1] - a[1], b[2] - a[2]
@@ -346,6 +367,11 @@ class Packmol(seamm.Node):
         n_fluid_atoms = 0
         fluid_mass = 0.0
 
+        if ff is not None:
+            ffname = ff.current_forcefield
+            ff_key = f"atom_types_{ffname}"
+            assign_ff_always = P["assign forcefield"] == "Always"
+
         # May need to create molecules.
         solute_configuration = None
         molecules = []
@@ -368,6 +394,8 @@ class Packmol(seamm.Node):
                 tmp_system = tmp_db.create_system(name=definition)
                 tmp_configuration = tmp_system.create_configuration(name="default")
                 tmp_configuration.from_smiles(definition)
+                if ff is not None:
+                    ff.assign_forcefield(tmp_configuration)
             elif source == "configuration":
                 if definition == "" or definition == "current":
                     tmp_system = system_db.system
@@ -379,6 +407,9 @@ class Packmol(seamm.Node):
                     else:
                         confname = definition
                     tmp_configuration = tmp_system.get_configuration(confname)
+                if ff is not None:
+                    if ff_key not in tmp_configuration.atoms or assign_ff_always:
+                        ff.assign_forcefield(tmp_configuration)
 
             tmp_mass = tmp_configuration.mass * ureg.g / ureg.mol
             tmp_mass.ito("kg")
@@ -786,6 +817,7 @@ def bounding_sphere(points):
     This method is approximate. While the sphere is guaranteed to contain all the points
     it is a few percent larger than necessary on average.
     """
+
     # euclidean metric
     def dist(a, b):
         return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) ** 0.5
