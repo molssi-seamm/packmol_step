@@ -242,6 +242,19 @@ class PackmolParameters(seamm.Parameters):
                 "cell. This will be rounded to give whole molecules"
             ),
         },
+        "assign forcefield": {
+            "default": "If not assigned",
+            "kind": "enum",
+            "default_units": "",
+            "enumeration": (
+                "If not assigned",
+                "Always",
+                "No",
+            ),
+            "format_string": "s",
+            "description": "Assign forcefield:",
+            "help_text": "Whether to assign the forcefield to the molecules.",
+        },
     }
 
     def __init__(self, defaults={}, data=None):
