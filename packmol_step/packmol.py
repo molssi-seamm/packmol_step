@@ -315,6 +315,7 @@ class Packmol(seamm.Node):
     @staticmethod
     def get_input(P, system_db, tmp_db, context, ff=None):
         """Create the input for PACKMOL."""
+
         # Return the translation from points a to b
         def recenter(a, b):
             return b[0] - a[0], b[1] - a[1], b[2] - a[2]
@@ -816,6 +817,7 @@ def bounding_sphere(points):
     This method is approximate. While the sphere is guaranteed to contain all the points
     it is a few percent larger than necessary on average.
     """
+
     # euclidean metric
     def dist(a, b):
         return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) ** 0.5

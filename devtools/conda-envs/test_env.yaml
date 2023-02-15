@@ -24,18 +24,17 @@ dependencies:
   - packmol==20.2.2
 
   # Documentation
-  - pygments
+  - pydata-sphinx-theme
+  - sphinx-design
 
   # Pip-only installs
   - pip:
+    # Documentation
+    - sphinx-copybutton
+
     # Testing
     - control-parameters-step
 
     # Integration testing
     - custom-step
     - from-smiles-step
-
-    # Documentation
-    - rinohtype
-    - sphinx-rtd-theme
-    - pystemmer
