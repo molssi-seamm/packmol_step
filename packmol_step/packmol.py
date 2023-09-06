@@ -296,6 +296,10 @@ class Packmol(seamm.Node):
             configuration.periodicity = 3
             a, b, c = cell
             configuration.cell.parameters = (a, b, c, 90.0, 90.0, 90.0)
+            # by convention we keep periodic systems in fractional coordinates
+            xyz = configuration.atoms.get_coordinates(fractionals=False)
+            configuration.coordinate_system = "fractional"
+            configuration.atoms.set_coordinates(xyz, fractionals=False)
 
         printer.important(__(output, indent=4 * " "))
         printer.important("")

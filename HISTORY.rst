@@ -2,6 +2,12 @@
 History
 =======
 
+2023.9.6 -- Using fractional coordinates for periodic systems.
+    * By convention, SEAMM is using fractional coordinates for periodic systems. The
+      PACKMOL step was creating periodic structures with Cartesian coordinates, which
+      can be a bit confusing, though it did not affect any reauls. This change fixes the
+      issue. 
+      
 2023.2.15 -- Restructured documentation and moved to new theme.
 
 2022.5.31 -- Substantial enhancements
