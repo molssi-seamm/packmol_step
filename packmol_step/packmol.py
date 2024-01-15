@@ -271,7 +271,7 @@ class Packmol(seamm.Node):
         tmp_db.close()
 
         # Get the system to fill and make sure it is empty
-        system, configuration = self.get_system_configuration(P)
+        system, configuration = self.get_system_configuration(P, same_as=None)
         configuration.clear()
         configuration.charge = total_q
 
