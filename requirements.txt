@@ -1,2 +1,3 @@
-seamm==2021.2.2
+seamm
+seamm_exec
 tabulate

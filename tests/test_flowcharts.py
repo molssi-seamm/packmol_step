@@ -4,7 +4,7 @@
 """Tests for `packmol_step` running full flowcharts."""
 from pathlib import Path
 import pytest
-from seamm import run_flowchart
+from seamm_exec import run
 
 test_dir = Path(__file__).resolve().parent
 
@@ -30,7 +30,7 @@ def test_ideal_gas(monkeypatch, tmp_path, flowchart):
         ],
     )
 
-    run_flowchart(wdir=str(tmp_path))
+    run(wdir=str(tmp_path))
 
 
 @pytest.mark.unit
@@ -46,4 +46,4 @@ def test_unit(monkeypatch, tmp_path, flowchart):
         ],
     )
 
-    run_flowchart(wdir=str(tmp_path))
+    run(wdir=str(tmp_path))

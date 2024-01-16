@@ -29,6 +29,9 @@ dependencies:
 
   # Pip-only installs
   - pip:
+    # SEAMM
+    - seamm-exec
+    
     # Documentation
     - sphinx-copybutton
 
