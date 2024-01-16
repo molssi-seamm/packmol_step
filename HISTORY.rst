@@ -1,7 +1,9 @@
 =======
 History
 =======
-
+2024.1.16 -- Adding support for containers
+    * Added the ability to work in Docker containers.
+      
 2023.9.6 -- Using fractional coordinates for periodic systems.
     * By convention, SEAMM is using fractional coordinates for periodic systems. The
       PACKMOL step was creating periodic structures with Cartesian coordinates, which

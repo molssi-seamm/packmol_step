@@ -2,9 +2,10 @@
 
 """A step for building fluids with Packmol in a SEAMM flowchart"""
 
+import configparser
 import logging
 import math
-import os.path
+from pathlib import Path
 import pprint
 import textwrap
 
@@ -68,14 +69,6 @@ class Packmol(seamm.Node):
 
         if parser_exists:
             return result
-
-        # Options for Packmol
-        parser.add_argument(
-            self.step_type,
-            "--packmol-path",
-            default="",
-            help="the path to the Packmol executables",
-        )
 
         return result
 
@@ -185,12 +178,8 @@ class Packmol(seamm.Node):
         # Get the system database
         system_db = self.get_variable("_system_db")
 
-        # The options from command line, config file ...
-        path = self.options["packmol_path"]
-
-        # and the executable
-        packmol_exe = os.path.join(path, "packmol")
-        seamm_util.check_executable(packmol_exe)
+        # Access the options
+        seamm_options = self.global_options
 
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
@@ -221,32 +210,35 @@ class Packmol(seamm.Node):
 
         self.logger.log(0, pprint.pformat(files))
 
-        # Save the files to disk.
-        os.makedirs(self.directory, exist_ok=True)
-        for filename in files:
-            with open(os.path.join(self.directory, filename), mode="w") as fd:
-                fd.write(files[filename])
+        executor = self.flowchart.executor
 
-        local = seamm.ExecLocal()
-        result = local.run(
-            cmd=(packmol_exe + " < input.inp"),
-            shell=True,
+        # Read configuration file for MOPAC
+        ini_dir = Path(seamm_options["root"]).expanduser()
+        full_config = configparser.ConfigParser()
+        full_config.read(ini_dir / "packmol.ini")
+        executor_type = executor.name
+        if executor_type not in full_config:
+            raise RuntimeError(
+                f"No section for '{executor_type}' in PACKMOL ini file "
+                f"({ini_dir / 'packmol.ini'})"
+            )
+        config = dict(full_config.items(executor_type))
+
+        result = executor.run(
+            cmd=["{code}", "<", "input.inp", ">", "packmol.out"],
+            config=config,
+            directory=self.directory,
             files=files,
             return_files=["packmol.pdb"],
+            in_situ=True,
+            shell=True,
         )
 
+        if not result:
+            self.logger.error("There was an error running PACKMOL")
+            return None
+
         self.logger.debug(pprint.pformat(result))
-
-        # And write the output files out.
-        with open(os.path.join(self.directory, "packmol.out"), "w") as fd:
-            fd.write(result["stdout"])
-
-        for filename in result["files"]:
-            with open(os.path.join(self.directory, filename), mode="w") as fd:
-                if result[filename]["data"] is not None:
-                    fd.write(result[filename]["data"])
-                else:
-                    fd.write(result[filename]["exception"])
 
         # Get the bond orders and extra parameters like ff atom types
         bond_orders = []
@@ -271,7 +263,7 @@ class Packmol(seamm.Node):
         tmp_db.close()
 
         # Get the system to fill and make sure it is empty
-        system, configuration = self.get_system_configuration(P)
+        system, configuration = self.get_system_configuration(P, same_as=None)
         configuration.clear()
         configuration.charge = total_q
 
