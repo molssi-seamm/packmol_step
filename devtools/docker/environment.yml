@@ -1,0 +1,8 @@
+name: base
+channels:
+  - conda-forge
+dependencies:
+  - python
+    # Executables, etc.
+  - packmol==20.2.2
+

@@ -1,6 +1,11 @@
 =======
 History
 =======
+2024.3.19 -- Updated installer for new scheme
+    * packmol-step-installer now uses the new scheme, which supports both Conda and
+      Docker installation.
+    * Added seamm-packmol Docker image
+
 2024.1.16 -- Adding support for containers
     * Added the ability to work in Docker containers.
       
