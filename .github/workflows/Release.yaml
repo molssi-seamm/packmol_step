@@ -21,4 +21,7 @@ jobs:
     with:
       image : molssi-seamm/seamm-packmol
       description: A Packmol executable packaged for use with SEAMM or standalone
+      # Can limit platforms, e.g., linux/amd64, linux/arm64                                                                                                                                                                                                                                                                   
+      platforms: linux/amd64
     secrets: inherit
+    
