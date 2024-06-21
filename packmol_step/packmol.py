@@ -389,7 +389,7 @@ class Packmol(seamm.Node):
             if source == "SMILES":
                 tmp_system = tmp_db.create_system(name=definition)
                 tmp_configuration = tmp_system.create_configuration(name="default")
-                tmp_configuration.from_smiles(definition)
+                tmp_configuration.from_smiles(definition, rdkit=True)
                 if ff is not None:
                     ff.assign_forcefield(tmp_configuration)
             elif source == "configuration":

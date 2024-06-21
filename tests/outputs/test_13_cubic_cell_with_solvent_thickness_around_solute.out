@@ -13,13 +13,13 @@
     the molecule. The number of molecules of the fluid will be obtained  by
     using the density 1.0 g/ml.
 
-Created a periodic cubic cell 18.47 Å on a side with the solute and 202.0 solvent molecules
+Created a periodic cubic cell 19.22 Å on a side with the solute and 229.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number | Actual %   |
     |-------------+------------------+---------------+----------+------------|
     |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      202 | 100.000    |
+    |    fluid    | O                |       100.000 |      229 | 100.000    |
     +-------------+------------------+---------------+----------+------------+
 
-There are a total of 628 atoms in the cell giving a density of 0.9993 g/ml.
+There are a total of 709 atoms in the cell giving a density of 1.0015 g/ml.
