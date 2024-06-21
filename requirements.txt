@@ -1,3 +1,4 @@
 seamm
 seamm_exec
+rdkit
 tabulate

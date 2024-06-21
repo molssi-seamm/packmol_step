@@ -11,6 +11,7 @@ dependencies:
   # SEAMM
   - seamm
   - pyyaml
+  - rdkit
   - tabulate
 
   # Testing
@@ -21,7 +22,7 @@ dependencies:
   - pytest-cov
 
   # Integration testing
-  - packmol==20.2.2
+  # - packmol==20.2.2
 
   # Documentation
   - pydata-sphinx-theme
