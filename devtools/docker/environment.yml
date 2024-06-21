@@ -1,9 +1,0 @@
-name: base
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - python
-    # Executables, etc.
-  - packmol==20.2.2
-
