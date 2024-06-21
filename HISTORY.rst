@@ -1,6 +1,8 @@
 =======
 History
 =======
+2024.6.21.2 -- Another internal release for Docker.
+
 2024.6.21.1 -- Internal release for Docker
     * There was an internal issue creating the Docker image.
       
