@@ -1,6 +1,10 @@
 =======
 History
 =======
+2024.6.21 -- Switching to RDKit for SMILES
+    * Using RDKit for SMILES since we found some issues with OpenBabel, and also the
+      atom typing uses RDKit, so this is more compatible.
+      
 2024.3.19 -- Updated installer for new scheme
     * packmol-step-installer now uses the new scheme, which supports both Conda and
       Docker installation.
