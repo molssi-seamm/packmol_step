@@ -3,10 +3,12 @@
 """A step for building fluids with Packmol in a SEAMM flowchart"""
 
 import configparser
+import importlib
 import logging
 import math
 from pathlib import Path
 import pprint
+import shutil
 import textwrap
 
 from tabulate import tabulate
@@ -212,17 +214,47 @@ class Packmol(seamm.Node):
 
         executor = self.flowchart.executor
 
-        # Read configuration file for MOPAC
-        ini_dir = Path(seamm_options["root"]).expanduser()
-        full_config = configparser.ConfigParser()
-        full_config.read(ini_dir / "packmol.ini")
+        # Read configuration file for Packmol if it exists
         executor_type = executor.name
+        full_config = configparser.ConfigParser()
+        ini_dir = Path(seamm_options["root"]).expanduser()
+        path = ini_dir / "packmol.ini"
+
+        if path.exists():
+            full_config.read(ini_dir / "packmol.ini")
+
+        # If the section we need doesn't exists, get the default
+        if not path.exists() or executor_type not in full_config:
+            resources = importlib.resources.files("packmol_step") / "data"
+            ini_text = (resources / "packmol.ini").read_text()
+            full_config.read_string(ini_text)
+
+        # Getting desperate! Look for an executable in the path
         if executor_type not in full_config:
-            raise RuntimeError(
-                f"No section for '{executor_type}' in PACKMOL ini file "
-                f"({ini_dir / 'packmol.ini'})"
-            )
+            path = shutil.which("packmol")
+            if path is None:
+                raise RuntimeError(
+                    f"No section for '{executor_type}' in Packmol ini file "
+                    f"({ini_dir / 'packmol.ini'}), nor in the defaults, nor "
+                    "in the path!"
+                )
+            else:
+                full_config[executor_type] = {
+                    "installation": "local",
+                    "code": str(path),
+                }
+
+        # If the ini file does not exist, write it out!
+        if not path.exists():
+            with path.open("w") as fd:
+                full_config.write(fd)
+            printer.normal(f"Wrote the Packmol configuration file to {path}")
+            printer.normal("")
+
         config = dict(full_config.items(executor_type))
+
+        # Use the matching version of the seamm-packmol image by default.
+        config["version"] = self.version
 
         result = executor.run(
             cmd=["{code}", "<", "input.inp", ">", "packmol.out"],
@@ -235,7 +267,7 @@ class Packmol(seamm.Node):
         )
 
         if not result:
-            self.logger.error("There was an error running PACKMOL")
+            self.logger.error("There was an error running Packmol")
             return None
 
         self.logger.debug(pprint.pformat(result))
@@ -267,7 +299,7 @@ class Packmol(seamm.Node):
         configuration.clear()
         configuration.charge = total_q
 
-        # Create the configuration from the PDB output of PACKMOL
+        # Create the configuration from the PDB output of Packmol
         configuration.coordinate_system = "Cartesian"
         configuration.from_pdb_text(result["packmol.pdb"]["data"])
 
@@ -303,14 +335,14 @@ class Packmol(seamm.Node):
             alias="packmol",
             module="packmol_step",
             level=1,
-            note="The principle PACKMOL citation.",
+            note="The principle Packmol citation.",
         )
 
         return next_node
 
     @staticmethod
     def get_input(P, system_db, tmp_db, context, ff=None):
-        """Create the input for PACKMOL."""
+        """Create the input for Packmol."""
 
         # Return the translation from points a to b
         def recenter(a, b):
