@@ -1,6 +1,10 @@
 =======
 History
 =======
+2024.6.29 -- Bugfix: bonding incorrect in some cases.
+    * The use of PDB with Packmol could in some cases lead to multiple bonds in the
+      wrong place. This release fixes that problem.
+      
 2024.6.21.2 -- Another internal release for Docker.
 
 2024.6.21.1 -- Internal release for Docker

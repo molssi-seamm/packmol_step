@@ -273,13 +273,20 @@ class Packmol(seamm.Node):
         self.logger.debug(pprint.pformat(result))
 
         # Get the bond orders and extra parameters like ff atom types
-        bond_orders = []
         extra_data = {}
         total_q = 0.0
+        offset = 0
+        i_indices = []
+        j_indices = []
+        bond_orders = []
         for molecule in molecules:
             n = molecule["number"]
-            orders = molecule["configuration"].bonds.get_column_data("bondorder")
-            bond_orders.extend(orders * n)
+            for _ in range(n):
+                for i, j, bond_order in molecule["bonds"]:
+                    i_indices.append(i + offset)
+                    j_indices.append(j + offset)
+                    bond_orders.append(bond_order)
+                offset += molecule["configuration"].n_atoms
 
             total_q += n * molecule["configuration"].charge
 
@@ -303,8 +310,12 @@ class Packmol(seamm.Node):
         configuration.coordinate_system = "Cartesian"
         configuration.from_pdb_text(result["packmol.pdb"]["data"])
 
-        # And set the bond orders and extra data we saved earlier.
-        configuration.bonds.get_column("bondorder")[:] = bond_orders
+        ids = configuration.atoms.ids
+        i_atoms = [ids[x] for x in i_indices]
+        j_atoms = [ids[x] for x in j_indices]
+        configuration.bonds.append(i=i_atoms, j=j_atoms, bondorder=bond_orders)
+
+        # And set the extra data we saved earlier.
         for key, values in extra_data.items():
             if key not in configuration.atoms:
                 if "atom_types_" in key:
@@ -438,6 +449,9 @@ class Packmol(seamm.Node):
                 if ff is not None:
                     if ff_key not in tmp_configuration.atoms or assign_ff_always:
                         ff.assign_forcefield(tmp_configuration)
+                    else:
+                        if any(typ is None for typ in tmp_configuration.atoms[ff_key]):
+                            ff.assign_forcefield(tmp_configuration)
 
             tmp_mass = tmp_configuration.mass * ureg.g / ureg.mol
             tmp_mass.ito("kg")
@@ -455,6 +469,14 @@ class Packmol(seamm.Node):
                 n_fluid_atoms += count * tmp_configuration.n_atoms
                 fluid_mass += count * tmp_mass
 
+            # Keep track of the bonding information to add at end_bond
+            bonds = []
+            index = {_id: i for i, _id in enumerate(tmp_configuration.atoms.ids)}
+            for row in tmp_configuration.bonds.bonds():
+                bonds.append((index[row["i"]], index[row["j"]], row["bondorder"]))
+            tmp_configuration.bonds.clear()
+            tmp_configuration.db.commit()
+
             molecules.append(
                 {
                     "configuration": tmp_configuration,
@@ -463,6 +485,7 @@ class Packmol(seamm.Node):
                     "mass": tmp_mass,
                     "n_atoms": tmp_configuration.n_atoms,
                     "definition": definition,
+                    "bonds": bonds,
                 }
             )
 
