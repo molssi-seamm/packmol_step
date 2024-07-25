@@ -3,12 +3,12 @@ output packmol.pdb
 filetype pdb
 connect yes
 structure input_1.pdb
-   inside cube 1.0000 1.0000 1.0000 17.2792
+   inside cube 1.0000 1.0000 1.0000 17.1247
    center
-   fixed 8.6363 8.6450 8.6389 0.0 0.0 0.0
+   fixed 8.5765 8.5850 8.5614 0.0 0.0 0.0
    number 1
 end structure
 structure input_2.pdb
-   inside cube 1.0000 1.0000 1.0000 17.2792
-   number 231
+   inside cube 1.0000 1.0000 1.0000 17.1247
+   number 225
 end structure

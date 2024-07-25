@@ -3,12 +3,12 @@ output packmol.pdb
 filetype pdb
 connect yes
 structure input_1.pdb
-   inside sphere 0.0 0.0 0.0 14.5778
+   inside sphere 0.0 0.0 0.0 14.5687
    center
-   fixed -0.0043 -0.0362 -0.0348 0.0 0.0 0.0
+   fixed 0.0302 -0.1685 0.0129 0.0 0.0 0.0
    number 1
 end structure
 structure input_2.pdb
-   inside sphere 0.0 0.0 0.0 14.5778
-   number 425
+   inside sphere 0.0 0.0 0.0 14.5687
+   number 424
 end structure
