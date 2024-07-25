@@ -6,6 +6,7 @@ import configparser
 import importlib
 import logging
 import math
+import os
 from pathlib import Path
 import pprint
 import shutil
@@ -16,7 +17,7 @@ from tabulate import tabulate
 from molsystem import SystemDB
 import seamm
 import seamm_util
-from seamm_util import ureg, Q_, units_class  # noqa: F401
+from seamm_util import Configuration, ureg, Q_, units_class  # noqa: F401
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import packmol_step
@@ -220,14 +221,19 @@ class Packmol(seamm.Node):
         ini_dir = Path(seamm_options["root"]).expanduser()
         path = ini_dir / "packmol.ini"
 
-        if path.exists():
-            full_config.read(ini_dir / "packmol.ini")
-
-        # If the section we need doesn't exists, get the default
-        if not path.exists() or executor_type not in full_config:
+        # If the config file doesn't exists, get the default
+        if not path.exists():
             resources = importlib.resources.files("packmol_step") / "data"
             ini_text = (resources / "packmol.ini").read_text()
-            full_config.read_string(ini_text)
+            txt_config = Configuration(path)
+            txt_config.from_string(ini_text)
+
+            # Work out the conda info needed
+            txt_config.set_value("local", "conda", os.environ["CONDA_EXE"])
+            txt_config.set_value("local", "conda-environment", "seamm-packmol")
+            txt_config.save()
+
+        full_config.read(ini_dir / "packmol.ini")
 
         # Getting desperate! Look for an executable in the path
         if executor_type not in full_config:
@@ -239,17 +245,12 @@ class Packmol(seamm.Node):
                     "in the path!"
                 )
             else:
-                full_config[executor_type] = {
-                    "installation": "local",
-                    "code": str(path),
-                }
-
-        # If the ini file does not exist, write it out!
-        if not path.exists():
-            with path.open("w") as fd:
-                full_config.write(fd)
-            printer.normal(f"Wrote the Packmol configuration file to {path}")
-            printer.normal("")
+                txt_config = Configuration(path)
+                txt_config.add_section(executor_type)
+                txt_config.add_value(executor_type, "installation", "local")
+                txt_config.add_value(executor_type, "code", str(path))
+                txt_config.save()
+                full_config.read(ini_dir / "packmol.ini")
 
         config = dict(full_config.items(executor_type))
 

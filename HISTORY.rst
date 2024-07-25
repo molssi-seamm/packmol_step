@@ -1,6 +1,10 @@
 =======
 History
 =======
+2024.7.25 -- Bugfix: initial setup of packmol.ini fil
+    * The initial setup of the packmol.ini file did not add the information for
+      Conda. This release fixes that problem.
+      
 2024.6.29 -- Bugfix: bonding incorrect in some cases.
     * The use of PDB with Packmol could in some cases lead to multiple bonds in the
       wrong place. This release fixes that problem.
