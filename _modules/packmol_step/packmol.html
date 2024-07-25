@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2024.6.29 documentation</title>
+    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2024.7.25 documentation</title>
   
   
   
@@ -45,7 +45,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../../_static/documentation_options.js?v=4a368e61"></script>
+    <script src="../../_static/documentation_options.js?v=87129bd3"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -495,6 +495,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -505,7 +506,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">molsystem</span> <span class="kn">import</span> <span class="n">SystemDB</span>
 <span class="kn">import</span> <span class="nn">seamm</span>
 <span class="kn">import</span> <span class="nn">seamm_util</span>
-<span class="kn">from</span> <span class="nn">seamm_util</span> <span class="kn">import</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">Q_</span><span class="p">,</span> <span class="n">units_class</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">seamm_util</span> <span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">Q_</span><span class="p">,</span> <span class="n">units_class</span>  <span class="c1"># noqa: F401</span>
 <span class="kn">import</span> <span class="nn">seamm_util.printing</span> <span class="k">as</span> <span class="nn">printing</span>
 <span class="kn">from</span> <span class="nn">seamm_util.printing</span> <span class="kn">import</span> <span class="n">FormattedText</span> <span class="k">as</span> <span class="n">__</span>
 <span class="kn">import</span> <span class="nn">packmol_step</span>
@@ -719,14 +720,19 @@ document.write(`
         <span class="n">ini_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">seamm_options</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">ini_dir</span> <span class="o">/</span> <span class="s2">&quot;packmol.ini&quot;</span>
 
-        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">full_config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ini_dir</span> <span class="o">/</span> <span class="s2">&quot;packmol.ini&quot;</span><span class="p">)</span>
-
-        <span class="c1"># If the section we need doesn&#39;t exists, get the default</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="n">executor_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_config</span><span class="p">:</span>
+        <span class="c1"># If the config file doesn&#39;t exists, get the default</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">resources</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="s2">&quot;packmol_step&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
             <span class="n">ini_text</span> <span class="o">=</span> <span class="p">(</span><span class="n">resources</span> <span class="o">/</span> <span class="s2">&quot;packmol.ini&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-            <span class="n">full_config</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">ini_text</span><span class="p">)</span>
+            <span class="n">txt_config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">txt_config</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">ini_text</span><span class="p">)</span>
+
+            <span class="c1"># Work out the conda info needed</span>
+            <span class="n">txt_config</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;conda&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CONDA_EXE&quot;</span><span class="p">])</span>
+            <span class="n">txt_config</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;conda-environment&quot;</span><span class="p">,</span> <span class="s2">&quot;seamm-packmol&quot;</span><span class="p">)</span>
+            <span class="n">txt_config</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">full_config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ini_dir</span> <span class="o">/</span> <span class="s2">&quot;packmol.ini&quot;</span><span class="p">)</span>
 
         <span class="c1"># Getting desperate! Look for an executable in the path</span>
         <span class="k">if</span> <span class="n">executor_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_config</span><span class="p">:</span>
@@ -738,17 +744,12 @@ document.write(`
                     <span class="s2">&quot;in the path!&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">full_config</span><span class="p">[</span><span class="n">executor_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;installation&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
-                <span class="p">}</span>
-
-        <span class="c1"># If the ini file does not exist, write it out!</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-                <span class="n">full_config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
-            <span class="n">printer</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote the Packmol configuration file to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">printer</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">txt_config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">txt_config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">executor_type</span><span class="p">)</span>
+                <span class="n">txt_config</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="n">executor_type</span><span class="p">,</span> <span class="s2">&quot;installation&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">)</span>
+                <span class="n">txt_config</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="n">executor_type</span><span class="p">,</span> <span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                <span class="n">txt_config</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">full_config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ini_dir</span> <span class="o">/</span> <span class="s2">&quot;packmol.ini&quot;</span><span class="p">)</span>
 
         <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">full_config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">executor_type</span><span class="p">))</span>
 
