@@ -1,7 +1,7 @@
 =======
 History
 =======
-2024.7.25 -- Bugfix: initial setup of packmol.ini fil
+2024.7.25 -- Bugfix: initial setup of packmol.ini file
     * The initial setup of the packmol.ini file did not add the information for
       Conda. This release fixes that problem.
       
