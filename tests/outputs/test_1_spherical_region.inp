@@ -5,7 +5,7 @@ connect yes
 structure input_1.pdb
    inside sphere 0.0 0.0 0.0 13.3688
    center
-   fixed -0.0074 0.0650 0.0012 0.0 0.0 0.0
+   fixed 0.0269 0.1283 -0.0216 0.0 0.0 0.0
    number 1
 end structure
 structure input_2.pdb
