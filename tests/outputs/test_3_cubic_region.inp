@@ -5,7 +5,7 @@ connect yes
 structure input_1.pdb
    inside cube 0.0 0.0 0.0 21.5504
    center
-   fixed 10.7897 10.7676 10.7743 0.0 0.0 0.0
+   fixed 10.6029 12.8229 10.8661 0.0 0.0 0.0
    number 1
 end structure
 structure input_2.pdb
