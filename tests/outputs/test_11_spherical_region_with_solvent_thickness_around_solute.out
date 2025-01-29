@@ -13,13 +13,13 @@
     the molecule. The number of molecules of the fluid will be obtained  by
     using the density 1.0 g/ml.
 
-Created a spherical region with a diameter of 29.14 Å with the solute and 424.0 solvent molecules
+Created a spherical region with a diameter of 29.06 Å with the solute and 421.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number | Actual %   |
     |-------------+------------------+---------------+----------+------------|
     |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      424 | 100.000    |
+    |    fluid    | O                |       100.000 |      421 | 100.000    |
     +-------------+------------------+---------------+----------+------------+
 
-There are a total of 1294 atoms in the cell giving a density of 0.99906 g/ml.
+There are a total of 1285 atoms in the cell giving a density of 1.0006 g/ml.

@@ -247,8 +247,8 @@ class Packmol(seamm.Node):
             else:
                 txt_config = Configuration(path)
                 txt_config.add_section(executor_type)
-                txt_config.add_value(executor_type, "installation", "local")
-                txt_config.add_value(executor_type, "code", str(path))
+                txt_config.set_value(executor_type, "installation", "local")
+                txt_config.set_value(executor_type, "code", str(path))
                 txt_config.save()
                 full_config.read(ini_dir / "packmol.ini")
 
@@ -433,7 +433,7 @@ class Packmol(seamm.Node):
             if source == "SMILES":
                 tmp_system = tmp_db.create_system(name=definition)
                 tmp_configuration = tmp_system.create_configuration(name="default")
-                tmp_configuration.from_smiles(definition, rdkit=True)
+                tmp_configuration.from_smiles(definition, flavor="openbabel")
                 if ff is not None:
                     ff.assign_forcefield(tmp_configuration)
             elif source == "configuration":

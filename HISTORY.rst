@@ -1,6 +1,10 @@
 =======
 History
 =======
+2025.1.29 -- Bugfixes: executable and SMILES
+    * The configuration for the executable was not set up correctly.
+    * There was a bug due to change in the SMILES interface for configurations.
+      
 2024.7.25 -- Bugfix: initial setup of packmol.ini file
     * The initial setup of the packmol.ini file did not add the information for
       Conda. This release fixes that problem.
