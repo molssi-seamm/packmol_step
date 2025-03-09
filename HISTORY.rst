@@ -1,6 +1,10 @@
 =======
 History
 =======
+2025.3.9 -- Update for new installer
+    * Changes in the installer required changes for codes that installed background
+      codes, like PACKMOL. This update allows PACKMOL to be automatically installed.
+      
 2025.1.29 -- Bugfixes: executable and SMILES
     * The configuration for the executable was not set up correctly.
     * There was a bug due to change in the SMILES interface for configurations.
