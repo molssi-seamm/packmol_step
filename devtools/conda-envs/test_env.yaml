@@ -9,6 +9,7 @@ dependencies:
   - pip
 
   # SEAMM
+  - libsqlite!=3.49.1
   - seamm
   - seamm-installer
   - pyyaml
