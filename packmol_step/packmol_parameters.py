@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Control parameters for Packmol, currently for packing fluids
-"""
+"""Control parameters for Packmol, currently for packing fluids"""
 
 import logging
 import seamm
