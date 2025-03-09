@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>packmol_step package &#8212; SEAMM Packmol Plug-in 2025.1.29 documentation</title>
+    <title>packmol_step package &#8212; SEAMM Packmol Plug-in 2025.3.9 documentation</title>
   
   
   
@@ -49,7 +49,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../_static/documentation_options.js?v=a926aebd"></script>
+    <script src="../_static/documentation_options.js?v=01b6f460"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -63,7 +63,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="prev" title="packmol_step" href="modules.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2025.1.29" />
+  <meta name="docsearch:version" content="2025.3.9" />
   </head>
   
   
@@ -503,7 +503,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 package <cite>packmol-step</cite>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="packmol_step.installer.Installer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.installer.</span></span><span class="sig-name descname"><span class="pre">Installer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">packmol_step.installer</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.installer.</span></span><span class="sig-name descname"><span class="pre">Installer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">packmol_step.installer</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">InstallerBase</span></code></p>
 <p>Handle further installation needed after installing packmol-step.</p>
 <p>The Python package <cite>packmol-step</cite> should already be installed, using <cite>pip</cite>,
@@ -535,12 +535,6 @@ default.</p></li>
 </li>
 </ol>
 <dl class="py method">
-<dt class="sig sig-object py" id="packmol_step.installer.Installer.check">
-<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer.check" title="Link to this definition">#</a></dt>
-<dd><p>Check the status of the Packmol installation.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="packmol_step.installer.Installer.exe_version">
 <span class="sig-name descname"><span class="pre">exe_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer.exe_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer.exe_version" title="Link to this definition">#</a></dt>
 <dd><p>Get the version of the PACKMOL executable.</p>
@@ -557,30 +551,6 @@ default.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="packmol_step.installer.Installer.install">
-<span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer.install"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer.install" title="Link to this definition">#</a></dt>
-<dd><p>Install Packmol in a conda environment.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="packmol_step.installer.Installer.show">
-<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer.show" title="Link to this definition">#</a></dt>
-<dd><p>Show the status of the Packmol installation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="packmol_step.installer.Installer.uninstall">
-<span class="sig-name descname"><span class="pre">uninstall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer.uninstall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer.uninstall" title="Link to this definition">#</a></dt>
-<dd><p>Uninstall the Packmol installation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="packmol_step.installer.Installer.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/installer.html#Installer.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.installer.Installer.update" title="Link to this definition">#</a></dt>
-<dd><p>Updates the Packmol installation.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -589,7 +559,7 @@ default.</p></li>
 <p>A step for building fluids with Packmol in a SEAMM flowchart</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="packmol_step.packmol.Packmol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.packmol.</span></span><span class="sig-name descname"><span class="pre">Packmol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowchart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol.html#Packmol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol.Packmol" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.packmol.</span></span><span class="sig-name descname"><span class="pre">Packmol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowchart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol.html#Packmol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol.Packmol" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="packmol_step.packmol.Packmol.create_parser">
@@ -614,13 +584,13 @@ be used as is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="packmol_step.packmol.Packmol.get_input">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol.html#Packmol.get_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol.Packmol.get_input" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol.html#Packmol.get_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol.Packmol.get_input" title="Link to this definition">#</a></dt>
 <dd><p>Create the input for Packmol.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="packmol_step.packmol.Packmol.git_revision">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">git_revision</span></span><a class="headerlink" href="#packmol_step.packmol.Packmol.git_revision" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">git_revision</span></span><a class="headerlink" href="#packmol_step.packmol.Packmol.git_revision" title="Link to this definition">#</a></dt>
 <dd><p>The git version of this module.</p>
 </dd></dl>
 
@@ -632,7 +602,7 @@ be used as is.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="packmol_step.packmol.Packmol.version">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#packmol_step.packmol.Packmol.version" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#packmol_step.packmol.Packmol.version" title="Link to this definition">#</a></dt>
 <dd><p>The semantic version of this module.</p>
 </dd></dl>
 
@@ -658,7 +628,7 @@ it is a few percent larger than necessary on average.</p>
 <p>Control parameters for Packmol, currently for packing fluids</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="packmol_step.packmol_parameters.PackmolParameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.packmol_parameters.</span></span><span class="sig-name descname"><span class="pre">PackmolParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol_parameters.html#PackmolParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol_parameters.PackmolParameters" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.packmol_parameters.</span></span><span class="sig-name descname"><span class="pre">PackmolParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol_parameters.html#PackmolParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol_parameters.PackmolParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parameters</span></code></p>
 <p>The control parameters for Packmol packing fluids</p>
 <dl class="py attribute">
@@ -702,7 +672,7 @@ this node, and a factory() method for creating the graphical and non-graphical
 nodes.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="packmol_step.packmol_step.PackmolStep">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.packmol_step.</span></span><span class="sig-name descname"><span class="pre">PackmolStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowchart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gui</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol_step.html#PackmolStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol_step.PackmolStep" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.packmol_step.</span></span><span class="sig-name descname"><span class="pre">PackmolStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowchart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gui</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/packmol_step.html#PackmolStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.packmol_step.PackmolStep" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="packmol_step.packmol_step.PackmolStep.create_node">
@@ -735,7 +705,7 @@ nodes.</p>
 <p>The graphical part of a Packmol step</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="packmol_step.tk_packmol.TkPackmol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.tk_packmol.</span></span><span class="sig-name descname"><span class="pre">TkPackmol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tk_flowchart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/tk_packmol.html#TkPackmol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.tk_packmol.TkPackmol" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packmol_step.tk_packmol.</span></span><span class="sig-name descname"><span class="pre">TkPackmol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tk_flowchart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packmol_step/tk_packmol.html#TkPackmol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packmol_step.tk_packmol.TkPackmol" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TkNode</span></code></p>
 <p>Graphical interface for using Packmol for fluid boxes</p>
 <dl class="py method">
@@ -851,12 +821,7 @@ A step for building fluid boxes using Packmol</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-packmol_step.installer">packmol_step.installer module</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer"><code class="docutils literal notranslate"><span class="pre">Installer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer.check"><code class="docutils literal notranslate"><span class="pre">Installer.check()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer.exe_version"><code class="docutils literal notranslate"><span class="pre">Installer.exe_version()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer.install"><code class="docutils literal notranslate"><span class="pre">Installer.install()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer.show"><code class="docutils literal notranslate"><span class="pre">Installer.show()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer.uninstall"><code class="docutils literal notranslate"><span class="pre">Installer.uninstall()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#packmol_step.installer.Installer.update"><code class="docutils literal notranslate"><span class="pre">Installer.update()</span></code></a></li>
 </ul>
 </li>
 </ul>
