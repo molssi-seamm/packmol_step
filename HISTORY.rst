@@ -1,6 +1,8 @@
 =======
 History
 =======
+2025.6.20 -- Added support for MACE PyTorch potentials
+
 2025.3.9 -- Update for new installer
     * Changes in the installer required changes for codes that installed background
       codes, like PACKMOL. This update allows PACKMOL to be automatically installed.

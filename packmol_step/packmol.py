@@ -202,7 +202,7 @@ class Packmol(seamm.Node):
                 ff = self.get_variable("_forcefield")
             except Exception:
                 ff = None
-            if ff == "OpenKIM":
+            if ff in ("OpenKIM", "PyTorch"):
                 ff = None
 
         # Get the input files and any more output to print
