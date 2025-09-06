@@ -1,6 +1,12 @@
 =======
 History
 =======
+2025.9.6 -- Bugfixes: centering of solute and using variables for compounds
+    * Fixed a problem centering a solute in a cubic cell.
+    * Fixed problems using variables for the comounds, counts, etc. i nthe input.
+    * Fixed a problem if the number of molecules of a compound is zero. Now it is just
+      ignored.
+
 2025.6.20 -- Added support for MACE PyTorch potentials
 
 2025.3.9 -- Update for new installer
