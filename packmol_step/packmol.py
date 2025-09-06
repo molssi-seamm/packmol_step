@@ -107,13 +107,35 @@ class Packmol(seamm.Node):
             "Structure": [],
             "Ratio": [],
         }
+        context = seamm.flowchart_variables
         for molecule in self.parameters["molecules"].value:
-            table["Component"].append(molecule["component"])
-            table["Structure"].append(molecule["definition"])
+            component = molecule["component"]
+            if is_expr(component):
+                try:
+                    component = context.value(component)
+                except Exception:
+                    pass
+
+            definition = molecule["definition"]
+            if is_expr(definition):
+                try:
+                    definition = context.value(definition)
+                except Exception:
+                    pass
+
+            count = molecule["count"]
+            if is_expr(count):
+                try:
+                    count = context.value(count)
+                except Exception:
+                    pass
+
+            table["Component"].append(component)
+            table["Structure"].append(definition)
             if molecule["component"] == "solute":
                 table["Ratio"].append("")
             else:
-                table["Ratio"].append(molecule["count"])
+                table["Ratio"].append(count)
 
         description = self.header + "\n" + str(__(text, indent=self.indent + 4 * " "))
         text_lines = tabulate(
@@ -412,6 +434,9 @@ class Packmol(seamm.Node):
             ff_key = f"atom_types_{ffname}"
             assign_ff_always = P["assign forcefield"] == "Always"
 
+        # Need to know if there is a solute
+        have_solute = False
+
         # May need to create molecules.
         solute_configuration = None
         molecules = []
@@ -429,6 +454,9 @@ class Packmol(seamm.Node):
             if is_expr(count):
                 count = context.value(count)
             count = float(count)
+
+            if count == 0:
+                continue
 
             if source == "SMILES":
                 tmp_system = tmp_db.create_system(name=definition)
@@ -458,6 +486,7 @@ class Packmol(seamm.Node):
             tmp_mass.ito("kg")
 
             if component == "solute":
+                have_solute = True
                 n_solute_molecules += count
                 n_solute_atoms += count * tmp_configuration.n_atoms
                 solute_mass += count * tmp_mass
@@ -661,7 +690,7 @@ class Packmol(seamm.Node):
             if shape == "cubic":
                 a = volume ** (1 / 3)
                 if solute_configuration is not None:
-                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                    dx = dy = dz = a / 2
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, a, a)
@@ -669,6 +698,18 @@ class Packmol(seamm.Node):
                     a -= gap
                     x0 = f"{gap/2:.4f}"
                     region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                    if have_solute:
+                        sx, sy, sz = sides
+                        x0 = a / 2 - sx / 2
+                        y0 = a / 2 - sy / 2
+                        z0 = a / 2 - sz / 2
+                        x1 = a / 2 + sx / 2
+                        y1 = a / 2 + sy / 2
+                        z1 = a / 2 + sz / 2
+                        region += (
+                            f"\n    outside box {x0:.5f} {y0:.5f} {z0:.5f} "
+                            f"{x1:.5f} {y1:.5f} {z1:.5f}"
+                        )
                 else:
                     region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
             elif shape == "rectangular":

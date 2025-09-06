@@ -3,8 +3,8 @@
         +-------------+-------------+---------+
         |  Component  | Structure   |   Ratio |
         |-------------+-------------+---------|
-        |    fluid    | c1ccccc1    |     $na |
-        |    fluid    | O           |     $nb |
+        |    fluid    | c1ccccc1    |       1 |
+        |    fluid    | O           |       3 |
         +-------------+-------------+---------+
 
     The dimensions of the region will be calculated from the density 0.9 g/ml.
