@@ -3,7 +3,7 @@ History
 =======
 2025.9.6 -- Bugfixes: centering of solute and using variables for compounds
     * Fixed a problem centering a solute in a cubic cell.
-    * Fixed problems using variables for the comounds, counts, etc. i nthe input.
+    * Fixed problems using variables for the compounds, counts, etc. in the input.
     * Fixed a problem if the number of molecules of a compound is zero. Now it is just
       ignored.
 
