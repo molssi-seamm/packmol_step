@@ -284,7 +284,7 @@ class Packmol(seamm.Node):
             config=config,
             directory=self.directory,
             files=files,
-            return_files=["packmol.pdb"],
+            return_files=["packmol.pdb", "packmol.out"],
             in_situ=True,
             shell=True,
         )
@@ -826,6 +826,7 @@ class Packmol(seamm.Node):
 
         # Prepare the input
         lines = []
+        lines.append("seed -1")
         lines.append("tolerance 2.0")
         lines.append("output packmol.pdb")
         lines.append("filetype pdb")

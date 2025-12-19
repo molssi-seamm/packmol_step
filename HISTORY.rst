@@ -1,6 +1,10 @@
 =======
 History
 =======
+2025.12.19 -- Bugfix: initialization of random numbers
+    * Added the command to the Packmol input to set the random seed using the system clock
+      so that each run is different.
+
 2025.9.6 -- Bugfixes: centering of solute and using variables for compounds
     * Fixed a problem centering a solute in a cubic cell.
     * Fixed problems using variables for the compounds, counts, etc. in the input.
