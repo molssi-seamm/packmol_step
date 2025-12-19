@@ -1,3 +1,4 @@
+seed -1
 tolerance 2.0
 output packmol.pdb
 filetype pdb
