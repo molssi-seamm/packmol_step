@@ -12,7 +12,7 @@
     obtained by rounding 1000 atoms to give a whole number of molecules with the
     requested ratios.
 
-Created a periodic 10.00 x 20.00 x 30.00 Å cell with the solute and 326.0 solvent molecules
+Created a periodic 10.0000 x 20.0000 x 30.0000 Å cell with the solute and 326.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number | Actual %   |
@@ -21,4 +21,4 @@ Created a periodic 10.00 x 20.00 x 30.00 Å cell with the solute and 326.0 solve
     |    fluid    | O                |       100.000 |      326 | 100.000    |
     +-------------+------------------+---------------+----------+------------+
 
-There are a total of 1000 atoms in the cell giving a density of 2.4823 g/ml.
+There are a total of 1000 atoms in the cell giving a density of 1.6681 g/ml.

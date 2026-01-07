@@ -11,7 +11,7 @@
     The number of molecules of the fluid will be obtained by rounding 300
     molecules to give the requested ratios of species.
 
-Created a spherical region with a diameter of 32.69 Å with 300 fluid molecules
+Created a spherical region with a diameter of 32.6879 Å with 300 fluid molecules
 
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |

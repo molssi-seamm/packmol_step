@@ -11,7 +11,7 @@
     The number of molecules of the fluid will be obtained by rounding 1000 atoms
     to give a whole number of molecules with the requested ratios.
 
-Created a spherical region with a diameter of 26.94 Å with 297 fluid molecules
+Created a spherical region with a diameter of 26.9438 Å with 297 fluid molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number |   Actual % |

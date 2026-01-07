@@ -11,7 +11,7 @@
     The number of molecules of the fluid will be obtained by rounding 1000 atoms
     to give a whole number of molecules with the requested ratios.
 
-Created a cubic region 21.55 Å on a side with the solute and 326.0 solvent molecules
+Created a cubic region 21.5504 Å on a side with the solute and 326.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number | Actual %   |

@@ -11,7 +11,7 @@
     The number of molecules of the fluid will be obtained  by using the density
     0.9 g/ml.
 
-Created a spherical region with a diameter of 26.73 Å with 164 fluid molecules
+Created a spherical region with a diameter of 26.7301 Å with 164 fluid molecules
 
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |

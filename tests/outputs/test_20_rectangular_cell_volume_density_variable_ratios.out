@@ -11,7 +11,7 @@
     number of molecules of the fluid will be obtained  by using the density 0.9
     g/ml.
 
-Created a periodic 10.00 x 20.00 x 30.00 Å cell with 99 fluid molecules
+Created a periodic 10.0000 x 20.0000 x 30.0000 Å cell with 99 fluid molecules
 
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |
