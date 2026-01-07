@@ -12,7 +12,7 @@
     obtained by rounding 1000 atoms to give a whole number of molecules with the
     requested ratios.
 
-Created a rectangular 10.00 x 20.00 x 30.00 Å region with 297 fluid molecules
+Created a rectangular 10.0000 x 20.0000 x 30.0000 Å region with 297 fluid molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number |   Actual % |

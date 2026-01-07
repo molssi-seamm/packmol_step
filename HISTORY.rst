@@ -1,6 +1,11 @@
 =======
 History
 =======
+2026.1.7 -- Enhancement: using periodic packing now in Packmol
+    * Added support for the PBC boundary conditions now that they are implemented in
+      Packmol. This seems to lead to considerably better packing, particulalrly with
+      periodic solutes like MOF's and zeolites.
+
 2025.12.19 -- Bugfix: initialization of random numbers
     * Added the command to the Packmol input to set the random seed using the system clock
       so that each run is different.

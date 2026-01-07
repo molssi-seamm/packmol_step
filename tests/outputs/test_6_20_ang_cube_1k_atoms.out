@@ -11,7 +11,7 @@
     20.0 Å. The number of molecules of the fluid will be obtained by rounding
     1000 atoms to give a whole number of molecules with the requested ratios.
 
-Created a cubic region 20.00 Å on a side with 297 fluid molecules
+Created a cubic region 20.0000 Å on a side with 297 fluid molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number |   Actual % |

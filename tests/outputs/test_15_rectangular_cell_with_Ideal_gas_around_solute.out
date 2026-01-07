@@ -12,7 +12,7 @@
     fluid will be obtained by rounding 300 molecules to give the requested
     ratios of species.
 
-Created a periodic 27.32 x 54.63 x 81.95 Å cell with the solute and 300.0 solvent molecules
+Created a periodic 27.3153 x 54.6305 x 81.9458 Å cell with the solute and 300.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number | Actual %   |

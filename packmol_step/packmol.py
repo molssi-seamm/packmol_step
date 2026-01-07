@@ -160,7 +160,7 @@ class Packmol(seamm.Node):
         elif dimensions == "calculated from the solute dimensions":
             text += (
                 ". If the input structure is periodic, its dimensions will be used. "
-                "Otherwise for molecules, a the region will be a box with "
+                "Otherwise for molecules, the region will be a box with "
                 f"extra space of {P['solvent thickness']} around the molecule."
             )
         elif dimensions == "calculated from the density":
@@ -526,14 +526,35 @@ class Packmol(seamm.Node):
         cell = None
 
         # Get information about the solute for placing it
+        periodic_solute = False
         if solute_configuration is not None:
             xyzs = solute_configuration.atoms.get_coordinates(fractionals=False)
-            if shape == "cubic":
-                center, sides = bounding_box(xyzs)
-            elif shape == "rectangular":
-                center, sides = bounding_box(xyzs)
-            elif shape == "spherical":
-                center, solute_radius = bounding_sphere(xyzs)
+            if solute_configuration.periodicity == 3:
+                periodic_solute = True
+                periodic = True
+                a, b, c, alpha, beta, gamma = solute_configuration.cell.parameters
+                if (
+                    abs(alpha - 90) > 0.1
+                    or abs(beta - 90) > 0.1
+                    or abs(gamma - 90) > 0.1
+                ):
+                    raise RuntimeError("Cannot handle a non-orthorhomic solute")
+                if abs(a - b) < 0.01 and abs(a - c) < 0.01:
+                    b = c = a
+                    shape = "cubic"
+                else:
+                    shape = "rectangular"
+                center = (a / 2, b / 2, c / 2)
+                sides = (a, b, c)
+                cell = (a, b, c)
+                dimensions = "calculated from the solute dimensions"
+            else:
+                if shape == "cubic":
+                    center, sides = bounding_box(xyzs)
+                elif shape == "rectangular":
+                    center, sides = bounding_box(xyzs)
+                elif shape == "spherical":
+                    center, solute_radius = bounding_sphere(xyzs)
 
         # Work out the dimensions of the region
         if dimensions == "given explicitly":
@@ -541,12 +562,8 @@ class Packmol(seamm.Node):
                 a = P["edge length"].to("Å").magnitude
                 if periodic:
                     cell = (a, a, a)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
-                else:
-                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                    b = c = a
+                region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -557,14 +574,7 @@ class Packmol(seamm.Node):
                 c = P["c"].to("Å").magnitude
                 if periodic:
                     cell = (a, b, c)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    b -= gap
-                    c -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
-                else:
-                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
                 if solute_configuration is not None:
                     dx, dy, dz = recenter(center, (a / 2, b / 2, c / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
@@ -584,10 +594,8 @@ class Packmol(seamm.Node):
                 a = volume ** (1 / 3)
                 if periodic:
                     cell = (a, a, a)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                    b = c = a
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 else:
                     region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                 if solute_configuration is not None:
@@ -604,12 +612,7 @@ class Packmol(seamm.Node):
                 c *= factor
                 if periodic:
                     cell = (a, b, c)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    b -= gap
-                    c -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
                 else:
                     region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
                 if solute_configuration is not None:
@@ -639,31 +642,34 @@ class Packmol(seamm.Node):
                     if periodic:
                         volume = (a + thickness) ** 3
                         a += thickness
+                        b = c = a
                         cell = (a, a, a)
-                        gap = P["gap"].to("Å").magnitude
-                        a -= gap
-                        x0 = f"{gap/2:.4f}"
-                        region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                        region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                     else:
                         a += 2 * thickness
+                        b = c = a
                         volume = a**3
                         region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                     # Move the solute molecule to the center of the box
-                    dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
-                    fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
+                    if periodic_solute:
+                        fixed = "   fixed 0.0 0.0 0.0 0.0 0.0 0.0"
+                    else:
+                        dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
+                        fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 else:
                     if periodic:
-                        a += thickness
-                        b += thickness
-                        c += thickness
-                        cell = (a, b, c)
-                        volume = a * b * c
-                        gap = P["gap"].to("Å").magnitude
-                        a -= gap
-                        b -= gap
-                        c -= gap
-                        x0 = f"{gap/2:.4f}"
-                        region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
+                        if periodic_solute:
+                            fixed = "   fixed 0.0 0.0 0.0 0.0 0.0 0.0"
+                            volume = a * b * c
+                        else:
+                            a += thickness
+                            b += thickness
+                            c += thickness
+                            cell = (a, b, c)
+                            volume = a * b * c
+                            region = (
+                                f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                            )
                     else:
                         a += 2 * thickness
                         b += 2 * thickness
@@ -694,10 +700,8 @@ class Packmol(seamm.Node):
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, a, a)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
+                    b = c = a
+                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
                     if have_solute:
                         sx, sy, sz = sides
                         x0 = a / 2 - sx / 2
@@ -726,14 +730,7 @@ class Packmol(seamm.Node):
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, b, c)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    b -= gap
-                    c -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
-                else:
-                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
             elif shape == "spherical":
                 diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
                 region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
@@ -765,12 +762,8 @@ class Packmol(seamm.Node):
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, a, a)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside cube {x0} {x0} {x0} {a:.4f}"
-                else:
-                    region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
+                    b = c = a
+                region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
             elif shape == "rectangular":
                 a = P["a"].to("Å").magnitude
                 b = P["b"].to("Å").magnitude
@@ -785,14 +778,7 @@ class Packmol(seamm.Node):
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
                 if periodic:
                     cell = (a, b, c)
-                    gap = P["gap"].to("Å").magnitude
-                    a -= gap
-                    b -= gap
-                    c -= gap
-                    x0 = f"{gap/2:.4f}"
-                    region = f"   inside box {x0} {x0} {x0} {a:.4f} {b:.4f} {c:.4f}"
-                else:
-                    region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
+                region = f"   inside box 0.0 0.0 0.0 {a:.4f} {b:.4f} {c:.4f}"
             elif shape == "spherical":
                 diameter = 2 * (volume / (4 / 3 * math.pi)) ** (1 / 3)
                 region = f"   inside sphere 0.0 0.0 0.0 {diameter/2:.4f}"
@@ -831,13 +817,17 @@ class Packmol(seamm.Node):
         lines.append("output packmol.pdb")
         lines.append("filetype pdb")
         lines.append("connect yes")
+        if periodic:
+            lines.append(f"pbc {a:.4f} {b:.4f} {c:.4f}")
 
         files = {}
         for i, molecule in enumerate(molecules, start=1):
             lines.append(f"structure input_{i}.pdb")
-            lines.append(region)
+            if not periodic:
+                lines.append(region)
             if molecule["type"] == "solute":
-                lines.append("   center")
+                if not periodic_solute:
+                    lines.append("   center")
                 lines.append(fixed)
                 lines.append("   number 1")
             else:
@@ -853,21 +843,23 @@ class Packmol(seamm.Node):
         if periodic:
             a, b, c = cell
             if shape == "cubic":
-                string += f"Created a periodic cubic cell {a:.2f} Å on a side"
+                string += f"Created a periodic cubic cell {a:.4f} Å on a side"
             else:
-                string += f"Created a periodic {a:.2f} x {b:.2f} x {c:.2f} Å cell"
+                string += f"Created a periodic {a:.4f} x {b:.4f} x {c:.4f} Å cell"
         else:
             if shape == "cubic":
-                string += f"Created a cubic region {a:.2f} Å on a side"
+                string += f"Created a cubic region {a:.4f} Å on a side"
             elif shape == "rectangular":
-                string += f"Created a rectangular {a:.2f} x {b:.2f} x {c:.2f} Å region"
+                string += f"Created a rectangular {a:.4f} x {b:.4f} x {c:.4f} Å region"
             else:
                 string += (
-                    f"Created a spherical region with a diameter of {diameter:.2f} Å"
+                    f"Created a spherical region with a diameter of {diameter:.4f} Å"
                 )
+        print(f"{volume=} {mass=}")
         volume = Q_(volume, "Å^3")
         density = mass / volume
         density.ito("g/ml")
+        print(f"{density=}")
 
         if n_solute_molecules > 0:
             string += (

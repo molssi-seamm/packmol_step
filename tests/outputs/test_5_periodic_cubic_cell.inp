@@ -3,11 +3,10 @@ tolerance 2.0
 output packmol.pdb
 filetype pdb
 connect yes
+pbc 21.7166 21.7166 21.7166
 structure input_1.pdb
-   inside cube 1.0000 1.0000 1.0000 19.7166
    number 6
 end structure
 structure input_2.pdb
-   inside cube 1.0000 1.0000 1.0000 19.7166
    number 291
 end structure

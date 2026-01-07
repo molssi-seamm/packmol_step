@@ -11,7 +11,7 @@
     The number of molecules of the fluid will be obtained  by using the density
     0.9 g/ml.
 
-Created a periodic cubic cell 21.54 Å on a side with 164 fluid molecules
+Created a periodic cubic cell 21.5443 Å on a side with 164 fluid molecules
 
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |
