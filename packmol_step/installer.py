@@ -6,9 +6,9 @@ This handles any further installation needed after installing the Python
 package `packmol-step`.
 """
 
+import importlib
 import logging
 from pathlib import Path
-import pkg_resources
 import subprocess
 
 import seamm_installer
@@ -56,7 +56,7 @@ class Installer(seamm_installer.InstallerBase):
         self.environment = "seamm-packmol"
         self.section = "packmol-step"
         self.executables = ["packmol"]
-        self.resource_path = Path(pkg_resources.resource_filename(__name__, "data/"))
+        self.resource_path = importlib.resources.files("packmol_step") / "data"
 
         # The environment.yaml file for Conda installations.
         logger.debug(f"data directory: {self.resource_path}")

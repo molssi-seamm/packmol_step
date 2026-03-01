@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Tests for `packmol_step` running full flowcharts."""
+
 from pathlib import Path
 import pytest
 from seamm_exec import run
