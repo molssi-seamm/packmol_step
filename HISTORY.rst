@@ -1,6 +1,8 @@
 =======
 History
 =======
+2026.3.1 -- Internal: switching from deprecated library pkg_resources to importlib
+
 2026.1.7 -- Enhancement: using periodic packing now in Packmol
     * Added support for the PBC boundary conditions now that they are implemented in
       Packmol. This seems to lead to considerably better packing, particulalrly with
