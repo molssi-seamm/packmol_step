@@ -276,9 +276,6 @@ class Packmol(seamm.Node):
 
         config = dict(full_config.items(executor_type))
 
-        # Use the matching version of the seamm-packmol image by default.
-        config["version"] = self.version
-
         result = executor.run(
             cmd=["{code}", "<", "input.inp", ">", "packmol.out"],
             config=config,
