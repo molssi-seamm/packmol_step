@@ -10,12 +10,16 @@ from packmol_step import PackmolParameters
 
 @pytest.fixture()
 def tk_node():
+    import faulthandler
     import tkinter as tk
 
     try:
         root = tk.Tk()
     except tk.TclError:
         pytest.skip("no display available for Tk")
+    # If Tk blocks (e.g. on a CI runner's display), fail with the tracebacks rather
+    # than hang the job
+    faulthandler.dump_traceback_later(120, exit=True)
     root.withdraw()
     import Pmw
     import seamm
@@ -41,6 +45,7 @@ def tk_node():
     )
     yield tk_node
     root.destroy()
+    faulthandler.cancel_dump_traceback_later()
 
 
 def rows(tk_node):
@@ -87,8 +92,8 @@ def test_measures_saved_and_rows_removed(tk_node):
     new = tk_node._molecule_data[3]
     new["widgets"]["definition"].insert("end", "COC(=O)OC")
     new["widgets"]["measure"].set("molality (mol/kg)")
+    # Delivered at once: no update(), which can block on a CI runner's display
     new["widgets"]["measure"].event_generate("<<ComboboxSelected>>")
-    new["widgets"]["measure"].update()
 
     # Remove the salt, then the last row: each button removes its own row
     tk_node._molecule_data[2]["widgets"]["remove"].invoke()
