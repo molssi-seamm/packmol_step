@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packmol_step.tk_packmol &#8212; SEAMM Packmol Plug-in 2026.3.1 documentation</title>
+    <title>packmol_step.tk_packmol &#8212; SEAMM Packmol Plug-in 2026.10.10 documentation</title>
   
   
   
@@ -26,8 +25,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -35,10 +34,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c224919a" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -48,33 +47,41 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../../_static/documentation_options.js?v=fec480e4"></script>
+    <script src="../../_static/documentation_options.js?v=355f04a4"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/packmol_step/tk_packmol';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
 
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.3.1" />
+  <meta name="docsearch:version" content="2026.10.10" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -100,9 +107,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -220,7 +227,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -230,11 +237,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -247,8 +261,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           
           
           
-          <a href="https://github.com/molssi-seamm/packmol_step" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/molssi-seamm/packmol_step" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -259,8 +272,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           
           
           
-          <a href="https://twitter.com/MolSSI_NSF" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://twitter.com/MolSSI_NSF" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i><span class="visually-hidden">Twitter</span></a>
         </li>
 </ul></div>
       
@@ -271,7 +283,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -375,11 +387,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -392,8 +411,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           
           
           
-          <a href="https://github.com/molssi-seamm/packmol_step" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/molssi-seamm/packmol_step" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -404,8 +422,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           
           
           
-          <a href="https://twitter.com/MolSSI_NSF" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://twitter.com/MolSSI_NSF" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i><span class="visually-hidden">Twitter</span></a>
         </li>
 </ul></div>
         
@@ -471,7 +488,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <h1>Source code for packmol_step.tk_packmol</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;The graphical part of a Packmol step&quot;&quot;&quot;</span>
+<span class="sd">"""The graphical part of a Packmol step"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tk</span>
@@ -487,15 +504,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="viewcode-block" id="TkPackmol">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TkPackmol</span><span class="p">(</span><span class="n">seamm</span><span class="o">.</span><span class="n">TkNode</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graphical interface for using Packmol for fluid boxes&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Graphical interface for using Packmol for fluid boxes"""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">tk_flowchart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">50</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a node</span>
+<span class="w">        </span><span class="sd">"""Initialize a node</span>
 
 <span class="sd">        Keyword arguments:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span> <span class="o">=</span> <span class="p">[]</span>
@@ -508,31 +525,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="viewcode-block" id="TkPackmol.create_dialog">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.create_dialog">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the dialog!&quot;&quot;&quot;</span>
-        <span class="n">frame</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_dialog</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Edit PACKMOL parameters&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Create the dialog!"""</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_dialog</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Edit PACKMOL parameters"</span><span class="p">)</span>
 
         <span class="c1"># Create all the widgets</span>
         <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">P</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;molecules&quot;</span><span class="p">,):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"molecules"</span><span class="p">,):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
 
         <span class="c1"># Frame for specifying molecules</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sw</span><span class="o">.</span><span class="n">ScrolledFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">interior</span><span class="p">()</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Component&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Source&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Definition&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;stoichiometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;proportion&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sw</span><span class="o">.</span><span class="n">ScrolledFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span><span class="o">.</span><span class="n">interior</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">"Component"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">"Source"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">"Definition"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"stoichiometry"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">"Amount"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">"as"</span><span class="p">)</span>
 
         <span class="c1"># And the molecule data</span>
-        <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="o">**</span><span class="n">molecule</span><span class="p">})</span>
 
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;periodic&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;dimensions&quot;</span><span class="p">,</span> <span class="s2">&quot;fluid amount&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;Return&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;FocusOut&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"periodic"</span><span class="p">,</span> <span class="s2">"shape"</span><span class="p">,</span> <span class="s2">"dimensions"</span><span class="p">,</span> <span class="s2">"fluid amount"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"&lt;&lt;ComboboxSelected&gt;&gt;"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"&lt;Return&gt;"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"&lt;FocusOut&gt;"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">()</span>
 
@@ -543,8 +561,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="viewcode-block" id="TkPackmol.reset_dialog">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.reset_dialog">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Layout the widgets in the dialog contingent on the parameter values.&quot;&quot;&quot;</span>
-        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;frame&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""Layout the widgets in the dialog contingent on the parameter values."""</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"frame"</span><span class="p">]</span>
 
         <span class="c1"># Reset everything</span>
         <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">grid_size</span><span class="p">()</span>
@@ -556,130 +574,130 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <span class="n">slave</span><span class="o">.</span><span class="n">grid_forget</span><span class="p">()</span>
 
         <span class="c1"># The possible shapes depend on the periodicity</span>
-        <span class="n">periodic</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;periodic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">periodic</span> <span class="o">==</span> <span class="s2">&quot;Yes&quot;</span><span class="p">:</span>
+        <span class="n">periodic</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"periodic"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"shape"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">periodic</span> <span class="o">==</span> <span class="s2">"Yes"</span><span class="p">:</span>
             <span class="n">shapes</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">periodic_shapes</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">shapes</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">shapes</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">shapes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"shape"</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">shapes</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">shape</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">:</span>
             <span class="n">shape</span> <span class="o">=</span> <span class="n">shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"shape"</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 
         <span class="c1"># The dimensions control the remaining widgets</span>
-        <span class="n">dimensions</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;dimensions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">dimensions</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"dimensions"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
         <span class="n">widgets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;periodic&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;dimensions&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"periodic"</span><span class="p">,</span> <span class="s2">"shape"</span><span class="p">,</span> <span class="s2">"dimensions"</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
             <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">&quot;given explicitly&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;cubic&quot;</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edge length&quot;</span><span class="p">,)</span>
-            <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;rectangular&quot;</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;spherical&quot;</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;diameter&quot;</span><span class="p">,)</span>
+        <span class="k">if</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">"given explicitly"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"cubic"</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"edge length"</span><span class="p">,)</span>
+            <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"rectangular"</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"spherical"</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"diameter"</span><span class="p">,)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Do not recognize shape &#39;</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Do not recognize shape '</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">&quot;calculated from the volume&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;rectangular&quot;</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;b_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;c_ratio&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">"calculated from the volume"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"rectangular"</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"volume"</span><span class="p">,</span> <span class="s2">"a_ratio"</span><span class="p">,</span> <span class="s2">"b_ratio"</span><span class="p">,</span> <span class="s2">"c_ratio"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">,)</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"volume"</span><span class="p">,)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">&quot;calculated from the solute dimensions&quot;</span><span class="p">:</span>
-            <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;solvent thickness&quot;</span><span class="p">,)</span>
+        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">"calculated from the solute dimensions"</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"solvent thickness"</span><span class="p">,)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">&quot;calculated from the density&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;rectangular&quot;</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;b_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;c_ratio&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">"calculated from the density"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"rectangular"</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"density"</span><span class="p">,</span> <span class="s2">"a_ratio"</span><span class="p">,</span> <span class="s2">"b_ratio"</span><span class="p">,</span> <span class="s2">"c_ratio"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">,)</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"density"</span><span class="p">,)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">&quot;calculated using the Ideal Gas Law&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;rectangular&quot;</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;b_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;c_ratio&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="s2">"calculated using the Ideal Gas Law"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"rectangular"</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"temperature"</span><span class="p">,</span> <span class="s2">"pressure"</span><span class="p">,</span> <span class="s2">"a_ratio"</span><span class="p">,</span> <span class="s2">"b_ratio"</span><span class="p">,</span> <span class="s2">"c_ratio"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">)</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"temperature"</span><span class="p">,</span> <span class="s2">"pressure"</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Do not recognize dimensions &#39;</span><span class="si">{</span><span class="n">dimensions</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Do not recognize dimensions '</span><span class="si">{</span><span class="n">dimensions</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
         <span class="c1"># Next we need the amount of material. However the options change depending on</span>
         <span class="c1"># the above</span>
-        <span class="n">amount</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;fluid amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">amount</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"fluid amount"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">dimensions</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s2">&quot;calculated from the density&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;calculated using the Ideal Gas Law&quot;</span><span class="p">,</span>
+            <span class="s2">"calculated from the density"</span><span class="p">,</span>
+            <span class="s2">"calculated using the Ideal Gas Law"</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="n">amounts</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">amounts_for_density</span>
-        <span class="k">elif</span> <span class="n">dimensions</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;calculated from the solute dimensions&quot;</span><span class="p">,):</span>
+        <span class="k">elif</span> <span class="n">dimensions</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"calculated from the solute dimensions"</span><span class="p">,):</span>
             <span class="n">amounts</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">amounts_for_layer</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">amounts</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">amounts</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;fluid amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">amounts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"fluid amount"</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">amounts</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">amount</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">amounts</span><span class="p">:</span>
             <span class="n">amount</span> <span class="o">=</span> <span class="n">amounts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;fluid amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"fluid amount"</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;fluid amount&quot;</span><span class="p">,):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"fluid amount"</span><span class="p">,):</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
             <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">&quot;rounding this number of atoms&quot;</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;approximate number of atoms&quot;</span><span class="p">,):</span>
+        <span class="k">if</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">"rounding this number of atoms"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"approximate number of atoms"</span><span class="p">,):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">&quot;rounding this number of molecules&quot;</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;approximate number of molecules&quot;</span><span class="p">,):</span>
+        <span class="k">elif</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">"rounding this number of molecules"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"approximate number of molecules"</span><span class="p">,):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">&quot;using the density&quot;</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">,):</span>
+        <span class="k">elif</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">"using the density"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"density"</span><span class="p">,):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">&quot;using the Ideal Gas Law&quot;</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">amount</span> <span class="o">==</span> <span class="s2">"using the Ideal Gas Law"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"temperature"</span><span class="p">,</span> <span class="s2">"pressure"</span><span class="p">):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
                 <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Do not recognize amount &#39;</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Do not recognize amount '</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;assign forcefield&quot;</span>
-        <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-        <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"proportions"</span><span class="p">,</span> <span class="s2">"assign forcefield"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+            <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
         <span class="n">sw</span><span class="o">.</span><span class="n">align_labels</span><span class="p">(</span><span class="n">widgets</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">E</span><span class="p">)</span>
 
         <span class="c1"># The table of molecules to use</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">NSEW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">NSEW</span><span class="p">)</span>
         <span class="n">frame</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minsize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
         <span class="n">frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -687,7 +705,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <span class="c1"># And finally, where to put the new system</span>
         <span class="n">widgets</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;structure handling&quot;</span><span class="p">,</span> <span class="s2">&quot;system name&quot;</span><span class="p">,</span> <span class="s2">&quot;configuration name&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"structure handling"</span><span class="p">,</span> <span class="s2">"system name"</span><span class="p">,</span> <span class="s2">"configuration name"</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
             <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
@@ -698,9 +716,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="viewcode-block" id="TkPackmol.reset_molecules">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.reset_molecules">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_molecules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Layout the table of molecules to use.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Layout the table of molecules to use."""</span>
 
-        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">interior</span><span class="p">()</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span><span class="o">.</span><span class="n">interior</span><span class="p">()</span>
 
         <span class="c1"># Unpack any widgets</span>
         <span class="k">for</span> <span class="n">slave</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">grid_slaves</span><span class="p">():</span>
@@ -708,68 +726,104 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <span class="c1"># Put in the column headers.</span>
         <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;stoichiometry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"stoichiometry"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
         <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;widgets&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;widgets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;widgets&quot;</span><span class="p">]</span>
+        <span class="c1"># Molarities need the volume, which the Ideal Gas Law only gives from the</span>
+        <span class="c1"># number of molecules, so they are not offered then.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"dimensions"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"calculated using the Ideal Gas Law"</span><span class="p">:</span>
+            <span class="n">measures</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">measures_without_volume</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">measures</span> <span class="o">=</span> <span class="n">PackmolParameters</span><span class="o">.</span><span class="n">measures</span>
 
-            <span class="k">if</span> <span class="s2">&quot;remove&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"widgets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"widgets"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"widgets"</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">"remove"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
                 <span class="c1"># The button to remove a row...</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;remove&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"remove"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span>
                     <span class="n">frame</span><span class="p">,</span>
-                    <span class="n">text</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                    <span class="n">text</span><span class="o">=</span><span class="s2">"-"</span><span class="p">,</span>
                     <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                    <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_molecule</span><span class="p">(</span><span class="n">row</span><span class="p">),</span>
+                    <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_molecule</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
                     <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
 
-            <span class="k">if</span> <span class="s2">&quot;component&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"component"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
                 <span class="c1"># the type of component</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span>
                     <span class="n">frame</span><span class="p">,</span>
-                    <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;solute&quot;</span><span class="p">,</span> <span class="s2">&quot;fluid&quot;</span><span class="p">),</span>
+                    <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="s2">"solute"</span><span class="p">,</span> <span class="s2">"fluid"</span><span class="p">),</span>
                     <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                     <span class="n">width</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-                    <span class="n">state</span><span class="o">=</span><span class="s2">&quot;readonly&quot;</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="s2">"readonly"</span><span class="p">,</span>
                     <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">])</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"component"</span><span class="p">])</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
+                    <span class="s2">"&lt;&lt;ComboboxSelected&gt;&gt;"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">event</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_molecules</span><span class="p">()</span>
+                <span class="p">)</span>
 
-            <span class="k">if</span> <span class="s2">&quot;source&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"source"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
                 <span class="c1"># the type of source</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span>
                     <span class="n">frame</span><span class="p">,</span>
-                    <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;configuration&quot;</span><span class="p">,</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">),</span>
+                    <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="s2">"configuration"</span><span class="p">,</span> <span class="s2">"SMILES"</span><span class="p">),</span>
                     <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                     <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                    <span class="n">state</span><span class="o">=</span><span class="s2">&quot;readonly&quot;</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="s2">"readonly"</span><span class="p">,</span>
                     <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">])</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"source"</span><span class="p">])</span>
 
-            <span class="k">if</span> <span class="s2">&quot;definition&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"definition"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
                 <span class="c1"># the SMILES ot system/configuration</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">])</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">"end"</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">])</span>
 
-            <span class="k">if</span> <span class="s2">&quot;count&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"count"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
                 <span class="c1"># The count for the stoichiometry</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"count"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"count"</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">"end"</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">"count"</span><span class="p">])</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  widgets: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">widgets</span><span class="p">))</span>
-            <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;remove&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
-            <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-            <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-            <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
-            <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"measure"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
+                <span class="c1"># How the amount is given: a proportion, molality or molarity</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span>
+                    <span class="n">frame</span><span class="p">,</span>
+                    <span class="n">values</span><span class="o">=</span><span class="n">measures</span><span class="p">,</span>
+                    <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                    <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="s2">"readonly"</span><span class="p">,</span>
+                    <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
+                    <span class="s2">"&lt;&lt;ComboboxSelected&gt;&gt;"</span><span class="p">,</span>
+                    <span class="k">lambda</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">measure</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">"widgets"</span><span class="p">][</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="c1"># Show the measure chosen if it is possible here, but remember it, so</span>
+            <span class="c1"># that looking at other dimensions does not lose it.</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">measures</span><span class="p">)</span>
+            <span class="n">measure</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"measure"</span><span class="p">,</span> <span class="s2">"proportion"</span><span class="p">)</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">measure</span> <span class="k">if</span> <span class="n">measure</span> <span class="ow">in</span> <span class="n">measures</span> <span class="k">else</span> <span class="s2">"proportion"</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"  widgets: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">widgets</span><span class="p">))</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s2">"remove"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+            <span class="c1"># There is always one solute, so it has no amount</span>
+            <span class="k">if</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"solute"</span><span class="p">:</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"count"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+                <span class="n">widgets</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stick</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
 
             <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -777,7 +831,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_molecule</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_molecule</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span>
                 <span class="n">frame</span><span class="p">,</span>
-                <span class="n">text</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
                 <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
                 <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_molecule</span><span class="p">,</span>
                 <span class="n">takefocus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -792,10 +846,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="viewcode-block" id="TkPackmol.right_click">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.right_click">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">right_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Probably need to add our dialog...&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Probably need to add our dialog..."""</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">right_click</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">popup_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Edit..&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Edit.."</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edit</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">popup_menu</span><span class="o">.</span><span class="n">tk_popup</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x_root</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y_root</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
@@ -803,30 +857,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="viewcode-block" id="TkPackmol.handle_dialog">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.handle_dialog">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"Cancel"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
             <span class="c1"># Reset the molecules</span>
             <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;widgets&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                    <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;widgets&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">"widgets"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"widgets"</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">widgets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                         <span class="n">w</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span>
-            <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="o">**</span><span class="n">molecule</span><span class="p">})</span>
 
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">handle_dialog</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;Help&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"Help"</span><span class="p">:</span>
             <span class="c1"># display help!!!</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="s2">"OK"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t recognize dialog result &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Don't recognize dialog result '</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
@@ -834,34 +888,36 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span>
 
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">P</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;molecules&quot;</span><span class="p">,):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"molecules"</span><span class="p">,):</span>
                 <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">set_from_widget</span><span class="p">()</span>
 
         <span class="c1"># And handle the molecules</span>
         <span class="n">molecules</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="p">:</span>
-            <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;widgets&quot;</span><span class="p">]</span>
+            <span class="n">widgets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"widgets"</span><span class="p">]</span>
             <span class="n">molecules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
-                    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
-                    <span class="s2">&quot;definition&quot;</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;definition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
-                    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                    <span class="s2">"component"</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                    <span class="s2">"source"</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                    <span class="s2">"definition"</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">"definition"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                    <span class="s2">"count"</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">"count"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                    <span class="s2">"measure"</span><span class="p">:</span> <span class="n">widgets</span><span class="p">[</span><span class="s2">"measure"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
-        <span class="n">P</span><span class="p">[</span><span class="s2">&quot;molecules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">molecules</span></div>
+        <span class="n">P</span><span class="p">[</span><span class="s2">"molecules"</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">molecules</span></div>
 
 
 <div class="viewcode-block" id="TkPackmol.add_molecule">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.add_molecule">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new row to the molecule table.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add a new row to the molecule table."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="s2">&quot;fluid&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;SMILES&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;definition&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                <span class="s2">"component"</span><span class="p">:</span> <span class="s2">"fluid"</span><span class="p">,</span>
+                <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"SMILES"</span><span class="p">,</span>
+                <span class="s2">"definition"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+                <span class="s2">"count"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
+                <span class="s2">"measure"</span><span class="p">:</span> <span class="s2">"proportion"</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_molecules</span><span class="p">()</span></div>
@@ -869,20 +925,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <div class="viewcode-block" id="TkPackmol.remove_molecule">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.tk_packmol.TkPackmol.remove_molecule">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a molecule entry from the table.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Remove a molecule entry from the table.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        row : int</span>
-<span class="sd">            The row in the table to remove. Note the first molecule is at row 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="n">row</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;widgets&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;widgets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="sd">        data : dict</span>
+<span class="sd">            The molecule's entry in the table. The entry rather than its row, which</span>
+<span class="sd">            changes as rows above it are removed.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"widgets"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">"widgets"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">w</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_molecule_data</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_molecules</span><span class="p">()</span></div>
 </div>
@@ -916,8 +971,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -929,7 +984,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
 </p></div>
       
     </div>

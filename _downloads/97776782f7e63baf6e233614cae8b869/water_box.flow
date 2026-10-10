@@ -1,0 +1,53 @@
+#!/usr/bin/env run_flowchart
+format: MolSSI flowchart 3.0
+metadata:
+  title: Water box
+  description: A periodic cubic box of about 3000 atoms of water at 1.0 g/mL.
+  keywords: []
+  creators:
+  - name: Saxe, Paul
+    orcid: 0000-0002-8641-9448
+    affiliation: The Molecular Sciences Software Institute (MolSSI)
+  grants: ['10.13039/100000001::2136142']
+requires:
+  packmol_step: 2026.3.1
+  seamm: 2026.10.2.2
+digest:
+  sha256: 0f95932e0278355842433aeb010282d606cdba66656bfe540786b44438b4804b
+  sha256_strict: f7ddaf1cf269ebe9e347b17bab56d8a49600963dc9c71754906aa6bbaa630a6b
+steps:
+- step: Packmol
+  parameters:
+    molecules:
+    - component: fluid
+      source: SMILES
+      definition: O
+      count: '1'
+    periodic: 'Yes'
+    shape: cubic
+    dimensions: calculated from the density
+    fluid amount: rounding this number of atoms
+    density: ['1.0', g/ml]
+    volume: [8.0, nm^3]
+    temperature: [298.15, K]
+    pressure: [1.0, atm]
+    gap: [2.0, Å]
+    edge length: [20, Å]
+    a: [20, Å]
+    b: [20, Å]
+    c: [20, Å]
+    a_ratio: 1
+    b_ratio: 1
+    c_ratio: 1
+    diameter: [20.0, Å]
+    solvent thickness: [10.0, Å]
+    approximate number of molecules: 100
+    approximate number of atoms: 3000
+    assign forcefield: 'No'
+    structure handling: Overwrite the current configuration
+    subsequent structure handling: Create a new system and configuration
+    system name: keep current name
+    configuration name: use chemical formula
+layout:
+  '0': [150, 35]
+  '1': [150, 105]
