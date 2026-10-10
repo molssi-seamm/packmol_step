@@ -41,8 +41,8 @@ setup(
     setup_requires=[] + pytest_runner,
     install_requires=requirements,
     python_requires='>=3.12',
-    # The flowchart tests use the Parameters step
-    extras_require={'test': ['control-parameters-step']},
+    # The flowchart tests run flowcharts (seamm-exec) with the Parameters step
+    extras_require={'test': ['control-parameters-step', 'seamm-exec']},
     test_suite='tests',
     platforms=['Linux',
                'Mac OS-X',
