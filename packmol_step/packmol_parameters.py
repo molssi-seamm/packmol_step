@@ -33,6 +33,19 @@ class PackmolParameters(seamm.Parameters):
         "rounding this number of atoms",
         "rounding this number of molecules",
     )
+    #: How the amount of each fluid molecule in the table is given. Molecules given
+    #: as proportions are the solvent; molality is per kg of them.
+    measures = (
+        "proportion",
+        "molality (mol/kg)",
+        "molarity (mol/L)",
+    )
+    #: Molarity needs the volume, which the Ideal Gas Law gives only from the
+    #: total number of molecules
+    measures_without_volume = (
+        "proportion",
+        "molality (mol/kg)",
+    )
 
     parameters = {
         "molecules": {
@@ -84,7 +97,7 @@ class PackmolParameters(seamm.Parameters):
             "default": "rounding this number of atoms",
             "kind": "enumeration",
             "default_units": "",
-            "enumeration": amounts_for_density,
+            "enumeration": amounts,
             "format_string": "s",
             "description": "Get number of fluid molecules by",
             "help_text": "How to get the number of fluid molecules",
@@ -133,10 +146,8 @@ class PackmolParameters(seamm.Parameters):
             "format_string": ".1f",
             "description": "Gap around cell:",
             "help_text": (
-                "Since Packmol does not support periodic systems "
-                "we will build a box with this gap around the "
-                "atoms, then make it periodic. The gap ensures "
-                "that molecules at the boundary do not hit images"
+                "Not used: Packmol now packs periodic cells itself. Kept so that "
+                "older flowcharts still read."
             ),
         },
         "edge length": {
@@ -239,6 +250,19 @@ class PackmolParameters(seamm.Parameters):
             "help_text": (
                 "The approximate number of atoms packed into the "
                 "cell. This will be rounded to give whole molecules"
+            ),
+        },
+        "proportions": {
+            "default": "by number of molecules",
+            "kind": "enumeration",
+            "default_units": "",
+            "enumeration": ("by number of molecules", "by mass"),
+            "format_string": "s",
+            "description": "Proportions are",
+            "help_text": (
+                "Whether the proportions in the table of molecules are relative "
+                "numbers of molecules (mole ratios) or relative masses (weight "
+                "ratios)."
             ),
         },
         "assign forcefield": {

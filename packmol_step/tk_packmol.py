@@ -48,7 +48,8 @@ class TkPackmol(seamm.TkNode):
         self["component"] = ttk.Label(w, text="Component")
         self["source"] = ttk.Label(w, text="Source")
         self["definition"] = ttk.Label(w, text="Definition")
-        self["stoichiometry"] = ttk.Label(w, text="proportion")
+        self["stoichiometry"] = ttk.Label(w, text="Amount")
+        self["measure"] = ttk.Label(w, text="as")
 
         # And the molecule data
         for molecule in P["molecules"].value:
@@ -193,10 +194,10 @@ class TkPackmol(seamm.TkNode):
         else:
             raise RuntimeError(f"Do not recognize amount '{amount}'")
 
-        key = "assign forcefield"
-        self[key].grid(row=row, column=0, sticky=tk.EW)
-        row += 1
-        widgets.append(self[key])
+        for key in ("proportions", "assign forcefield"):
+            self[key].grid(row=row, column=0, sticky=tk.EW)
+            row += 1
+            widgets.append(self[key])
 
         sw.align_labels(widgets, sticky=tk.E)
 
@@ -231,7 +232,15 @@ class TkPackmol(seamm.TkNode):
         self["source"].grid(row=row, column=2, sticky=tk.EW)
         self["definition"].grid(row=row, column=3, sticky=tk.EW)
         self["stoichiometry"].grid(row=row, column=4, sticky=tk.EW)
+        self["measure"].grid(row=row, column=5, sticky=tk.EW)
         row += 1
+
+        # Molarities need the volume, which the Ideal Gas Law only gives from the
+        # number of molecules, so they are not offered then.
+        if self["dimensions"].get() == "calculated using the Ideal Gas Law":
+            measures = PackmolParameters.measures_without_volume
+        else:
+            measures = PackmolParameters.measures
 
         for data in self._molecule_data:
             if "widgets" not in data:
@@ -245,7 +254,7 @@ class TkPackmol(seamm.TkNode):
                     frame,
                     text="-",
                     width=2,
-                    command=lambda row=row: self.remove_molecule(row),
+                    command=lambda data=data: self.remove_molecule(data),
                     takefocus=True,
                 )
 
@@ -260,6 +269,9 @@ class TkPackmol(seamm.TkNode):
                     takefocus=True,
                 )
                 widgets["component"].set(data["component"])
+                widgets["component"].bind(
+                    "<<ComboboxSelected>>", lambda event: self.reset_molecules()
+                )
 
             if "source" not in widgets:
                 # the type of source
@@ -283,12 +295,37 @@ class TkPackmol(seamm.TkNode):
                 widgets["count"] = ttk.Entry(frame, width=5, takefocus=True)
                 widgets["count"].insert("end", data["count"])
 
+            if "measure" not in widgets:
+                # How the amount is given: a proportion, molality or molarity
+                widgets["measure"] = ttk.Combobox(
+                    frame,
+                    values=measures,
+                    height=4,
+                    width=16,
+                    state="readonly",
+                    takefocus=True,
+                )
+                widgets["measure"].bind(
+                    "<<ComboboxSelected>>",
+                    lambda event, data=data: data.update(
+                        measure=data["widgets"]["measure"].get()
+                    ),
+                )
+            # Show the measure chosen if it is possible here, but remember it, so
+            # that looking at other dimensions does not lose it.
+            widgets["measure"].config(values=measures)
+            measure = data.get("measure", "proportion")
+            widgets["measure"].set(measure if measure in measures else "proportion")
+
             self.logger.debug("  widgets: " + str(widgets))
             widgets["remove"].grid(row=row, column=0, sticky=tk.W)
             widgets["component"].grid(row=row, column=1, stick=tk.EW)
             widgets["source"].grid(row=row, column=2, stick=tk.EW)
             widgets["definition"].grid(row=row, column=3, stick=tk.EW)
-            widgets["count"].grid(row=row, column=4, stick=tk.EW)
+            # There is always one solute, so it has no amount
+            if widgets["component"].get() != "solute":
+                widgets["count"].grid(row=row, column=4, stick=tk.EW)
+                widgets["measure"].grid(row=row, column=5, stick=tk.EW)
 
             row += 1
 
@@ -360,6 +397,7 @@ class TkPackmol(seamm.TkNode):
                     "source": widgets["source"].get(),
                     "definition": widgets["definition"].get(),
                     "count": widgets["count"].get(),
+                    "measure": widgets["measure"].get(),
                 }
             )
         P["molecules"].value = molecules
@@ -372,23 +410,23 @@ class TkPackmol(seamm.TkNode):
                 "source": "SMILES",
                 "definition": "",
                 "count": "1",
+                "measure": "proportion",
             }
         )
         self.reset_molecules()
 
-    def remove_molecule(self, row):
+    def remove_molecule(self, data):
         """Remove a molecule entry from the table.
 
         Parameters
         ----------
-        row : int
-            The row in the table to remove. Note the first molecule is at row 1.
+        data : dict
+            The molecule's entry in the table. The entry rather than its row, which
+            changes as rows above it are removed.
         """
-        index = row - 1
-        data = self._molecule_data[index]
         if "widgets" in data:
             for w in data["widgets"].values():
                 w.destroy()
-        del self._molecule_data[index]
+        self._molecule_data.remove(data)
 
         self.reset_molecules()

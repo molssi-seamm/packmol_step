@@ -40,6 +40,9 @@ setup(
     include_package_data=True,
     setup_requires=[] + pytest_runner,
     install_requires=requirements,
+    python_requires='>=3.12',
+    # The flowchart tests run flowcharts (seamm-exec) with the Parameters step
+    extras_require={'test': ['control-parameters-step', 'seamm-exec']},
     test_suite='tests',
     platforms=['Linux',
                'Mac OS-X',
@@ -58,8 +61,7 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.12',
     ],
     entry_points={
         'console_scripts': [

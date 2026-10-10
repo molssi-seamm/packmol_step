@@ -1,0 +1,71 @@
+#!/usr/bin/env run_flowchart
+format: MolSSI flowchart 3.0
+metadata:
+  title: LiPF6 electrolyte
+  description: 1.0 M LiPF6 in EC:DMC 3:7 by weight, a periodic cubic cell of about 5000 atoms
+    at 1.3 g/mL.
+  keywords: []
+  creators:
+  - name: Saxe, Paul
+    orcid: 0000-0002-8641-9448
+    affiliation: The Molecular Sciences Software Institute (MolSSI)
+  grants: ['10.13039/100000001::2136142']
+requires:
+  packmol_step: 2026.3.1+4.g3717061.dirty
+  seamm: 2026.10.5+0.gf68e4cc.dirty
+digest:
+  sha256: 6440bf27c75df2ee174d3bba8713d141bb37345365be6f79eb8c1b7b48f9e439
+  sha256_strict: ec1ef87d8b21b887a9a99051c34ce79a770985afcc1354d5d2a27a7a82c8f5b6
+steps:
+- step: Packmol
+  parameters:
+    molecules:
+    - component: fluid
+      source: SMILES
+      definition: O=C1OCCO1
+      count: '3'
+      measure: proportion
+    - component: fluid
+      source: SMILES
+      definition: COC(=O)OC
+      count: '7'
+      measure: proportion
+    - component: fluid
+      source: SMILES
+      definition: '[Li+]'
+      count: '1.0'
+      measure: molarity (mol/L)
+    - component: fluid
+      source: SMILES
+      definition: F[P-](F)(F)(F)(F)F
+      count: '1.0'
+      measure: molarity (mol/L)
+    periodic: 'Yes'
+    shape: cubic
+    dimensions: calculated from the density
+    fluid amount: rounding this number of atoms
+    density: ['1.3', g/ml]
+    volume: [8.0, nm^3]
+    temperature: [298.15, K]
+    pressure: [1.0, atm]
+    gap: [2.0, Å]
+    edge length: [20, Å]
+    a: [20, Å]
+    b: [20, Å]
+    c: [20, Å]
+    a_ratio: 1
+    b_ratio: 1
+    c_ratio: 1
+    diameter: [20.0, Å]
+    solvent thickness: [10.0, Å]
+    approximate number of molecules: 100
+    approximate number of atoms: 5000
+    proportions: by mass
+    assign forcefield: 'No'
+    structure handling: Overwrite the current configuration
+    subsequent structure handling: Create a new system and configuration
+    system name: keep current name
+    configuration name: use chemical formula
+layout:
+  '0': [150, 35]
+  '1': [150, 105]

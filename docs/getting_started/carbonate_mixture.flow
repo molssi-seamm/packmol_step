@@ -1,0 +1,58 @@
+#!/usr/bin/env run_flowchart
+format: MolSSI flowchart 3.0
+metadata:
+  title: Carbonate mixture
+  description: A periodic box of ethylene carbonate and dimethyl carbonate, 3:7 by molecules,
+    about 3000 atoms at 1.2 g/mL.
+  keywords: []
+  creators:
+  - name: Saxe, Paul
+    orcid: 0000-0002-8641-9448
+    affiliation: The Molecular Sciences Software Institute (MolSSI)
+  grants: ['10.13039/100000001::2136142']
+requires:
+  packmol_step: 2026.3.1
+  seamm: 2026.10.2.2
+digest:
+  sha256: b037499a3ae3c2541c07dbfb250c8aa8e771ae5a7d8403388a06c322e19b9bf0
+  sha256_strict: 6e4049f743ee1c5c3e14db61d83d0cb2ed52180dc5fa7c2c823e86b1c790726a
+steps:
+- step: Packmol
+  parameters:
+    molecules:
+    - component: fluid
+      source: SMILES
+      definition: O=C1OCCO1
+      count: '3'
+    - component: fluid
+      source: SMILES
+      definition: COC(=O)OC
+      count: '7'
+    periodic: 'Yes'
+    shape: cubic
+    dimensions: calculated from the density
+    fluid amount: rounding this number of atoms
+    density: ['1.2', g/ml]
+    volume: [8.0, nm^3]
+    temperature: [298.15, K]
+    pressure: [1.0, atm]
+    gap: [2.0, Å]
+    edge length: [20, Å]
+    a: [20, Å]
+    b: [20, Å]
+    c: [20, Å]
+    a_ratio: 1
+    b_ratio: 1
+    c_ratio: 1
+    diameter: [20.0, Å]
+    solvent thickness: [10.0, Å]
+    approximate number of molecules: 100
+    approximate number of atoms: 3000
+    assign forcefield: 'No'
+    structure handling: Overwrite the current configuration
+    subsequent structure handling: Create a new system and configuration
+    system name: keep current name
+    configuration name: use chemical formula
+layout:
+  '0': [150, 35]
+  '1': [150, 105]

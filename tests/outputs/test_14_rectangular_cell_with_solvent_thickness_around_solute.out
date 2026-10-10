@@ -1,11 +1,11 @@
     Will create a cubic periodic cell containing the following molecules:
 
-        +-------------+------------------+---------+
-        |  Component  | Structure        |   Ratio |
-        |-------------+------------------+---------|
-        |   solute    | c1ccccc1c2ccccc2 |         |
-        |    fluid    | O                |       1 |
-        +-------------+------------------+---------+
+        +-------------+------------------+----------+
+        |  Component  | Structure        |   Amount |
+        |-------------+------------------+----------|
+        |   solute    | c1ccccc1c2ccccc2 |          |
+        |    fluid    | O                |        1 |
+        +-------------+------------------+----------+
 
     The dimensions of the region will be calculated from the solute dimensions.
     If the input structure is periodic, its dimensions will be used. Otherwise
@@ -13,13 +13,13 @@
     the molecule. The number of molecules of the fluid will be obtained  by
     using the density 1.0 g/ml.
 
-Created a periodic cubic cell 19.0486 Å on a side with the solute and 222.0 solvent molecules
+Created a periodic cubic cell 19.0486 Å on a side with the solute and 222 solvent molecules
 
-    +-------------+------------------+---------------+----------+------------+
-    |  Component  | Structure        |   Requested % |   Number | Actual %   |
-    |-------------+------------------+---------------+----------+------------|
-    |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      222 | 100.000    |
-    +-------------+------------------+---------------+----------+------------+
+    +-------------+------------------+-------------+----------+-----------+----------------+
+    |  Component  | Structure        |   Requested |   Number |    Actual |   Molarity (M) |
+    |-------------+------------------+-------------+----------+-----------+----------------|
+    |   solute    | c1ccccc1c2ccccc2 |             |        1 |           |         0.2402 |
+    |    fluid    | O                |   100.000 % |      222 | 100.000 % |        53.3353 |
+    +-------------+------------------+-------------+----------+-----------+----------------+
 
 There are a total of 688 atoms in the cell giving a density of 0.99791 g/ml.
