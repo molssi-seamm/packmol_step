@@ -600,9 +600,10 @@ class Packmol(seamm.Node):
                     dx, dy, dz = recenter(center, (a / 2, a / 2, a / 2))
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
             elif shape == "rectangular":
-                a = P["a"].to("Å").magnitude
-                b = P["b"].to("Å").magnitude
-                c = P["c"].to("Å").magnitude
+                # The shape from the ratios the dialog shows; the size from the volume
+                a = float(P["a_ratio"])
+                b = float(P["b_ratio"])
+                c = float(P["c_ratio"])
                 volume1 = a * b * c
                 factor = (volume / volume1) ** (1 / 3)
                 a *= factor
@@ -715,9 +716,10 @@ class Packmol(seamm.Node):
                 else:
                     region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
             elif shape == "rectangular":
-                a = P["a"].to("Å").magnitude
-                b = P["b"].to("Å").magnitude
-                c = P["c"].to("Å").magnitude
+                # The shape from the ratios the dialog shows; the size from the volume
+                a = float(P["a_ratio"])
+                b = float(P["b_ratio"])
+                c = float(P["c_ratio"])
                 volume1 = a * b * c
                 factor = (volume / volume1) ** (1 / 3)
                 a *= factor
@@ -763,9 +765,10 @@ class Packmol(seamm.Node):
                     b = c = a
                 region = f"   inside cube 0.0 0.0 0.0 {a:.4f}"
             elif shape == "rectangular":
-                a = P["a"].to("Å").magnitude
-                b = P["b"].to("Å").magnitude
-                c = P["c"].to("Å").magnitude
+                # The shape from the ratios the dialog shows; the size from the volume
+                a = float(P["a_ratio"])
+                b = float(P["b_ratio"])
+                c = float(P["c_ratio"])
                 volume1 = a * b * c
                 factor = (volume / volume1) ** (1 / 3)
                 a *= factor
@@ -863,11 +866,9 @@ class Packmol(seamm.Node):
                 string += (
                     f"Created a spherical region with a diameter of {diameter:.4f} Å"
                 )
-        print(f"{volume=} {mass=}")
         volume = Q_(volume, "Å^3")
         density = mass / volume
         density.ito("g/ml")
-        print(f"{density=}")
 
         if n_solute_molecules > 0:
             string += (
@@ -884,13 +885,20 @@ class Packmol(seamm.Node):
             "Requested %": [],
             "Number": [],
             "Actual %": [],
+            "Molarity (M)": [],
         }
+        # Molarity: moles per liter of the whole region
+        liters = volume.to("L").magnitude
+        avogadro = Q_(1, "N_A").to("1/mol").magnitude
         for molecule in molecules:
             table["Component"].append(molecule["type"])
             table["Structure"].append(molecule["definition"])
             table["Requested %"].append(molecule["requested %"])
             table["Number"].append(molecule["number"])
             table["Actual %"].append(molecule["actual %"])
+            molarity = molecule["number"] / avogadro / liters
+            molecule["molarity"] = molarity
+            table["Molarity (M)"].append(f"{molarity:.4f}")
 
         # The percentages are already formatted, so keep them as they are: newer
         # tabulate releases would otherwise reparse and reformat them.
@@ -898,7 +906,7 @@ class Packmol(seamm.Node):
             table,
             headers="keys",
             tablefmt="psql",
-            colalign=("center", "left", "right", "right", "right"),
+            colalign=("center", "left", "right", "right", "right", "right"),
             disable_numparse=True,
         )
         string += textwrap.indent(text_lines, 4 * " ")

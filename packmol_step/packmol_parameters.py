@@ -84,7 +84,7 @@ class PackmolParameters(seamm.Parameters):
             "default": "rounding this number of atoms",
             "kind": "enumeration",
             "default_units": "",
-            "enumeration": amounts_for_density,
+            "enumeration": amounts,
             "format_string": "s",
             "description": "Get number of fluid molecules by",
             "help_text": "How to get the number of fluid molecules",
@@ -133,10 +133,8 @@ class PackmolParameters(seamm.Parameters):
             "format_string": ".1f",
             "description": "Gap around cell:",
             "help_text": (
-                "Since Packmol does not support periodic systems "
-                "we will build a box with this gap around the "
-                "atoms, then make it periodic. The gap ensures "
-                "that molecules at the boundary do not hit images"
+                "Not used: Packmol now packs periodic cells itself. Kept so that "
+                "older flowcharts still read."
             ),
         },
         "edge length": {
