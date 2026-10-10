@@ -1,11 +1,11 @@
     Will create a rectangular region containing the following molecules:
 
-        +-------------+------------------+---------+
-        |  Component  | Structure        |   Ratio |
-        |-------------+------------------+---------|
-        |    fluid    | c1ccccc1c2ccccc2 |       1 |
-        |    fluid    | O                |      50 |
-        +-------------+------------------+---------+
+        +-------------+------------------+----------+
+        |  Component  | Structure        |   Amount |
+        |-------------+------------------+----------|
+        |    fluid    | c1ccccc1c2ccccc2 |        1 |
+        |    fluid    | O                |       50 |
+        +-------------+------------------+----------+
 
     The dimensions of the region will be given explicitly by the three sides
     10.0 Å x20.0 Å x30.0 Å. The number of molecules of the fluid will be
@@ -14,11 +14,11 @@
 
 Created a rectangular 10.0000 x 20.0000 x 30.0000 Å region with 297 fluid molecules
 
-    +-------------+------------------+---------------+----------+------------+----------------+
-    |  Component  | Structure        |   Requested % |   Number |   Actual % |   Molarity (M) |
-    |-------------+------------------+---------------+----------+------------+----------------|
-    |    fluid    | c1ccccc1c2ccccc2 |         1.961 |        6 |      2.020 |         1.6605 |
-    |    fluid    | O                |        98.039 |      291 |     97.980 |        80.5361 |
-    +-------------+------------------+---------------+----------+------------+----------------+
+    +-------------+------------------+-------------+----------+----------+----------------+
+    |  Component  | Structure        |   Requested |   Number |   Actual |   Molarity (M) |
+    |-------------+------------------+-------------+----------+----------+----------------|
+    |    fluid    | c1ccccc1c2ccccc2 |     1.961 % |        6 |  2.020 % |         1.6605 |
+    |    fluid    | O                |    98.039 % |      291 | 97.980 % |        80.5361 |
+    +-------------+------------------+-------------+----------+----------+----------------+
 
 There are a total of 1005 atoms in the cell giving a density of 1.707 g/ml.

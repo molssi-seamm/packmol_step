@@ -1,15 +1,28 @@
 =======
 History
 =======
-2026.10.10 -- Bugfix: structures given as sources lost their bonds
-    * With two or more structures from the database as sources (e.g. PF6/initial and
-      LiEC4/initial), every source after the first lost its bonds, so the forcefield
-      could not be assigned (PF6- was seen as a P plus six F atoms). The step also
-      left the bonds of every structure in the database deleted. Source structures are
-      now left untouched.
-    * A source given only by its configuration name now uses the current system.
-    * The table of the molecules packed keeps the percentages as they are printed,
-      the same with every version of the tabulate library.
+2026.10.10 -- Concentrations, documentation, and structures as sources keep their bonds
+    * The amount of each fluid molecule can be given as a proportion, a molality
+      (mol/kg of solvent) or a molarity (mol/L), and the proportions by number of
+      molecules or by mass, e.g. 1.0 M LiPF6 in EC:DMC 3:7 by weight. The molecules
+      given as proportions are the solvent. Molarity is not offered when the volume
+      comes from the Ideal Gas Law.
+    * The table of what was packed gives the requested and actual amounts of each
+      molecule, its molarity and, for molecules other than the solvent, its molality.
+    * New user guide and getting-started pages, with three example flowcharts.
+    * Bugfix: with two or more structures from the database as sources (e.g.
+      PF6/initial and LiEC4/initial), every source after the first lost its bonds, so
+      the forcefield could not be assigned (PF6- was seen as a P plus six F atoms). The
+      step also deleted the bonds of every structure in the database. Source
+      structures are now left untouched.
+    * Bugfix: rectangular boxes sized from a volume, density or the Ideal Gas Law now
+      have the side ratios given in the dialog; before, they were ignored.
+    * Bugfix: the "-" button of a molecule removed the wrong row after an earlier row
+      had been removed.
+    * A source given only by its configuration name now uses the current system, and
+      a solute's proportion no longer changes the numbers of atoms or the mass.
+    * Flowcharts that get the amount of fluid from the density or the Ideal Gas Law
+      now validate; the unused "gap" parameter says so.
     * Removed the unused Docker image and its release job; the tests now run with the
       package's own dependencies, on Python 3.12.
 

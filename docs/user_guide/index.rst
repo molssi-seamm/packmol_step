@@ -33,10 +33,25 @@ Source and definition
      configuration. A source structure can be anything SMILES cannot describe well, such
      as a cluster of a lithium ion with its solvent shell. It is left unchanged.
 
-Proportion
-   For fluid molecules, the relative numbers of each kind: ``1`` and ``3`` give one
-   molecule of the first kind for every three of the second. Only the ratios matter.
-   For a solute it is ignored; there is always one.
+Amount and as
+   How much of a fluid molecule there is, given in one of three ways:
+
+   ``proportion``
+      Relative amounts of the molecules: ``1`` and ``3`` give one molecule of the first
+      kind for every three of the second. Only the ratios matter. **Proportions are**
+      (above the table) says whether they are numbers of molecules (``by number of
+      molecules``, mole ratios) or masses (``by mass``, weight ratios, e.g. EC:DMC 3:7
+      by weight).
+   ``molality (mol/kg)``
+      Moles per kilogram of the solvent.
+   ``molarity (mol/L)``
+      Moles per liter of the region. Not offered with ``calculated using the Ideal Gas
+      Law``, where the volume follows from the number of molecules.
+
+   The molecules given as proportions are the *solvent*, and there must be at least
+   one. The others -- typically the ions of a salt -- are added to it: in proportion to
+   its mass for molalities, and to the volume of the region for molarities. A solute
+   has no amount; there is always one.
 
 Any of the entries can be a variable, e.g. ``$smiles`` or ``$ratio``.
 
@@ -83,12 +98,12 @@ dimensions:
 
 ``rounding this number of atoms`` / ``rounding this number of molecules``
    An approximate total, from which the step takes the nearest whole numbers of
-   molecules in the requested proportions. With a solute, its atoms count toward the
-   number of atoms but it is not one of the molecules.
+   molecules in the requested proportions and concentrations. With a solute, its atoms
+   count toward the number of atoms but it is not one of the molecules.
 
 ``using the density``
-   The density of the region, given its size; the mass of fluid fills it to that
-   density.
+   The density of the region, given its size; the solvent fills it to that density,
+   with any molecules given as molarities already in it.
 
 ``using the Ideal Gas Law``
    The temperature and pressure, given the size of the region.
@@ -96,6 +111,10 @@ dimensions:
 With ``calculated from the density`` or ``calculated using the Ideal Gas Law`` the
 amount is one of the first two, since the density or T and P then sets the size; with
 ``calculated from the solute dimensions`` it is one of the last two.
+
+Molarities with a size calculated from the density are solved for together: the volume
+depends on the mass, which includes the molecules given as molarities, whose number
+depends on the volume.
 
 Forcefields
 ===========
@@ -118,23 +137,33 @@ charges.
 The output
 ==========
 The step first prints what it will do, then what it built: the size of the region, and
-a table of the molecules with the requested and actual percentages, the number of each
-kind, and its molarity -- moles per liter of the whole region, solute included. Since
-the numbers of molecules are whole, the actual percentages differ a little from the
+a table of the molecules. For each it gives
+
+* the amount requested and the amount actually packed: for the solvent its
+  composition, in percent by number of molecules (``%``) or by mass (``wt%``); for the
+  other molecules their molarity (``M``) or molality (``mol/kg``);
+* the number of molecules;
+* the molarity -- moles per liter of the whole region, solute included;
+* when there are molecules besides the solvent, their molality, per kilogram of solvent.
+
+Since the numbers of molecules are whole, the actual amounts differ a little from the
 requested ones, the more so the fewer molecules there are. Last come the total number of
 atoms and the density.
 
 Tips
 ====
-* **Neutral cells.** For ions, make sure the counts give a neutral cell: one
-  ``[Li+]`` for each ``F[P-](F)(F)(F)(F)F``, in equal proportions.
+* **Neutral cells.** For ions, make sure the amounts give a neutral cell: the same
+  molarity or molality for ``[Li+]`` and ``F[P-](F)(F)(F)(F)F``, or twice as much
+  ``[Li+]`` as of a dianion. The packed structure's charge is the sum of the molecules'
+  charges.
 * **Dense or crowded systems.** Packmol keeps atoms of different molecules at least
   2 Å apart. Near or above the liquid density, especially with large molecules, it may
   take long or fail to converge. Pack at a somewhat lower density and let a
   constant-pressure (NPT) simulation bring the system to its equilibrium density.
-* **Small cells.** A small cell holds few molecules, so minor components may round to
-  zero or far from the requested proportion. Check the actual percentages in the output,
-  or use more atoms.
+* **Small cells and dilute solutions.** A small cell holds few molecules, so minor
+  components round far from the requested amount, or to zero: at 0.1 M a 30 Å cube
+  holds only about 1.6 ions of each kind. Use enough atoms for the composition you want,
+  and check the actual amounts in the output.
 * **Different every time.** Packmol starts from random positions, so each run gives a
   different packing of the same composition.
 

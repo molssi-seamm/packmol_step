@@ -1,11 +1,11 @@
     Will create a cubic periodic cell containing the following molecules:
 
-        +-------------+-------------+---------+
-        |  Component  | Structure   |   Ratio |
-        |-------------+-------------+---------|
-        |    fluid    | c1ccccc1    |       1 |
-        |    fluid    | O           |       3 |
-        +-------------+-------------+---------+
+        +-------------+-------------+----------+
+        |  Component  | Structure   |   Amount |
+        |-------------+-------------+----------|
+        |    fluid    | c1ccccc1    |        1 |
+        |    fluid    | O           |        3 |
+        +-------------+-------------+----------+
 
     The dimensions of the region will be calculated from the volume 10.0 nm³.
     The number of molecules of the fluid will be obtained  by using the density
@@ -13,11 +13,11 @@
 
 Created a periodic cubic cell 21.5443 Å on a side with 164 fluid molecules
 
-    +-------------+-------------+---------------+----------+------------+----------------+
-    |  Component  | Structure   |   Requested % |   Number |   Actual % |   Molarity (M) |
-    |-------------+-------------+---------------+----------+------------+----------------|
-    |    fluid    | c1ccccc1    |        25.000 |       41 |     25.000 |         6.8082 |
-    |    fluid    | O           |        75.000 |      123 |     75.000 |        20.4246 |
-    +-------------+-------------+---------------+----------+------------+----------------+
+    +-------------+-------------+-------------+----------+----------+----------------+
+    |  Component  | Structure   |   Requested |   Number |   Actual |   Molarity (M) |
+    |-------------+-------------+-------------+----------+----------+----------------|
+    |    fluid    | c1ccccc1    |    25.000 % |       41 | 25.000 % |         6.8082 |
+    |    fluid    | O           |    75.000 % |      123 | 75.000 % |        20.4246 |
+    +-------------+-------------+-------------+----------+----------+----------------+
 
 There are a total of 861 atoms in the cell giving a density of 0.89976 g/ml.

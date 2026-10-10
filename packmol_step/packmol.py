@@ -105,8 +105,9 @@ class Packmol(seamm.Node):
         table = {
             "Component": [],
             "Structure": [],
-            "Ratio": [],
+            "Amount": [],
         }
+        units = {"molality (mol/kg)": " mol/kg", "molarity (mol/L)": " M"}
         context = seamm.flowchart_variables
         for molecule in self.parameters["molecules"].value:
             component = molecule["component"]
@@ -130,12 +131,19 @@ class Packmol(seamm.Node):
                 except Exception:
                     pass
 
+            measure = molecule.get("measure", "proportion")
+            if is_expr(measure):
+                try:
+                    measure = context.value(measure)
+                except Exception:
+                    pass
+
             table["Component"].append(component)
             table["Structure"].append(definition)
             if molecule["component"] == "solute":
-                table["Ratio"].append("")
+                table["Amount"].append("")
             else:
-                table["Ratio"].append(count)
+                table["Amount"].append(f"{count}{units.get(measure, '')}")
 
         description = self.header + "\n" + str(__(text, indent=self.indent + 4 * " "))
         text_lines = tabulate(
@@ -145,7 +153,10 @@ class Packmol(seamm.Node):
 
         # And the rest of the control
         dimensions = P["dimensions"]
-        text = f"\n\nThe dimensions of the region will be {dimensions}"
+        text = ""
+        if P.get("proportions") == "by mass":
+            text += "\n\nThe proportions of the molecules are by mass."
+        text += f"\n\nThe dimensions of the region will be {dimensions}"
         if dimensions == "given explicitly":
             if shape == "cubic":
                 text += f" by the edge length {P['edge length']}."
@@ -381,41 +392,26 @@ class Packmol(seamm.Node):
 
         # Work out integer numbers of molecules, atoms, etc.
         def round_copies(n_copies, molecules):
+            """Whole numbers of each molecule for this many copies of the solvent.
+
+            Molecules given as proportions or molalities scale with the copies;
+            those given as molarities have their own number, ``molecule["fixed"]``.
+            """
             total_atoms = 0
             total_molecules = 0
             total_mass = 0.0
-            total = 0.0
-            total_count = 0.0
-            for molecule in molecules:
-                count = molecule["count"]
-                component = molecule["type"]
-                mass = molecule["mass"]
-                n_atoms = molecule["n_atoms"]
-
-                if component == "solute":
-                    total_atoms += n_atoms
-                    total_molecules += 1
-                    total_mass += mass
-                    molecule["number"] = 1
-                else:
-                    n = int(round(n_copies * count))
-                    if n > 0:
-                        total_atoms += n * n_atoms
-                        total_molecules += n
-                        total_mass += n * mass
-                    molecule["number"] = n
-                    total_count += molecule["count"]
-                    total += n
-
-            # Get the actual mol percent
             for molecule in molecules:
                 if molecule["type"] == "solute":
-                    molecule["actual %"] = ""
-                    molecule["requested %"] = ""
+                    n = 1
+                elif molecule["measure"] == "molarity (mol/L)":
+                    n = int(round(molecule["fixed"]))
                 else:
-                    molecule["actual %"] = f"{molecule['number']/total*100:.3f}"
-                    molecule["requested %"] = f"{molecule['count']/total_count*100:.3f}"
-
+                    n = int(round(n_copies * molecule["ratio"]))
+                molecule["number"] = n
+                if n > 0:
+                    total_atoms += n * molecule["n_atoms"]
+                    total_molecules += n
+                    total_mass += n * molecule["mass"]
             return total_atoms, total_molecules, total_mass
 
         # Start by handling the molecules
@@ -430,6 +426,9 @@ class Packmol(seamm.Node):
             ffname = ff.current_forcefield
             ff_key = f"atom_types_{ffname}"
             assign_ff_always = P["assign forcefield"] == "Always"
+
+        # Whether the proportions of the solvent are relative masses
+        by_mass = P.get("proportions", "by number of molecules") == "by mass"
 
         # Need to know if there is a solute
         have_solute = False
@@ -451,6 +450,17 @@ class Packmol(seamm.Node):
             if is_expr(count):
                 count = context.value(count)
             count = float(count)
+            measure = molecule.get("measure", "proportion")
+            if is_expr(measure):
+                measure = context.value(measure)
+            if component == "solute":
+                measure = "proportion"
+            if measure not in packmol_step.PackmolParameters.measures:
+                measures = packmol_step.PackmolParameters.measures
+                raise RuntimeError(
+                    f"The amount of '{definition}' is given as '{measure}', which "
+                    f"is not one of {', '.join(measures)}."
+                )
 
             if count == 0:
                 continue
@@ -483,19 +493,28 @@ class Packmol(seamm.Node):
             tmp_mass = tmp_configuration.mass * ureg.g / ureg.mol
             tmp_mass.ito("kg")
 
+            # How many of this molecule are in one "copy" of the solvent. The
+            # molecules given as proportions are the solvent; a proportion by mass
+            # becomes a number by dividing by the molecule's mass.
+            ratio = 0.0
             if component == "solute":
+                # There is only ever one solute, whatever its proportion
                 have_solute = True
-                n_solute_molecules += count
-                n_solute_atoms += count * tmp_configuration.n_atoms
-                solute_mass += count * tmp_mass
+                n_solute_molecules += 1
+                n_solute_atoms += tmp_configuration.n_atoms
+                solute_mass += tmp_mass
                 if solute_configuration is None:
                     solute_configuration = tmp_configuration
                 else:
                     raise RuntimeError("More than one solute system!")
-            else:
-                n_fluid_molecules += count
-                n_fluid_atoms += count * tmp_configuration.n_atoms
-                fluid_mass += count * tmp_mass
+            elif measure == "proportion":
+                if by_mass:
+                    ratio = count / tmp_configuration.mass
+                else:
+                    ratio = count
+                n_fluid_molecules += ratio
+                n_fluid_atoms += ratio * tmp_configuration.n_atoms
+                fluid_mass += ratio * tmp_mass
 
             # Keep track of the bonding information to add at the end. The input
             # PDB files carry no bonds (see below), and the configurations are
@@ -509,6 +528,8 @@ class Packmol(seamm.Node):
                 {
                     "configuration": tmp_configuration,
                     "count": count,
+                    "measure": measure,
+                    "ratio": ratio,
                     "type": component,
                     "mass": tmp_mass,
                     "n_atoms": tmp_configuration.n_atoms,
@@ -517,11 +538,105 @@ class Packmol(seamm.Node):
                 }
             )
 
+        # The solvent -- the molecules given as proportions -- sets the scale: the
+        # molecules given as molalities are in proportion to its mass, and those
+        # given as molarities to the volume of the region.
+        fluids = [m for m in molecules if m["type"] == "fluid"]
+        if fluids and not any(m["measure"] == "proportion" for m in fluids):
+            raise RuntimeError(
+                "At least one fluid molecule must be given as a proportion: the "
+                "solvent, which sets the scale for the molecules given as "
+                "molalities or molarities."
+            )
+        avogadro = Q_(1, "N_A").to("1/mol").magnitude
+        solvent_kg = fluid_mass.m_as("kg") if fluids else 0.0  # per copy
+        for molecule in fluids:
+            if molecule["measure"] == "molality (mol/kg)":
+                ratio = molecule["count"] * avogadro * solvent_kg
+                molecule["ratio"] = ratio
+                n_fluid_molecules += ratio
+                n_fluid_atoms += ratio * molecule["n_atoms"]
+                fluid_mass += ratio * molecule["mass"]
+        molar = [m for m in fluids if m["measure"] == "molarity (mol/L)"]
+
+        def copies(amount, volume=None):
+            """The number of copies of the solvent (with the molecules given as
+            molalities) for the amount of fluid, and the numbers of the molecules
+            given as molarities.
+
+            With the volume (Å^3) known, the molarities give fixed numbers. Without
+            it the volume follows from the density, and depends on the copies: with
+            x copies of mass M0 (kg), the solute's mass ms and the molarities c_i of
+            molecules of mass m_i, V = (x M0 + ms) / (rho - N_A sum(c_i m_i)), and
+            the molecule given as c_i numbers c_i N_A V.
+            """
+            M0 = fluid_mass.m_as("kg")
+            ms = solute_mass.m_as("kg") if have_solute else 0.0
+            if volume is not None:
+                liters = volume * 1.0e-27
+                for m in molar:
+                    m["fixed"] = m["count"] * avogadro * liters
+            else:
+                rho = P["density"].m_as("kg/L")
+                dissolved = avogadro * sum(
+                    m["count"] * m["mass"].m_as("kg") for m in molar
+                )
+                if dissolved >= rho:
+                    raise RuntimeError(
+                        "The molecules given as molarities alone have a density of "
+                        f"{dissolved:.3f} g/mL, more than the density requested, "
+                        f"{rho:.3f} g/mL."
+                    )
+                # number of molecule i = gamma_i (x M0 + ms)
+                for m in molar:
+                    m["gamma"] = m["count"] * avogadro / (rho - dissolved)
+            if amount == "rounding this number of atoms":
+                target = P["approximate number of atoms"] - n_solute_atoms
+                if volume is not None:
+                    target -= sum(m["fixed"] * m["n_atoms"] for m in molar)
+                    x = target / n_fluid_atoms
+                else:
+                    per_mass = sum(m["gamma"] * m["n_atoms"] for m in molar)
+                    x = (target - per_mass * ms) / (n_fluid_atoms + per_mass * M0)
+            elif amount == "rounding this number of molecules":
+                target = P["approximate number of molecules"]
+                if volume is not None:
+                    target -= sum(m["fixed"] for m in molar)
+                    x = target / n_fluid_molecules
+                else:
+                    per_mass = sum(m["gamma"] for m in molar)
+                    x = (target - per_mass * ms) / (n_fluid_molecules + per_mass * M0)
+            elif amount == "using the density":
+                mass = (Q_(volume, "Å^3") * P["density"]).m_as("kg")
+                mass -= ms + sum(m["fixed"] * m["mass"].m_as("kg") for m in molar)
+                x = mass / M0
+            elif amount == "using the Ideal Gas Law":
+                n = P["pressure"] * Q_(volume, "Å^3") / (P["temperature"] * ureg.k)
+                n = n.m_as("dimensionless") - sum(m["fixed"] for m in molar)
+                x = n / n_fluid_molecules
+            else:
+                raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+            if volume is None:
+                for m in molar:
+                    m["fixed"] = m["gamma"] * (x * M0 + ms)
+            if x <= 0:
+                raise RuntimeError(
+                    "There is no room for the solvent: the solute and the molecules "
+                    "given as molarities already fill the region."
+                )
+            return x
+
         periodic = P["periodic"]
         shape = P["shape"]
         dimensions = P["dimensions"]
         amount = P["fluid amount"]
         cell = None
+        if molar and dimensions == "calculated using the Ideal Gas Law":
+            raise RuntimeError(
+                "Molarities need the volume, which the Ideal Gas Law gives only from "
+                "the total number of molecules. Give the dimensions another way, or "
+                "the amounts as proportions or molalities."
+            )
 
         # Get information about the solute for placing it
         periodic_solute = False
@@ -680,14 +795,7 @@ class Packmol(seamm.Node):
                     fixed = f"   fixed {dx:.4f} {dy:.4f} {dz:.4f} 0.0 0.0 0.0"
         elif dimensions == "calculated from the density":
             density = P["density"]
-            if amount == "rounding this number of atoms":
-                n_atoms = P["approximate number of atoms"]
-                n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
-            elif amount == "rounding this number of molecules":
-                n_molecules = P["approximate number of molecules"]
-                n_copies = n_molecules / n_fluid_molecules
-            else:
-                raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+            n_copies = copies(amount)
             n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
             volume = mass / density
             volume = volume.to("Å^3").magnitude
@@ -742,14 +850,7 @@ class Packmol(seamm.Node):
         elif dimensions == "calculated using the Ideal Gas Law":
             temperature = P["temperature"]
             pressure = P["pressure"]
-            if amount == "rounding this number of atoms":
-                n_atoms = P["approximate number of atoms"]
-                n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
-            elif amount == "rounding this number of molecules":
-                n_molecules = P["approximate number of molecules"]
-                n_copies = n_molecules / n_fluid_molecules
-            else:
-                raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
+            n_copies = copies(amount)
             n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
 
             # PV = NRT
@@ -791,25 +892,14 @@ class Packmol(seamm.Node):
         else:
             raise RuntimeError(f"Do not recognize dimensions '{dimensions}'")
 
-        # Now that we have the volume, get the number of molecules
-        if amount == "rounding this number of atoms":
-            n_atoms = P["approximate number of atoms"]
-            n_copies = (n_atoms - n_solute_atoms) / n_fluid_atoms
-        elif amount == "rounding this number of molecules":
-            n_molecules = P["approximate number of molecules"]
-            n_copies = n_molecules / n_fluid_molecules
-        elif amount == "using the density":
-            density = P["density"]
-            mass = Q_(volume, "Å^3") * density
-            mass.ito("kg")
-            n_copies = (mass - solute_mass) / fluid_mass
-        elif amount == "using the Ideal Gas Law":
-            # PV = NRT
-            n_molecules = pressure * volume / (temperature * ureg.k)
-            n_copies = n_molecules / n_fluid_molecules
-        else:
-            raise RuntimeError(f"Do not recognize fluid amount '{amount}'")
-        n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
+        # Now that we have the volume, get the number of molecules. From the density
+        # or the Ideal Gas Law they came first, and gave the volume.
+        if dimensions not in (
+            "calculated from the density",
+            "calculated using the Ideal Gas Law",
+        ):
+            n_copies = copies(amount, volume)
+            n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
 
         # Prepare the input
         lines = []
@@ -878,35 +968,76 @@ class Packmol(seamm.Node):
         else:
             string += f" with {n_molecules} fluid molecules\n\n"
 
-        # Reprint table of molecules
+        # Reprint table of molecules, with the requested and actual amounts: for the
+        # solvent its composition (by number or mass), for the other molecules their
+        # concentration.
+        liters = volume.to("L").magnitude
+        avogadro = Q_(1, "N_A").to("1/mol").magnitude
+        solvent = [
+            m
+            for m in molecules
+            if m["type"] == "fluid" and m["measure"] == "proportion"
+        ]
+        unit = "wt%" if by_mass else "%"
+
+        def share(m):
+            return m["number"] * m["mass"].m_as("kg") if by_mass else m["number"]
+
+        total_requested = sum(m["count"] for m in solvent)
+        total_actual = sum(share(m) for m in solvent)
+        solvent_kg = sum(m["number"] * m["mass"].m_as("kg") for m in solvent)
+
         table = {
             "Component": [],
             "Structure": [],
-            "Requested %": [],
+            "Requested": [],
             "Number": [],
-            "Actual %": [],
+            "Actual": [],
             "Molarity (M)": [],
+            "Molality (mol/kg)": [],
         }
-        # Molarity: moles per liter of the whole region
-        liters = volume.to("L").magnitude
-        avogadro = Q_(1, "N_A").to("1/mol").magnitude
         for molecule in molecules:
+            measure = molecule["measure"]
+            molarity = molecule["number"] / avogadro / liters
+            molality = (
+                molecule["number"] / avogadro / solvent_kg if solvent_kg > 0 else 0.0
+            )
+            molecule["molarity"] = molarity
             table["Component"].append(molecule["type"])
             table["Structure"].append(molecule["definition"])
-            table["Requested %"].append(molecule["requested %"])
             table["Number"].append(molecule["number"])
-            table["Actual %"].append(molecule["actual %"])
-            molarity = molecule["number"] / avogadro / liters
-            molecule["molarity"] = molarity
             table["Molarity (M)"].append(f"{molarity:.4f}")
+            if molecule["type"] == "solute":
+                requested = actual = molality = ""
+            elif measure == "proportion":
+                requested = f"{molecule['count'] / total_requested * 100:.3f} {unit}"
+                actual = f"{share(molecule) / total_actual * 100:.3f} {unit}"
+                molality = ""
+            elif measure == "molality (mol/kg)":
+                requested = f"{molecule['count']:.4f} mol/kg"
+                actual = f"{molality:.4f} mol/kg"
+                molecule["molality"] = molality
+                molality = f"{molality:.4f}"
+            else:
+                requested = f"{molecule['count']:.4f} M"
+                actual = f"{molarity:.4f} M"
+                molecule["molality"] = molality
+                molality = f"{molality:.4f}"
+            table["Requested"].append(requested)
+            table["Actual"].append(actual)
+            table["Molality (mol/kg)"].append(molality)
 
-        # The percentages are already formatted, so keep them as they are: newer
+        # Molality only for the molecules dissolved in the solvent, if there are any
+        if not any(table["Molality (mol/kg)"]):
+            del table["Molality (mol/kg)"]
+
+        # The amounts are already formatted, so keep them as they are: newer
         # tabulate releases would otherwise reparse and reformat them.
         text_lines = tabulate(
             table,
             headers="keys",
             tablefmt="psql",
-            colalign=("center", "left", "right", "right", "right", "right"),
+            colalign=("center", "left") + ("right",) * (len(table) - 2),
             disable_numparse=True,
         )
         string += textwrap.indent(text_lines, 4 * " ")
