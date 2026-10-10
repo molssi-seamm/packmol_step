@@ -4,10 +4,19 @@
 """Tests for `packmol_step` running full flowcharts."""
 
 from pathlib import Path
+import shutil
+
 import pytest
 from seamm_exec import run
 
 test_dir = Path(__file__).resolve().parent
+
+# The flowcharts run Packmol, so they need it: configured in the SEAMM installation, or
+# on the PATH. Neither is there in CI.
+needs_packmol = pytest.mark.skipif(
+    not (Path("~/SEAMM/packmol.ini").expanduser().exists() or shutil.which("packmol")),
+    reason="Packmol is not installed",
+)
 
 flowcharts = [
     str(test_dir / path)
@@ -35,6 +44,7 @@ def test_ideal_gas(monkeypatch, tmp_path, flowchart):
 
 
 @pytest.mark.unit
+@needs_packmol
 @pytest.mark.parametrize("flowchart", unit_flowcharts)
 def test_unit(monkeypatch, tmp_path, flowchart):
     """Unit tests with flowcharts"""

@@ -254,8 +254,10 @@ class Packmol(seamm.Node):
         ini_dir = Path(seamm_options["root"]).expanduser()
         path = ini_dir / "packmol.ini"
 
-        # If the config file doesn't exists, get the default
-        if not path.exists():
+        # If the config file doesn't exist, write the default, which runs Packmol
+        # from the seamm-packmol conda environment. Without conda (e.g. a pip or uv
+        # installation), leave it to the search of the PATH below.
+        if not path.exists() and "CONDA_EXE" in os.environ:
             resources = importlib.resources.files("packmol_step") / "data"
             ini_text = (resources / "packmol.ini").read_text()
             txt_config = Configuration(path)
@@ -266,24 +268,24 @@ class Packmol(seamm.Node):
             txt_config.set_value("local", "conda-environment", "seamm-packmol")
             txt_config.save()
 
-        full_config.read(ini_dir / "packmol.ini")
+        full_config.read(path)
 
         # Getting desperate! Look for an executable in the path
         if executor_type not in full_config:
-            path = shutil.which("packmol")
-            if path is None:
+            code = shutil.which("packmol")
+            if code is None:
                 raise RuntimeError(
                     f"No section for '{executor_type}' in Packmol ini file "
-                    f"({ini_dir / 'packmol.ini'}), nor in the defaults, nor "
-                    "in the path!"
+                    f"({path}), nor in the defaults, nor in the path!"
                 )
             else:
+                # Add the section to the ini file -- not to the executable
                 txt_config = Configuration(path)
                 txt_config.add_section(executor_type)
                 txt_config.set_value(executor_type, "installation", "local")
-                txt_config.set_value(executor_type, "code", str(path))
+                txt_config.set_value(executor_type, "code", str(code))
                 txt_config.save()
-                full_config.read(ini_dir / "packmol.ini")
+                full_config.read(path)
 
         config = dict(full_config.items(executor_type))
 

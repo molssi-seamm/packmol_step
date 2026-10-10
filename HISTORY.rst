@@ -19,6 +19,8 @@ History
       have the side ratios given in the dialog; before, they were ignored.
     * Bugfix: the "-" button of a molecule removed the wrong row after an earlier row
       had been removed.
+    * Bugfix: without a packmol.ini the step failed unless SEAMM was installed with conda.
+      It now finds Packmol on the PATH and records it in packmol.ini.
     * A source given only by its configuration name now uses the current system, and
       a solute's proportion no longer changes the numbers of atoms or the mass.
     * Flowcharts that get the amount of fluid from the density or the Ideal Gas Law
