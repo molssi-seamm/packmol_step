@@ -1,6 +1,18 @@
 =======
 History
 =======
+2026.10.10 -- Bugfix: structures given as sources lost their bonds
+    * With two or more structures from the database as sources (e.g. PF6/initial and
+      LiEC4/initial), every source after the first lost its bonds, so the forcefield
+      could not be assigned (PF6- was seen as a P plus six F atoms). The step also
+      left the bonds of every structure in the database deleted. Source structures are
+      now left untouched.
+    * A source given only by its configuration name now uses the current system.
+    * The table of the molecules packed keeps the percentages as they are printed,
+      the same with every version of the tabulate library.
+    * Removed the unused Docker image and its release job; the tests now run with the
+      package's own dependencies, on Python 3.12.
+
 2026.3.1 -- Internal: switching from deprecated library pkg_resources to importlib
 
 2026.1.7 -- Enhancement: using periodic packing now in Packmol

@@ -16,8 +16,8 @@ Created a spherical region with a diameter of 32.6879 Å with 300 fluid molecule
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |
     |-------------+-------------+---------------+----------+------------|
-    |    fluid    | c1ccccc1    |            25 |       75 |         25 |
-    |    fluid    | O           |            75 |      225 |         75 |
+    |    fluid    | c1ccccc1    |        25.000 |       75 |     25.000 |
+    |    fluid    | O           |        75.000 |      225 |     75.000 |
     +-------------+-------------+---------------+----------+------------+
 
 There are a total of 1575 atoms in the cell giving a density of 0.9 g/ml.

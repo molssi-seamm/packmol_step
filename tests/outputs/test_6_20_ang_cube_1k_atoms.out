@@ -16,8 +16,8 @@ Created a cubic region 20.0000 Å on a side with 297 fluid molecules
     +-------------+------------------+---------------+----------+------------+
     |  Component  | Structure        |   Requested % |   Number |   Actual % |
     |-------------+------------------+---------------+----------+------------|
-    |    fluid    | c1ccccc1c2ccccc2 |         1.961 |        6 |       2.02 |
-    |    fluid    | O                |        98.039 |      291 |      97.98 |
+    |    fluid    | c1ccccc1c2ccccc2 |         1.961 |        6 |      2.020 |
+    |    fluid    | O                |        98.039 |      291 |     97.980 |
     +-------------+------------------+---------------+----------+------------+
 
 There are a total of 1005 atoms in the cell giving a density of 1.2802 g/ml.

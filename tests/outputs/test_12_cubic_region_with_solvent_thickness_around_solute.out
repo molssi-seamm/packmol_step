@@ -16,10 +16,10 @@
 Created a cubic region 29.0486 Å on a side with the solute and 811.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
-    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
     |-------------+------------------+---------------+----------+------------|
     |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      811 | 100.000    |
+    |    fluid    | O                |       100.000 |      811 |    100.000 |
     +-------------+------------------+---------------+----------+------------+
 
 There are a total of 2455 atoms in the cell giving a density of 1.0002 g/ml.

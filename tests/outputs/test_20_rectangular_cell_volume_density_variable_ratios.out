@@ -16,8 +16,8 @@ Created a periodic 10.0000 x 20.0000 x 30.0000 Å cell with 99 fluid molecules
     +-------------+-------------+---------------+----------+------------+
     |  Component  | Structure   |   Requested % |   Number |   Actual % |
     |-------------+-------------+---------------+----------+------------|
-    |    fluid    | c1ccccc1    |            25 |       25 |     25.253 |
-    |    fluid    | O           |            75 |       74 |     74.747 |
+    |    fluid    | c1ccccc1    |        25.000 |       25 |     25.253 |
+    |    fluid    | O           |        75.000 |       74 |     74.747 |
     +-------------+-------------+---------------+----------+------------+
 
 There are a total of 522 atoms in the cell giving a density of 0.9094 g/ml.

@@ -16,10 +16,10 @@
 Created a periodic cubic cell 19.0486 Å on a side with the solute and 222.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
-    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
     |-------------+------------------+---------------+----------+------------|
     |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      222 | 100.000    |
+    |    fluid    | O                |       100.000 |      222 |    100.000 |
     +-------------+------------------+---------------+----------+------------+
 
 There are a total of 688 atoms in the cell giving a density of 0.99791 g/ml.

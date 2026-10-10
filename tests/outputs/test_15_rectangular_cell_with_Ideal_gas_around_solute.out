@@ -15,10 +15,10 @@
 Created a periodic 27.3153 x 54.6305 x 81.9458 Å cell with the solute and 300.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
-    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
     |-------------+------------------+---------------+----------+------------|
     |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      300 | 100.000    |
+    |    fluid    | O                |       100.000 |      300 |    100.000 |
     +-------------+------------------+---------------+----------+------------+
 
 There are a total of 922 atoms in the cell giving a density of 0.075486 g/ml.

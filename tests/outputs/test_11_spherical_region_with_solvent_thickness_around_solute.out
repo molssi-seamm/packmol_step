@@ -16,10 +16,10 @@
 Created a spherical region with a diameter of 29.0554 Å with the solute and 421.0 solvent molecules
 
     +-------------+------------------+---------------+----------+------------+
-    |  Component  | Structure        |   Requested % |   Number | Actual %   |
+    |  Component  | Structure        |   Requested % |   Number |   Actual % |
     |-------------+------------------+---------------+----------+------------|
     |   solute    | c1ccccc1c2ccccc2 |               |        1 |            |
-    |    fluid    | O                |       100.000 |      421 | 100.000    |
+    |    fluid    | O                |       100.000 |      421 |    100.000 |
     +-------------+------------------+---------------+----------+------------+
 
 There are a total of 1285 atoms in the cell giving a density of 1.0006 g/ml.

@@ -470,6 +470,7 @@ class Packmol(seamm.Node):
                         sysname, confname = definition.split("/")
                         tmp_system = system_db.get_system(sysname)
                     else:
+                        tmp_system = system_db.system
                         confname = definition
                     tmp_configuration = tmp_system.get_configuration(confname)
                 if ff is not None:
@@ -496,13 +497,13 @@ class Packmol(seamm.Node):
                 n_fluid_atoms += count * tmp_configuration.n_atoms
                 fluid_mass += count * tmp_mass
 
-            # Keep track of the bonding information to add at end_bond
+            # Keep track of the bonding information to add at the end. The input
+            # PDB files carry no bonds (see below), and the configurations are
+            # left as they are: a "configuration" source is the user's structure.
             bonds = []
             index = {_id: i for i, _id in enumerate(tmp_configuration.atoms.ids)}
             for row in tmp_configuration.bonds.bonds():
                 bonds.append((index[row["i"]], index[row["j"]], row["bondorder"]))
-            tmp_configuration.bonds.clear()
-            tmp_configuration.db.commit()
 
             molecules.append(
                 {
@@ -830,8 +831,18 @@ class Packmol(seamm.Node):
             else:
                 lines.append(f"   number {molecule['number']}")
             lines.append("end structure")
+            # Without CONECT records: Packmol would copy them to its output, but
+            # PDB has no bond orders and the reader takes at most four neighbors,
+            # so the bonds are added from the configurations afterwards instead.
             configuration = molecule["configuration"]
-            files[f"input_{i}.pdb"] = configuration.to_pdb_text()
+            files[f"input_{i}.pdb"] = (
+                "\n".join(
+                    line
+                    for line in configuration.to_pdb_text().splitlines()
+                    if not line.startswith("CONECT")
+                )
+                + "\n"
+            )
 
         lines.append("")
         files["input.inp"] = "\n".join(lines)
@@ -881,8 +892,14 @@ class Packmol(seamm.Node):
             table["Number"].append(molecule["number"])
             table["Actual %"].append(molecule["actual %"])
 
+        # The percentages are already formatted, so keep them as they are: newer
+        # tabulate releases would otherwise reparse and reformat them.
         text_lines = tabulate(
-            table, headers="keys", tablefmt="psql", colalign=("center", "left", "right")
+            table,
+            headers="keys",
+            tablefmt="psql",
+            colalign=("center", "left", "right", "right", "right"),
+            disable_numparse=True,
         )
         string += textwrap.indent(text_lines, 4 * " ")
 
