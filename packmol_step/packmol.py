@@ -209,7 +209,7 @@ class Packmol(seamm.Node):
     def _forcefield(self):
         """The forcefield to type the molecules with, or None.
 
-        A forcefield model chemistry (``FF@OPLS-AA``, ``ReaxFF@...``) from a
+        A forcefield model chemistry (``FF@oplsaa``, ``ReaxFF@...``) from a
         Model Chemistry step, built by the step that offers it; otherwise the
         Forcefield step's forcefield. OpenKIM and PyTorch models have no atom
         types.

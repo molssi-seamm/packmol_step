@@ -119,7 +119,7 @@ depends on the volume.
 Forcefields
 ===========
 If a forcefield has been chosen before the Packmol step -- with a Model Chemistry step
-(``FF@OPLS-AA``, ``ReaxFF@...``) or a Forcefield step -- the step assigns the
+(``FF@oplsaa``, ``ReaxFF@...``) or a Forcefield step -- the step assigns the
 forcefield's atom types and charges to each kind of molecule before packing, and the
 packed system carries them, ready for LAMMPS. **Assign forcefield** controls this: ``If not assigned``
 (the default) types only molecules that lack types for the current forcefield,

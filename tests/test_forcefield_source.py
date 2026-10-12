@@ -34,8 +34,8 @@ def _mc(level, type_):
 
 
 def test_a_forcefield_model_chemistry():
-    node = _node({"_model_chemistry": _mc("FF@OPLS-AA", "FF")}, _Provider)
-    assert Packmol._forcefield(node) == "built FF@OPLS-AA"
+    node = _node({"_model_chemistry": _mc("FF@oplsaa", "FF")}, _Provider)
+    assert Packmol._forcefield(node) == "built FF@oplsaa"
     node = _node({"_model_chemistry": _mc("ReaxFF@CH_2018", "ReaxFF")}, _Provider)
     assert Packmol._forcefield(node) == "built ReaxFF@CH_2018"
 
