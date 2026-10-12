@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2026.10.10 documentation</title>
+    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2026.10.12 documentation</title>
   
   
   
@@ -47,7 +47,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../../_static/documentation_options.js?v=355f04a4"></script>
+    <script src="../../_static/documentation_options.js?v=a6df0ad7"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.10" />
+  <meta name="docsearch:version" content="2026.10.12" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -702,6 +702,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <span class="k">return</span> <span class="n">description</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_forcefield</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The forcefield to type the molecules with, or None.</span>
+
+<span class="sd">        A forcefield model chemistry (``FF@oplsaa``, ``ReaxFF@...``) from a</span>
+<span class="sd">        Model Chemistry step, built by the step that offers it; otherwise the</span>
+<span class="sd">        Forcefield step's forcefield. OpenKIM and PyTorch models have no atom</span>
+<span class="sd">        types.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_exists</span><span class="p">(</span><span class="s2">"_model_chemistry"</span><span class="p">):</span>
+            <span class="n">mc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">"_model_chemistry"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"type"</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"FF"</span><span class="p">,</span> <span class="s2">"ReaxFF"</span><span class="p">):</span>
+                <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flowchart</span><span class="o">.</span><span class="n">plugin_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mc</span><span class="p">[</span><span class="s2">"step"</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">provider</span><span class="o">.</span><span class="n">forcefield</span><span class="p">(</span><span class="n">mc</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">"_forcefield"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">ff</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"OpenKIM"</span><span class="p">,</span> <span class="s2">"PyTorch"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">ff</span>
+
 <div class="viewcode-block" id="Packmol.run">
 <a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.packmol.Packmol.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -729,12 +750,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <span class="n">ff</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">P</span><span class="p">[</span><span class="s2">"assign forcefield"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"No"</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">ff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">"_forcefield"</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">ff</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">ff</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"OpenKIM"</span><span class="p">,</span> <span class="s2">"PyTorch"</span><span class="p">):</span>
-                <span class="n">ff</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">ff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forcefield</span><span class="p">()</span>
 
         <span class="c1"># Get the input files and any more output to print</span>
         <span class="n">tmp_db</span> <span class="o">=</span> <span class="n">SystemDB</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">"file:tmp_db?mode=memory&amp;cache=shared"</span><span class="p">)</span>

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; SEAMM Packmol Plug-in 2026.10.10 documentation</title>
+    <title>User Guide &#8212; SEAMM Packmol Plug-in 2026.10.12 documentation</title>
   
   
   
@@ -48,7 +48,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../_static/documentation_options.js?v=355f04a4"></script>
+    <script src="../_static/documentation_options.js?v=a6df0ad7"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -65,7 +65,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.10" />
+  <meta name="docsearch:version" content="2026.10.12" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -612,9 +612,10 @@ depends on the volume.</p>
 </section>
 <section id="forcefields">
 <h2>Forcefields<a class="headerlink" href="#forcefields" title="Link to this heading">#</a></h2>
-<p>If a Forcefield step comes before the Packmol step, the step assigns the forcefield’s
-atom types and charges to each kind of molecule before packing, and the packed system
-carries them, ready for LAMMPS. <strong>Assign forcefield</strong> controls this: <code class="docutils literal notranslate"><span class="pre">If</span> <span class="pre">not</span> <span class="pre">assigned</span></code>
+<p>If a forcefield has been chosen before the Packmol step – with a Model Chemistry step
+(<code class="docutils literal notranslate"><span class="pre">FF&#64;oplsaa</span></code>, <code class="docutils literal notranslate"><span class="pre">ReaxFF&#64;...</span></code>) or a Forcefield step – the step assigns the
+forcefield’s atom types and charges to each kind of molecule before packing, and the
+packed system carries them, ready for LAMMPS. <strong>Assign forcefield</strong> controls this: <code class="docutils literal notranslate"><span class="pre">If</span> <span class="pre">not</span> <span class="pre">assigned</span></code>
 (the default) types only molecules that lack types for the current forcefield,
 <code class="docutils literal notranslate"><span class="pre">Always</span></code> retypes them all, and <code class="docutils literal notranslate"><span class="pre">No</span></code> leaves the molecules as they are. Machine-learned
 potentials (PyTorch) and OpenKIM models need no atom types, so with them nothing is
