@@ -206,6 +206,27 @@ class Packmol(seamm.Node):
         description += str(__(text, indent=self.indent + 4 * " "))
         return description
 
+    def _forcefield(self):
+        """The forcefield to type the molecules with, or None.
+
+        A forcefield model chemistry (``FF@OPLS-AA``, ``ReaxFF@...``) from a
+        Model Chemistry step, built by the step that offers it; otherwise the
+        Forcefield step's forcefield. OpenKIM and PyTorch models have no atom
+        types.
+        """
+        if self.variable_exists("_model_chemistry"):
+            mc = self.get_variable("_model_chemistry")
+            if mc.get("type") in ("FF", "ReaxFF"):
+                provider = self.flowchart.plugin_manager.get(mc["step"])
+                return provider.forcefield(mc, node=self)
+        try:
+            ff = self.get_variable("_forcefield")
+        except Exception:
+            return None
+        if ff in ("OpenKIM", "PyTorch"):
+            return None
+        return ff
+
     def run(self):
         """Run a Packmol building step"""
 
@@ -231,12 +252,7 @@ class Packmol(seamm.Node):
 
         ff = None
         if P["assign forcefield"] != "No":
-            try:
-                ff = self.get_variable("_forcefield")
-            except Exception:
-                ff = None
-            if ff in ("OpenKIM", "PyTorch"):
-                ff = None
+            ff = self._forcefield()
 
         # Get the input files and any more output to print
         tmp_db = SystemDB(filename="file:tmp_db?mode=memory&cache=shared")

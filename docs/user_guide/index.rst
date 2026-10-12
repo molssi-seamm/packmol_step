@@ -118,9 +118,10 @@ depends on the volume.
 
 Forcefields
 ===========
-If a Forcefield step comes before the Packmol step, the step assigns the forcefield's
-atom types and charges to each kind of molecule before packing, and the packed system
-carries them, ready for LAMMPS. **Assign forcefield** controls this: ``If not assigned``
+If a forcefield has been chosen before the Packmol step -- with a Model Chemistry step
+(``FF@OPLS-AA``, ``ReaxFF@...``) or a Forcefield step -- the step assigns the
+forcefield's atom types and charges to each kind of molecule before packing, and the
+packed system carries them, ready for LAMMPS. **Assign forcefield** controls this: ``If not assigned``
 (the default) types only molecules that lack types for the current forcefield,
 ``Always`` retypes them all, and ``No`` leaves the molecules as they are. Machine-learned
 potentials (PyTorch) and OpenKIM models need no atom types, so with them nothing is

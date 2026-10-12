@@ -1,6 +1,10 @@
 =======
 History
 =======
+2026.10.12 -- Forcefields from the Model Chemistry step
+    * The molecules are typed with a forcefield chosen in a Model Chemistry step
+      (``FF@OPLS-AA``, ...) as well as with the Forcefield step's.
+
 2026.10.10 -- Concentrations, documentation, and structures as sources keep their bonds
     * The amount of each fluid molecule can be given as a proportion, a molality
       (mol/kg of solvent) or a molarity (mol/L), and the proportions by number of
