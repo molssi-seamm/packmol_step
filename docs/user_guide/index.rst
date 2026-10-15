@@ -59,9 +59,11 @@ The region
 ==========
 **Create periodic system** chooses between a cluster (``No``) and a periodic cell
 (``Yes``), and **Shape of the region** between ``cubic``, ``rectangular`` and
-``spherical``; a periodic cell is cubic or rectangular. A periodic cell is packed
-with Packmol's own periodic boundary conditions, so molecules near one face do not
-overlap the images of those near the opposite face.
+``spherical``; a periodic cell is cubic or rectangular. In a periodic cell the
+fluid molecules are packed 1 Å inside each face, half of Packmol's 2 Å tolerance, so
+that they are at least 2 Å from the images of those near the opposite face. (Packmol's
+own periodic boundary conditions do not keep them apart: with water, dozens of pairs
+ended up closer than 1.8 Å across the faces, and the MD failed at once.)
 
 How big is it?
 --------------

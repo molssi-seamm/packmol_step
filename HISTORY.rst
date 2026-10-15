@@ -1,6 +1,13 @@
 =======
 History
 =======
+2026.10.15 -- Bugfix: molecules overlapped across the faces of a periodic cell
+    * Packmol's periodic boundary conditions, used for periodic cells, do not keep
+      molecules apart across the faces of the cell: in a cell of 512 waters, 25 to 53
+      pairs were closer than 1.8 Å, some at 0.8 Å, so the MD that followed could
+      fail at once with "Lost atoms". The molecules are now packed 1 Å inside each
+      face, so they are at least 2 Å from those across it.
+
 2026.10.12 -- Forcefields from the Model Chemistry step
     * The molecules are typed with a forcefield chosen in a Model Chemistry step
       (``FF@oplsaa``, ...) as well as with the Forcefield step's.

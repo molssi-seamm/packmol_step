@@ -3,10 +3,11 @@ tolerance 2.0
 output packmol.pdb
 filetype pdb
 connect yes
-pbc 10.0000 20.0000 30.0000
 structure input_1.pdb
+   inside box 1.0000 1.0000 1.0000 9.0000 19.0000 29.0000
    number 25
 end structure
 structure input_2.pdb
+   inside box 1.0000 1.0000 1.0000 9.0000 19.0000 29.0000
    number 74
 end structure
