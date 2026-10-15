@@ -919,20 +919,30 @@ class Packmol(seamm.Node):
             n_copies = copies(amount, volume)
             n_atoms, n_molecules, mass = round_copies(n_copies, molecules)
 
-        # Prepare the input
+        # Prepare the input. For a periodic cell, Packmol's "pbc" option does not
+        # keep the molecules apart across the faces of the cell: with water, dozens
+        # of pairs end up closer than 1.8 Å, some at 0.8 Å, so MD fails at once.
+        # Instead the molecules are packed in the cell shrunk by half the tolerance
+        # on each side, so their periodic images are at least the tolerance apart.
+        tolerance = 2.0
         lines = []
         lines.append("seed -1")
-        lines.append("tolerance 2.0")
+        lines.append(f"tolerance {tolerance}")
         lines.append("output packmol.pdb")
         lines.append("filetype pdb")
         lines.append("connect yes")
         if periodic:
-            lines.append(f"pbc {a:.4f} {b:.4f} {c:.4f}")
+            t = tolerance / 2
+            a, b, c = cell
+            region = (
+                f"   inside box {t:.4f} {t:.4f} {t:.4f} {a - t:.4f} {b - t:.4f} "
+                f"{c - t:.4f}"
+            )
 
         files = {}
         for i, molecule in enumerate(molecules, start=1):
             lines.append(f"structure input_{i}.pdb")
-            if not periodic:
+            if not periodic or molecule["type"] != "solute":
                 lines.append(region)
             if molecule["type"] == "solute":
                 if not periodic_solute:
