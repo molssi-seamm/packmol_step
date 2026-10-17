@@ -1,6 +1,16 @@
 =======
 History
 =======
+2026.10.17 -- Bugfix: the packed system had no name
+    * The system Packmol makes is now named after what is in it, e.g. "512 H2O, 9 Na+,
+      9 Cl-", and its configuration "packed", rather than left with an empty name
+      that the following steps kept. The structure handling's choices of names are
+      now applied too; a name given as text may use ``{composition}``. The default
+      configuration name is now "keep current name" rather than a SMILES string of
+      the whole box.
+    * Bugfix: the charge of the packed system is an integer; a fractional value broke
+      naming it by SMILES.
+
 2026.10.15 -- Bugfix: molecules overlapped across the faces of a periodic cell
     * Packmol's periodic boundary conditions, used for periodic cells, do not keep
       molecules apart across the faces of the cell: in a cell of 512 waters, 25 to 53

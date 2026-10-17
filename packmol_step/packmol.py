@@ -347,13 +347,16 @@ class Packmol(seamm.Node):
                     else:
                         extra_data[key] = atoms.get_column_data(key) * n
 
+        # What is in the box, for its name, while the molecules' database is open
+        composition = composition_text(molecules)
+
         # Remove the temporary database
         tmp_db.close()
 
         # Get the system to fill and make sure it is empty
         system, configuration = self.get_system_configuration(P, same_as=None)
         configuration.clear()
-        configuration.charge = total_q
+        configuration.charge = int(round(total_q))
 
         # Create the configuration from the PDB output of Packmol
         configuration.coordinate_system = "Cartesian"
@@ -384,6 +387,16 @@ class Packmol(seamm.Node):
             xyz = configuration.atoms.get_coordinates(fractionals=False)
             configuration.coordinate_system = "fractional"
             configuration.atoms.set_coordinates(xyz, fractionals=False)
+
+        # Name the system and configuration: by default after what is in the box,
+        # rather than leaving the new system without a name
+        if system.name in (None, ""):
+            system.name = composition
+        if configuration.name in (None, ""):
+            configuration.name = "packed"
+        seamm.standard_parameters.set_names(
+            system, configuration, P, _first=True, composition=composition
+        )
 
         printer.important(__(output, indent=4 * " "))
         printer.important("")
@@ -1074,6 +1087,23 @@ class Packmol(seamm.Node):
         string += f" giving a density of {density:.5~P}."
 
         return molecules, files, string, cell
+
+
+def composition_text(molecules):
+    """What is in the box, e.g. "512 H2O, 9 Na+, 9 Cl-".
+
+    Parameters
+    ----------
+    molecules : [dict]
+        The molecules packed, each with its "number" and "configuration".
+    """
+    parts = []
+    for molecule in molecules:
+        # The formula includes any charge, e.g. "[Na]+"
+        formula = molecule["configuration"].formula[0]
+        formula = formula.replace(" ", "").replace("[", "").replace("]", "")
+        parts.append(f"{molecule['number']} {formula}")
+    return ", ".join(parts)
 
 
 def bounding_sphere(points):
