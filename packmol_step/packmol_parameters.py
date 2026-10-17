@@ -292,3 +292,6 @@ class PackmolParameters(seamm.Parameters):
             },
             data=data,
         )
+        # A box of many molecules: name it by what is in it (the Packmol step does
+        # when the name would be empty), not by a SMILES string of the whole box
+        self["configuration name"].default = "keep current name"
