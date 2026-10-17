@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2026.10.15 documentation</title>
+    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2026.10.17 documentation</title>
   
   
   
@@ -47,7 +47,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../../_static/documentation_options.js?v=6d569a1a"></script>
+    <script src="../../_static/documentation_options.js?v=fed69469"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.15" />
+  <meta name="docsearch:version" content="2026.10.17" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -845,13 +845,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">extra_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_column_data</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span>
 
+        <span class="c1"># What is in the box, for its name, while the molecules' database is open</span>
+        <span class="n">composition</span> <span class="o">=</span> <span class="n">composition_text</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
         <span class="c1"># Remove the temporary database</span>
         <span class="n">tmp_db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="c1"># Get the system to fill and make sure it is empty</span>
         <span class="n">system</span><span class="p">,</span> <span class="n">configuration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_system_configuration</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">same_as</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">configuration</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="n">configuration</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">total_q</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">total_q</span><span class="p">))</span>
 
         <span class="c1"># Create the configuration from the PDB output of Packmol</span>
         <span class="n">configuration</span><span class="o">.</span><span class="n">coordinate_system</span> <span class="o">=</span> <span class="s2">"Cartesian"</span>
@@ -882,6 +885,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <span class="n">xyz</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">fractionals</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">configuration</span><span class="o">.</span><span class="n">coordinate_system</span> <span class="o">=</span> <span class="s2">"fractional"</span>
             <span class="n">configuration</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">fractionals</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Name the system and configuration: by default after what is in the box,</span>
+        <span class="c1"># rather than leaving the new system without a name</span>
+        <span class="k">if</span> <span class="n">system</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">composition</span>
+        <span class="k">if</span> <span class="n">configuration</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span>
+            <span class="n">configuration</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"packed"</span>
+        <span class="n">seamm</span><span class="o">.</span><span class="n">standard_parameters</span><span class="o">.</span><span class="n">set_names</span><span class="p">(</span>
+            <span class="n">system</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">composition</span><span class="o">=</span><span class="n">composition</span>
+        <span class="p">)</span>
 
         <span class="n">printer</span><span class="o">.</span><span class="n">important</span><span class="p">(</span><span class="n">__</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="s2">" "</span><span class="p">))</span>
         <span class="n">printer</span><span class="o">.</span><span class="n">important</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
@@ -1576,6 +1589,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <span class="k">return</span> <span class="n">molecules</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">cell</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="composition_text">
+<a class="viewcode-back" href="../../api/packmol_step.html#packmol_step.packmol.composition_text">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">composition_text</span><span class="p">(</span><span class="n">molecules</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""What is in the box, e.g. "512 H2O, 9 Na+, 9 Cl-".</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    molecules : [dict]</span>
+<span class="sd">        The molecules packed, each with its "number" and "configuration".</span>
+<span class="sd">    """</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">:</span>
+        <span class="c1"># The formula includes any charge, e.g. "[Na]+"</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="s2">"configuration"</span><span class="p">]</span><span class="o">.</span><span class="n">formula</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">formula</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"["</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"]"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">molecule</span><span class="p">[</span><span class="s1">'number'</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">formula</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
 
 
 

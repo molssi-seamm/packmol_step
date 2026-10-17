@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>History &#8212; SEAMM Packmol Plug-in 2026.10.15 documentation</title>
+    <title>History &#8212; SEAMM Packmol Plug-in 2026.10.17 documentation</title>
   
   
   
@@ -48,7 +48,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="_static/documentation_options.js?v=6d569a1a"></script>
+    <script src="_static/documentation_options.js?v=fed69469"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -63,7 +63,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.15" />
+  <meta name="docsearch:version" content="2026.10.17" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -506,6 +506,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <section id="history">
 <h1>History<a class="headerlink" href="#history" title="Link to this heading">#</a></h1>
 <dl class="simple">
+<dt>2026.10.17 – Bugfix: the packed system had no name</dt><dd><ul class="simple">
+<li><p>The system Packmol makes is now named after what is in it, e.g. “512 H2O, 9 Na+,
+9 Cl-”, and its configuration “packed”, rather than left with an empty name
+that the following steps kept. The structure handling’s choices of names are
+now applied too; a name given as text may use <code class="docutils literal notranslate"><span class="pre">{composition}</span></code>. The default
+configuration name is now “keep current name” rather than a SMILES string of
+the whole box.</p></li>
+<li><p>Bugfix: the charge of the packed system is an integer; a fractional value broke
+naming it by SMILES.</p></li>
+</ul>
+</dd>
 <dt>2026.10.15 – Bugfix: molecules overlapped across the faces of a periodic cell</dt><dd><ul class="simple">
 <li><p>Packmol’s periodic boundary conditions, used for periodic cells, do not keep
 molecules apart across the faces of the cell: in a cell of 512 waters, 25 to 53
