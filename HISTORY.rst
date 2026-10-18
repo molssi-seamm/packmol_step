@@ -1,6 +1,11 @@
 =======
 History
 =======
+2026.10.18 -- Internal: read the output files from disk
+    * seamm-exec 2026.10.18 no longer reads the files a calculation returns into memory,
+      since they can be gigabytes. The Packmol step now reads the ones it needs from the
+      step's directory, which works with earlier versions of seamm-exec too.
+
 2026.10.17 -- Bugfix: the packed system had no name
     * The system Packmol makes is now named after what is in it, e.g. "512 H2O, 9 Na+,
       9 Cl-", and its configuration "packed", rather than left with an empty name

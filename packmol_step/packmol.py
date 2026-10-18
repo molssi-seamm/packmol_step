@@ -360,7 +360,7 @@ class Packmol(seamm.Node):
 
         # Create the configuration from the PDB output of Packmol
         configuration.coordinate_system = "Cartesian"
-        configuration.from_pdb_text(result["packmol.pdb"]["data"])
+        configuration.from_pdb_text((Path(self.directory) / "packmol.pdb").read_text())
 
         ids = configuration.atoms.ids
         i_atoms = [ids[x] for x in i_indices]
