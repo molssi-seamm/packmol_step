@@ -4,10 +4,10 @@ output packmol.pdb
 filetype pdb
 connect yes
 structure input_1.pdb
-   inside box 1.0000 1.0000 1.0000 20.7166 20.7166 20.7166
+   inside box 1.0000 1.0000 1.0000 20.7165 20.7165 20.7165
    number 6
 end structure
 structure input_2.pdb
-   inside box 1.0000 1.0000 1.0000 20.7166 20.7166 20.7166
+   inside box 1.0000 1.0000 1.0000 20.7165 20.7165 20.7165
    number 291
 end structure
