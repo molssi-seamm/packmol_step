@@ -3,3 +3,5 @@ seamm_exec
 rdkit
 tabulate
 forcefield-step>=2026.10.12.1
+molsystem>=2026.10.18
+seamm-util>=2026.10.18

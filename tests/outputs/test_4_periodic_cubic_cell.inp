@@ -5,10 +5,10 @@ filetype pdb
 connect yes
 structure input_1.pdb
    center
-   fixed 10.7752 10.7752 10.7752 0.0 0.0 0.0
+   fixed 10.7751 10.7751 10.7751 0.0 0.0 0.0
    number 1
 end structure
 structure input_2.pdb
-   inside box 1.0000 1.0000 1.0000 20.5504 20.5504 20.5504
+   inside box 1.0000 1.0000 1.0000 20.5503 20.5503 20.5503
    number 326
 end structure

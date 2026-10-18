@@ -1,6 +1,11 @@
 =======
 History
 =======
+2026.10.18.1 -- Internal: tests with the atomic weights from mendeleev
+    * The expected outputs of the tests are updated for the atomic weights from
+      mendeleev in seamm-util and molsystem 2026.10.18, which change the densities and
+      sizes printed in the fourth or fifth decimal. Requires those versions.
+
 2026.10.18 -- Internal: read the output files from disk
     * seamm-exec 2026.10.18 no longer reads the files a calculation returns into memory,
       since they can be gigabytes. The Packmol step now reads the ones it needs from the
