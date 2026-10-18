@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2026.10.17 documentation</title>
+    <title>packmol_step.packmol &#8212; SEAMM Packmol Plug-in 2026.10.18 documentation</title>
   
   
   
@@ -47,7 +47,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-PQXXTJ2');</script>
 <!-- End Google Tag Manager -->
 
-    <script src="../../_static/documentation_options.js?v=fed69469"></script>
+    <script src="../../_static/documentation_options.js?v=16cc37ab"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.17" />
+  <meta name="docsearch:version" content="2026.10.18" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -858,7 +858,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <span class="c1"># Create the configuration from the PDB output of Packmol</span>
         <span class="n">configuration</span><span class="o">.</span><span class="n">coordinate_system</span> <span class="o">=</span> <span class="s2">"Cartesian"</span>
-        <span class="n">configuration</span><span class="o">.</span><span class="n">from_pdb_text</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"packmol.pdb"</span><span class="p">][</span><span class="s2">"data"</span><span class="p">])</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="n">from_pdb_text</span><span class="p">((</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"packmol.pdb"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
 
         <span class="n">ids</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">ids</span>
         <span class="n">i_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">ids</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">i_indices</span><span class="p">]</span>
