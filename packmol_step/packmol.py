@@ -29,6 +29,30 @@ job = printing.getPrinter()
 printer = printing.getPrinter("packmol")
 
 
+def atom_columns(molecules):
+    """The atom data to carry into the packed configuration, in its order: the atom
+    types and charges of the forcefield, and the formal charges.
+
+    Parameters
+    ----------
+    molecules : [dict]
+        Each molecule's "configuration" and "number" of copies, in order.
+
+    Returns
+    -------
+    dict
+        Column name -> the values for every atom of the packed configuration.
+    """
+    columns = {}
+    for molecule in molecules:
+        n = molecule["number"]
+        atoms = molecule["configuration"].atoms
+        for key in atoms.keys():
+            if "atom_types_" in key or "charges" in key or key == "formal_charge":
+                columns.setdefault(key, []).extend(atoms.get_column_data(key) * n)
+    return columns
+
+
 class Packmol(seamm.Node):
     def __init__(self, flowchart=None, extension=None):
         """Setup the main Packmol step
@@ -322,7 +346,6 @@ class Packmol(seamm.Node):
         self.logger.debug(pprint.pformat(result))
 
         # Get the bond orders and extra parameters like ff atom types
-        extra_data = {}
         total_q = 0.0
         offset = 0
         i_indices = []
@@ -338,14 +361,7 @@ class Packmol(seamm.Node):
                 offset += molecule["configuration"].n_atoms
 
             total_q += n * molecule["configuration"].charge
-
-            atoms = molecule["configuration"].atoms
-            for key in atoms.keys():
-                if "atom_types_" in key or "charges" in key:
-                    if key in extra_data:
-                        extra_data[key].extend(atoms.get_column_data(key) * n)
-                    else:
-                        extra_data[key] = atoms.get_column_data(key) * n
+        extra_data = atom_columns(molecules)
 
         # What is in the box, for its name, while the molecules' database is open
         composition = composition_text(molecules)
@@ -374,6 +390,10 @@ class Packmol(seamm.Node):
                     configuration.atoms.add_attribute(key, coltype="str")
                 elif "charges" in key:
                     configuration.atoms.add_attribute(key, coltype="float")
+                elif key == "formal_charge":
+                    # The ions' formal charges, which analyses of an MD without
+                    # fixed charges (an MLFF) need to find the ions
+                    configuration.atoms.add_attribute(key, coltype="int", default=0)
                 else:
                     raise RuntimeError(f"Can't handle extra column '{key}'")
             configuration.atoms.get_column(key)[:] = values
