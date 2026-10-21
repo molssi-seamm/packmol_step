@@ -1,6 +1,12 @@
 =======
 History
 =======
+2026.10.21 -- Bugfix: the packed structure keeps the formal charges
+    * The atoms of the packed structure lost the formal charges of the molecules (e.g.
+      +1 on Li+ and -1 on the P of PF6-), although the total charge was kept. They are
+      now carried over, so analyses of an MD without fixed charges -- with a
+      machine-learned forcefield -- can find the ions.
+
 2026.10.18.1 -- Internal: tests with the atomic weights from mendeleev
     * The expected outputs of the tests are updated for the atomic weights from
       mendeleev in seamm-util and molsystem 2026.10.18, which change the densities and
